@@ -1,0 +1,32 @@
+{
+  "name": "pptmaster",
+  "version": "0.1.0",
+  "description": "PPTAgent — AI-powered brand strategy planning agent that produces consulting-grade brand decks from uploaded materials.",
+  "type": "module",
+  "license": "MIT",
+  "author": "SevenAILab",
+  "homepage": "https://pptagent.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SevenAILab/pptmaster.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "ingest:book": "node scripts/ingest/ingest-book.mjs",
+    "ingest:models": "node scripts/ingest/ingest-models.mjs",
+    "ingest:pptx": "node scripts/ingest/ingest-pptx.mjs",
+    "ingest:tools": "node scripts/ingest/ingest-tools.mjs",
+    "ingest:methodologies": "node scripts/ingest/ingest-methodologies.mjs",
+    "compile:concepts": "node scripts/compile/extract-concepts.mjs",
+    "compile:images": "node scripts/compile/extract-from-images.mjs",
+    "compile:golden": "node scripts/compile/build-golden.mjs",
+    "compile:matrix": "node scripts/compile/build-application-matrix.mjs",
+    "search:test": "node scripts/web-search.mjs --test",
+    "run:positioning": "node scripts/run-sub-agent.mjs brand_positioning"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0"
+  }
+}

@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.local
+*.env
+!.env.example
+
+# Web Search cache
+.cache/
+
+# User uploads & generated outputs
+inputs/
+outputs/
+
+# Raw external article scrapes (per spec §3.3 v1.1)
+assets/_raw/methodologies/raw/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
