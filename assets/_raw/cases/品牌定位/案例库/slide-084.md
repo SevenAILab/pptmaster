@@ -1,0 +1,13 @@
+---
+slide: 84
+total_slides: 86
+case_slug: brand-positioning-cases
+source: 品牌定位案例.pptx
+title: "Slide 84"
+extraction: none
+image_count: 0
+char_count: 0
+---
+
+# Slide 84 · Slide 84
+

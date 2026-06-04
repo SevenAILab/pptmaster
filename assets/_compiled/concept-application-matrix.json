@@ -1,0 +1,1616 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-05-27T05:48:01.780Z",
+  "generated_from": {
+    "golden_dir": "assets/_compiled/concepts-golden",
+    "golden_concepts_count": 60,
+    "source_rule": "frontmatter.applicable_sub_agents + application_role, with spec §4.3-4.8 tier overrides"
+  },
+  "matrix": {
+    "consumer_insight": {
+      "must_load": [
+        {
+          "concept": "JTBD",
+          "slug": "jtbd",
+          "file": "assets/_compiled/concepts-golden/jtbd.md",
+          "category": "methodology",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "JTBD (**Jobs to be Done**) 是由哈佛 Clayton Christensen 推广的用户需求分析理论: > **\"用户'雇佣' (hire) 一个产品来完成某个'任务 (Job)'\"** 核心洞察: - 用户买的不是产品本身, 而是**雇佣产品帮自己完成某项任务** - 痛点 (Pain) ="
+        },
+        {
+          "concept": "Persona-5W2H",
+          "slug": "persona-5w2h",
+          "file": "assets/_compiled/concepts-golden/persona-5w2h.md",
+          "category": "methodology",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "Persona-5W2H 是一种把目标用户从\"一群人\"具体化为\"一个可理解的人\"的画像方法。它以 User Persona 为主体,再用 5W2H 问题补齐场景、动机和决策细节: - **Who**: 他是谁,基本人口特征、职业、生活状态 - **What**: 他要解决什么问题,正在购买/使用什么 - **Why**"
+        },
+        {
+          "concept": "User-Journey",
+          "slug": "user-journey",
+          "file": "assets/_compiled/concepts-golden/user-journey.md",
+          "category": "methodology",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "用户旅程 (Customer Journey) 是用户从首次意识到需求或接触品牌,到了解、比较、购买、使用、复购、推荐或流失的全过程路径。用户旅程地图 (CJM) 则把每个阶段的行为、想法、情绪、触点、痛点和机会点可视化。 247 书给出的核心价值是: 让团队\"穿上用户的鞋子走路\",跳出\"我觉得\"的品牌视角,完整审视用"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "4A-Funnel",
+          "slug": "4a-funnel",
+          "file": "assets/_compiled/concepts-golden/4a-funnel.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4A-Funnel 是 PPTAgent 内部用于品牌策略诊断的行为漏斗: 把用户从\"知道品牌\"到\"愿意行动并推荐\"分为 4 个阶段。 ```text Awareness 认知 → Attitude 态度/好感 → Action 行动/购买 → Advocacy 拥护/推荐 ``` 本地材料中直接出现的是\"销售漏斗 /"
+        },
+        {
+          "concept": "4C",
+          "slug": "4c",
+          "file": "assets/_compiled/concepts-golden/4c.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4C 是从顾客视角重构营销组合的模型,包含 Customer Needs、Cost、Convenience、Communication。 Robert Lauterborn 在 1990 年提出 4C,主张当竞争加剧、产品供过于求时,企业应从产品本位转向消费者本位: Product 转向 Customer, Price"
+        },
+        {
+          "concept": "5-Why-Essence",
+          "slug": "5-why-essence",
+          "file": "assets/_compiled/concepts-golden/5-why-essence.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "5-Why-Essence 是用连续追问 \"为什么\" 来穿透表象、找到问题本质和底层动机的方法。 它借鉴丰田生产方式中的 5 Whys 根因分析,在 Seven 方法论中被扩展为品牌策略的本质思维: 不只问发生了什么,更问为什么发生、成立条件是什么、真正驱动行为的是什么。找本质的前提是行业和领域积累,方法包括第一性原理"
+        },
+        {
+          "concept": "HEART",
+          "slug": "heart",
+          "file": "assets/_compiled/concepts-golden/heart.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "HEART 是一套用户体验指标框架,通常由 Happiness、Engagement、Adoption、Retention、Task Success 五类指标组成,用于衡量用户是否满意、是否参与、是否采用、是否留存、是否顺利完成任务。 本概念来自全景图 06-体验层的 \"HEART 指标体系\",属于 MAP-STRUC"
+        },
+        {
+          "concept": "KANO",
+          "slug": "kano",
+          "file": "assets/_compiled/concepts-golden/kano.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "KANO 模型是一种产品需求分类和优先级判断工具,用于分析不同需求满足程度对用户满意度的影响。 模型卡显示,KANO 模型由东京理工大学教授狩野纪昭提出,把需求分为魅力属性、期待属性、必备属性、无关属性。Seven 247 书在用户需求小科普中也使用 KANO: 基本需求没有会不满意,期望需求有就满意没有就不满意,兴奋"
+        },
+        {
+          "concept": "Maslow",
+          "slug": "maslow",
+          "file": "assets/_compiled/concepts-golden/maslow.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "马斯洛需求层次理论由美国心理学家 Abraham Maslow 在 1943 年提出,从人类动机角度解释需求如何影响行为。经典五层为: 1. **生理需求**: 生存、食物、睡眠、身体舒适 2. **安全需求**: 稳定、可靠、健康、风险可控 3. **社交需求**: 归属、关系、陪伴、被接纳 4. **尊重需求**:"
+        },
+        {
+          "concept": "MECE",
+          "slug": "mece",
+          "file": "assets/_compiled/concepts-golden/mece.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "MECE 是 Mutually Exclusive, Collectively Exhaustive 的缩写,中文常译为相互独立、完全穷尽。它要求分类之间不重叠,整体上不遗漏。 虽然当前本地材料对 MECE 的直接命中较少,但 5W2H 模型卡中明确强调结构化问题分析要 \"抓住核心要点,不遗漏重要讯息\"；金字塔原理要求"
+        },
+        {
+          "concept": "Pain-Gain-Map",
+          "slug": "pain-gain-map",
+          "file": "assets/_compiled/concepts-golden/pain-gain-map.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Pain-Gain Map 是围绕一个用户任务 (JTBD) 梳理\"完成任务时有什么痛、完成任务后想得到什么好处\"的分析工具。 - **Pain 痛点**: 用户在完成任务时遇到的困难、风险、阻碍、恐惧、成本或不爽 - **Gain 收益**: 用户完成任务后期待获得的功能结果、情绪感受、社交认同或意外惊喜 247 书"
+        },
+        {
+          "concept": "Service-Blueprint",
+          "slug": "service-blueprint",
+          "file": "assets/_compiled/concepts-golden/service-blueprint.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "服务蓝图是把用户行为、前台触点、后台支持、系统流程和证据物串起来的服务设计工具,用于看清一段体验如何被组织交付。 本概念在 Phase 1 中主要来自全景图 06-体验层的 \"服务蓝图 Service Blueprint\",属于 MAP-STRUCTURE 新增候选,缺少 247 书中的完整专章。结合品牌全案框架和用户"
+        },
+        {
+          "concept": "Value-Prop-Canvas",
+          "slug": "value-prop-canvas",
+          "file": "assets/_compiled/concepts-golden/value-prop-canvas.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "价值主张画布 (Value Proposition Canvas, VPC) 由 Alexander Osterwalder 等提出,用于检查产品/服务是否真正匹配客户任务、痛点和收益。247 书将它解释为提炼品牌价值主张的结构化工具。 画布分两侧: - **右侧: 客户档案 Customer Profile**: 客"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "Communication-Theory-34",
+          "slug": "communication-theory-34",
+          "file": "assets/_compiled/concepts-golden/communication-theory-34.md",
+          "category": "term",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "34 个传播学理论是一个传播策略选择库,用于帮助策略 Agent 判断: 说什么、对谁说、通过什么媒介说、用户如何理解、信息如何扩散、风险如何控制。 Seven 本地方法论强调,传播不是简单输出信息,而是影响注意力、理解方式、社会认同和行为决策。这 34 个理论覆盖议程设置、编码解码、叙事理论、把关人、基模、沉默的螺旋"
+        },
+        {
+          "concept": "ICE",
+          "slug": "ice",
+          "file": "assets/_compiled/concepts-golden/ice.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "ICE 是一种优先级评分模型,用 Impact (影响力)、Confidence (信心)、Ease (易实施度) 三个维度评估行动、实验或项目的优先级。 本概念来自 MAP-STRUCTURE 07-增长层的 \"ICE 优先级模型\",属于全景图新增候选,缺少 247 书中的独立专章。本地年度规划材料反复强调资源有限、"
+        },
+        {
+          "concept": "North-Star-Metric",
+          "slug": "north-star-metric",
+          "file": "assets/_compiled/concepts-golden/north-star-metric.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "北极星指标是一个能够同时代表用户核心价值和业务长期增长的核心指标,用于统一团队增长方向。 本概念来自全景图 07-增长层的 \"北极星指标\",属于 MAP-STRUCTURE 新增候选。Seven 247 书在用户趋势章节中有 \"看到满天繁星,但要找到属于你的那颗北极星\" 的表达,可作为品牌策略语境: 增长指标很多,但真"
+        }
+      ]
+    },
+    "industry_analysis": {
+      "must_load": [
+        {
+          "concept": "Industry-Lifecycle",
+          "slug": "industry-lifecycle",
+          "file": "assets/_compiled/concepts-golden/industry-lifecycle.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "行业生命周期是判断一个行业从出现、增长、成熟到衰退或变革所处阶段的分析模型。常见阶段包括导入期、成长期、成熟期、衰退期,也可结合 S-Curve 表达行业增长速度的变化。 247 书强调: 判断行业处于哪个阶段,能帮助我们理解未来增长空间、当前竞争焦点和适合的策略。一个成长期行业要抢速度和心智,一个成熟期行业要拼效率、"
+        },
+        {
+          "concept": "PESTEL",
+          "slug": "pestel",
+          "file": "assets/_compiled/concepts-golden/pestel.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "PESTEL 是一种宏观环境分析框架,用于从外部大环境识别行业机会与风险。经典 PEST 包含四类因素: Political 政治/法律、Economic 经济、Social 社会文化、Technological 技术；PESTEL 进一步加入 Environmental 环境与 Legal 法律,使分析更适合监管、可"
+        },
+        {
+          "concept": "Porter-5-Forces",
+          "slug": "porter-5-forces",
+          "file": "assets/_compiled/concepts-golden/porter-5-forces.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "波特五力竞争模型由 Michael Porter 提出,用于分析一个行业的结构性吸引力和盈利压力。五种力量分别是: 1. **现有竞争者竞争强度** 2. **潜在进入者威胁** 3. **替代品威胁** 4. **供应商议价能力** 5. **购买者议价能力** 模型卡强调: 企业间直接竞争通常是五力中最显性的力量,"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "5-Why-Essence",
+          "slug": "5-why-essence",
+          "file": "assets/_compiled/concepts-golden/5-why-essence.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "5-Why-Essence 是用连续追问 \"为什么\" 来穿透表象、找到问题本质和底层动机的方法。 它借鉴丰田生产方式中的 5 Whys 根因分析,在 Seven 方法论中被扩展为品牌策略的本质思维: 不只问发生了什么,更问为什么发生、成立条件是什么、真正驱动行为的是什么。找本质的前提是行业和领域积累,方法包括第一性原理"
+        },
+        {
+          "concept": "Ansoff-Matrix",
+          "slug": "ansoff-matrix",
+          "file": "assets/_compiled/concepts-golden/ansoff-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "安索夫矩阵是用产品和市场两个维度判断增长路径的 2x2 工具,也叫产品市场扩张方格。 模型卡显示,安索夫矩阵由 Igor Ansoff 提出,以现有/新产品和现有/新市场组成四种组合: 市场渗透、市场开发、产品开发、多元化。它帮助企业在增长时判断风险和资源投入,避免把 \"增长\" 说成一个笼统愿望。 在 PPTAgent"
+        },
+        {
+          "concept": "S-Curve",
+          "slug": "s-curve",
+          "file": "assets/_compiled/concepts-golden/s-curve.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "S-Curve 是描述技术、产品或行业从诞生、扩散、成熟到衰退的发展曲线,形状像拉长的 S。 Seven 247 书在市场分析章节中把 S 曲线用于判断行业发展阶段: 导入期增长慢、成长期加速、成熟期放缓、衰退期下降。它和行业生命周期相近,但更强调增长速度、渗透率和技术扩散的变化。判断 S 曲线位置,可以回答未来增长空"
+        },
+        {
+          "concept": "Value-Chain",
+          "slug": "value-chain",
+          "file": "assets/_compiled/concepts-golden/value-chain.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "价值链是把企业或产业中创造价值的活动拆成一组相互连接的环节,用来识别价值增值位置、成本结构、利润池和竞争优势来源。 Michael Porter 在 1985 年提出企业价值链框架,将企业活动分为基本活动和支持性活动。Seven 247 书在行业分析里采用更适合品牌策略的产业链视角: 产品从原材料到最终消费者手中会经历"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "OGSM",
+          "slug": "ogsm",
+          "file": "assets/_compiled/concepts-golden/ogsm.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "OGSM 是一种战略落地框架,用 Objective、Goals、Strategies、Measures 四个部分把战略方向转成可衡量行动。 本概念来自全景图 02-战略层的 \"OGSM 模型\",属于 MAP-STRUCTURE 新增候选,缺 P1 七书专章。结合 Seven 品牌战略 SOP 中 \"愿景/战略目标/竞"
+        }
+      ]
+    },
+    "competitor_analysis": {
+      "must_load": [
+        {
+          "concept": "Competitor-Matrix",
+          "slug": "competitor-matrix",
+          "file": "assets/_compiled/concepts-golden/competitor-matrix.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "竞品分析矩阵是一张按统一维度横向比较主要竞争对手的结构化表格。它把分散的官网、电商、社媒、价格、产品、用户评价等信息整理成可比较的行列,帮助团队看清\"谁在服务谁、卖什么、怎么卖、强弱在哪里\"。 247 书把这一步称为\"竞品大全分析表\": 对核心直接竞争对手搜集基本情况、产品布局、定价策略、目标用户画像、营销渠道和初步优"
+        },
+        {
+          "concept": "Perceptual-Map",
+          "slug": "perceptual-map",
+          "file": "assets/_compiled/concepts-golden/perceptual-map.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "Perceptual Map 是用二维坐标展示品牌/产品在用户心智或竞争维度上的相对位置的可视化工具。常见做法是选择两个关键维度,例如\"价格高低 × 天然成分强调程度\",把自己和竞品放到同一张图中。 247 书强调: 定位图能帮助团队理解\"战场地形\"和\"各方势力分布\",直观看到拥挤区域、空白区域和品牌当前位置是否符合战"
+        },
+        {
+          "concept": "SWOT",
+          "slug": "swot",
+          "file": "assets/_compiled/concepts-golden/swot.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "SWOT 是一个战略分析与决策工具,把与品牌/业务相关的内外部因素归纳到四个象限: - **S - 优势 (Strengths)**: 内部有利因素 — 你擅长什么、有什么独特资源 - **W - 劣势 (Weaknesses)**: 内部不利因素 — 你欠缺什么、哪些方面不如对手 - **O - 机会 (Opport"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "4C",
+          "slug": "4c",
+          "file": "assets/_compiled/concepts-golden/4c.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4C 是从顾客视角重构营销组合的模型,包含 Customer Needs、Cost、Convenience、Communication。 Robert Lauterborn 在 1990 年提出 4C,主张当竞争加剧、产品供过于求时,企业应从产品本位转向消费者本位: Product 转向 Customer, Price"
+        },
+        {
+          "concept": "4P",
+          "slug": "4p",
+          "file": "assets/_compiled/concepts-golden/4p.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P 是经典营销组合模型,从企业视角组织产品、价格、渠道和推广四个可控变量: Product、Price、Place、Promotion。 模型卡将 4P 归为菲利普·科特勒体系中的营销理论: 消费者购买的是产品的使用价值,产品应该卖多少钱,在哪里卖,用什么促销/推广方式,共同构成营销闭环。Seven 247 书在竞品"
+        },
+        {
+          "concept": "4P-Comparison",
+          "slug": "4p-comparison",
+          "file": "assets/_compiled/concepts-golden/4p-comparison.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P-Comparison 是把多个竞品放在同一张 4P 矩阵中横向比较的方法,用于识别产品、价格、渠道和推广策略的差异与机会。 它不是重新定义 4P,而是 4P 在竞品分析中的应用。Seven 247 书明确指出,初创品牌最实用的往往是从用户评价出发,结合 4P/4C 分析,快速了解对手的产品、价格、渠道、营销以及用"
+        },
+        {
+          "concept": "Action-Title",
+          "slug": "action-title",
+          "file": "assets/_compiled/concepts-golden/action-title.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Action Title 是咨询式 PPT 页面标题写法,用一句结论或行动建议概括本页观点,而不是只描述图表内容。 它的底层来自金字塔原理的 \"先说结论,后说论据\"。模型卡强调,表达要先总结所以,后过程因为；塔尖用一两句话说出结论,下方再用论据支持。Action Title 就是把这个原则落到每一页 PPT: 标题先告"
+        },
+        {
+          "concept": "BCG-Matrix",
+          "slug": "bcg-matrix",
+          "file": "assets/_compiled/concepts-golden/bcg-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "BCG 矩阵是用于分析和规划产品组合的工具,用市场增长率和相对市场占有率两个维度,将业务或产品分成明星、金牛、问题、瘦狗四类。 模型卡显示,波士顿矩阵由美国管理学家 Bruce Henderson 提出,目的是让企业根据不同产品的增长与份额状态合理分配资源。高增长高份额是明星产品,低增长高份额是金牛产品,高增长低份额是"
+        },
+        {
+          "concept": "Budget-Allocation",
+          "slug": "budget-allocation",
+          "file": "assets/_compiled/concepts-golden/budget-allocation.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "预算分配是把有限资源按品牌目标、关键问题、渠道角色、项目优先级和预期回报进行配置的方法。 本概念的 P1 来源是品牌年度规划方案: \"年度规划,实际上是资源的分配\",现实是预算有限、野心和创意无限,因此不能什么都想做,一定要锁定最需要发力的点,预算分配可参照二八法则。MAP-STRUCTURE 08-管理层也把资源与预"
+        },
+        {
+          "concept": "GTM",
+          "slug": "gtm",
+          "file": "assets/_compiled/concepts-golden/gtm.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "GTM (Go-to-Market) 是把产品或品牌推向市场的一套进入策略,用于明确首批用户、上市主张、渠道组合、传播节奏、销售路径、预算分配和复盘指标。 本概念在 Phase 1 中来自 MAP-STRUCTURE 的传播层与增长层连接: 它把品牌定位、产品卖点、渠道选择和增长动作串成一段可执行的上市路径。它缺少 S"
+        },
+        {
+          "concept": "KOL-KOC",
+          "slug": "kol-koc",
+          "file": "assets/_compiled/concepts-golden/kol-koc.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "KOL/KOC 合作是品牌借助关键意见领袖和关键意见消费者进行内容种草、信任背书、口碑扩散和销售转化的传播方法。 本概念来自 MAP-STRUCTURE 05-传播层的 \"KOL/KOC 合作\",属于全景图新增候选,缺少 Seven 247 书中的独立专章。但在本地材料中,KOL/KOC 多次出现在渠道选择、用户洞察、"
+        },
+        {
+          "concept": "MECE",
+          "slug": "mece",
+          "file": "assets/_compiled/concepts-golden/mece.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "MECE 是 Mutually Exclusive, Collectively Exhaustive 的缩写,中文常译为相互独立、完全穷尽。它要求分类之间不重叠,整体上不遗漏。 虽然当前本地材料对 MECE 的直接命中较少,但 5W2H 模型卡中明确强调结构化问题分析要 \"抓住核心要点,不遗漏重要讯息\"；金字塔原理要求"
+        },
+        {
+          "concept": "Porter-5-Forces",
+          "slug": "porter-5-forces",
+          "file": "assets/_compiled/concepts-golden/porter-5-forces.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "波特五力竞争模型由 Michael Porter 提出,用于分析一个行业的结构性吸引力和盈利压力。五种力量分别是: 1. **现有竞争者竞争强度** 2. **潜在进入者威胁** 3. **替代品威胁** 4. **供应商议价能力** 5. **购买者议价能力** 模型卡强调: 企业间直接竞争通常是五力中最显性的力量,"
+        },
+        {
+          "concept": "Pyramid-Principle",
+          "slug": "pyramid-principle",
+          "file": "assets/_compiled/concepts-golden/pyramid-principle.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "金字塔原理是一套结构化思考与表达方法,核心是先说结论,再说论据；先总结所以,后解释因为。 Barbara Minto 在《金字塔原理》中系统化了这一咨询表达方法。模型卡给出的关键规则是: 塔尖用一两句话说出结论,塔往下依次展开论据；从上而下先陈述论点,后用论据支持。它特别适用于提案、沟通和思考,能让复杂信息在短时间内被"
+        },
+        {
+          "concept": "RTB",
+          "slug": "rtb",
+          "file": "assets/_compiled/concepts-golden/rtb.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "RTB (Reason to Believe) 是支撑品牌承诺或产品宣称的可信理由,中文可称为信任状。 Seven 247 书给出的核心判断很直接: 光有定位和承诺还不够,消费者凭什么相信你? RTB 就是把内部优势翻译成用户可理解、可感知、可验证的外部证据。它通常来自产品技术、服务流程、资质认证、专利奖项、用户证言、"
+        },
+        {
+          "concept": "SCQA",
+          "slug": "scqa",
+          "file": "assets/_compiled/concepts-golden/scqa.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "SCQA 是一种结构化叙事模型,由 Situation、Complication、Question、Answer 四部分组成: 先讲共同情景,再指出冲突,引出关键问题,最后给出答案。 模型卡显示,SCQA 来源于麦肯锡咨询顾问 Barbara Minto 的《金字塔原理》。S 是情景,从大家熟悉的事实切入；C 是冲突,"
+        },
+        {
+          "concept": "TOWS",
+          "slug": "tows",
+          "file": "assets/_compiled/concepts-golden/tows.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "TOWS 矩阵是 SWOT 之后的策略生成工具,通过交叉匹配优势、劣势、机会和威胁,形成 SO、ST、WO、WT 四类行动策略。 Heinz Weihrich 在 1982 年系统化提出 TOWS Matrix,强调从外部机会/威胁与内部优势/劣势的组合中制定战略。Seven 247 书里的表述更适合品牌策略: 完成 "
+        },
+        {
+          "concept": "Value-Chain",
+          "slug": "value-chain",
+          "file": "assets/_compiled/concepts-golden/value-chain.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "价值链是把企业或产业中创造价值的活动拆成一组相互连接的环节,用来识别价值增值位置、成本结构、利润池和竞争优势来源。 Michael Porter 在 1985 年提出企业价值链框架,将企业活动分为基本活动和支持性活动。Seven 247 书在行业分析里采用更适合品牌策略的产业链视角: 产品从原材料到最终消费者手中会经历"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "LTV-CAC",
+          "slug": "ltv-cac",
+          "file": "assets/_compiled/concepts-golden/ltv-cac.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "LTV/CAC 是用客户生命周期价值 (Lifetime Value) 与获客成本 (Customer Acquisition Cost) 的比值判断增长效率和商业健康度的模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"LTV/CAC 生命周期价值模型\",属于全景图新增候选,缺少 247 书中的独立专"
+        },
+        {
+          "concept": "PDCA",
+          "slug": "pdca",
+          "file": "assets/_compiled/concepts-golden/pdca.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "PDCA 是 Plan、Do、Check、Action 四步循环,中文常称戴明环,用于把计划、执行、检查和改进行动连接成持续优化闭环。 模型卡中将 PDCA 定义为全面质量管理遵循的科学程序: P 是计划目标,D 是执行内容,C 是检查结果并找出问题,A 是处理检查结果,将成功经验标准化,将失败教训规避,未解决问题进入"
+        }
+      ]
+    },
+    "brand_positioning": {
+      "must_load": [
+        {
+          "concept": "Brand-Positioning-Triangle",
+          "slug": "brand-positioning-triangle",
+          "file": "assets/_compiled/concepts-golden/brand-positioning-triangle.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "品牌定位三角是奥美常用的定位表达模型,围绕三个关键点构建品牌定位: - **TA (Target Audience)**: 为了什么样的人 - **Benefit / Positioning**: 提供什么样的核心好处,占据什么心智位置 - **RTB (Reason to Believe)**: 凭什么相信你能做到 "
+        },
+        {
+          "concept": "Business-Model-Canvas",
+          "slug": "business-model-canvas",
+          "file": "assets/_compiled/concepts-golden/business-model-canvas.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "商业模式画布 (BMC) 是由 **Alexander Osterwalder** 与 Yves Pigneur 在《商业模式新生代》(2010) 提出的可视化战略工具,把复杂商业模式分解为 **9 个相互关联的构造块**,帮助系统性思考\"企业如何**创造价值、传递价值、获取价值**\"。 **第一性原理**: 商业模式"
+        },
+        {
+          "concept": "STP",
+          "slug": "stp",
+          "file": "assets/_compiled/concepts-golden/stp.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "STP 是品牌定位决策的经典路线图,由 Wendell Smith (1956) 提出,把\"找位置\"分解为 3 个有序步骤: - **S - Segmentation 市场细分**: 按需求差异类型把市场切成有意义的子市场 - **T - Targeting 目标市场选择**: 从细分中选 1-3 个作为品牌主攻的目标"
+        },
+        {
+          "concept": "Value-Prop-Canvas",
+          "slug": "value-prop-canvas",
+          "file": "assets/_compiled/concepts-golden/value-prop-canvas.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "价值主张画布 (Value Proposition Canvas, VPC) 由 Alexander Osterwalder 等提出,用于检查产品/服务是否真正匹配客户任务、痛点和收益。247 书将它解释为提炼品牌价值主张的结构化工具。 画布分两侧: - **右侧: 客户档案 Customer Profile**: 客"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "4P-Comparison",
+          "slug": "4p-comparison",
+          "file": "assets/_compiled/concepts-golden/4p-comparison.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P-Comparison 是把多个竞品放在同一张 4P 矩阵中横向比较的方法,用于识别产品、价格、渠道和推广策略的差异与机会。 它不是重新定义 4P,而是 4P 在竞品分析中的应用。Seven 247 书明确指出,初创品牌最实用的往往是从用户评价出发,结合 4P/4C 分析,快速了解对手的产品、价格、渠道、营销以及用"
+        },
+        {
+          "concept": "4P-Rhythm",
+          "slug": "4p-rhythm",
+          "file": "assets/_compiled/concepts-golden/4p-rhythm.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P-Rhythm 是把营销组合 4P (Product 产品、Price 价格、Place 渠道、Promotion 传播/促销) 按时间节奏展开的年度执行工具。它回答的不是\"4P 分别是什么\",而是\"在不同阶段,产品、价格、渠道、传播应该先后怎么推进\"。 本地策略辞典中\"营销节奏\"\"传播节奏\"\"卡点\"等词条强调,营"
+        },
+        {
+          "concept": "5-Why-Essence",
+          "slug": "5-why-essence",
+          "file": "assets/_compiled/concepts-golden/5-why-essence.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "5-Why-Essence 是用连续追问 \"为什么\" 来穿透表象、找到问题本质和底层动机的方法。 它借鉴丰田生产方式中的 5 Whys 根因分析,在 Seven 方法论中被扩展为品牌策略的本质思维: 不只问发生了什么,更问为什么发生、成立条件是什么、真正驱动行为的是什么。找本质的前提是行业和领域积累,方法包括第一性原理"
+        },
+        {
+          "concept": "Aaker-Brand-Personality",
+          "slug": "aaker-brand-personality",
+          "file": "assets/_compiled/concepts-golden/aaker-brand-personality.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Aaker 品牌人格是把品牌拟人化为一组稳定性格特征的模型,帮助团队回答: \"如果品牌是一个人,他会怎么说话、怎么做事、给人什么感觉?\" Jennifer Aaker 在 1997 年提出品牌人格五维度框架,常见维度包括真诚、刺激、能力、精致、粗犷。Seven 247 书在品牌语言识别章节中更偏实操: 先把品牌想成一个"
+        },
+        {
+          "concept": "Action-Title",
+          "slug": "action-title",
+          "file": "assets/_compiled/concepts-golden/action-title.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Action Title 是咨询式 PPT 页面标题写法,用一句结论或行动建议概括本页观点,而不是只描述图表内容。 它的底层来自金字塔原理的 \"先说结论,后说论据\"。模型卡强调,表达要先总结所以,后过程因为；塔尖用一两句话说出结论,下方再用论据支持。Action Title 就是把这个原则落到每一页 PPT: 标题先告"
+        },
+        {
+          "concept": "Brand-Story-Hero-Journey",
+          "slug": "brand-story-hero-journey",
+          "file": "assets/_compiled/concepts-golden/brand-story-hero-journey.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌故事是用真实、动人、可传播的叙事,解释品牌为什么存在、为谁而做、如何兑现承诺、带来什么改变。 Seven 247 书强调: 事实讲道理,故事传情感。在信息泛滥的时代,一个好的品牌故事比硬邦邦的产品介绍更能打动人心,也更容易被记住和传播。品牌故事可以采用创始人故事、用户改变故事、产品工艺故事、文化传承故事、概念再造故"
+        },
+        {
+          "concept": "Competitor-Matrix",
+          "slug": "competitor-matrix",
+          "file": "assets/_compiled/concepts-golden/competitor-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "竞品分析矩阵是一张按统一维度横向比较主要竞争对手的结构化表格。它把分散的官网、电商、社媒、价格、产品、用户评价等信息整理成可比较的行列,帮助团队看清\"谁在服务谁、卖什么、怎么卖、强弱在哪里\"。 247 书把这一步称为\"竞品大全分析表\": 对核心直接竞争对手搜集基本情况、产品布局、定价策略、目标用户画像、营销渠道和初步优"
+        },
+        {
+          "concept": "MECE",
+          "slug": "mece",
+          "file": "assets/_compiled/concepts-golden/mece.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "MECE 是 Mutually Exclusive, Collectively Exhaustive 的缩写,中文常译为相互独立、完全穷尽。它要求分类之间不重叠,整体上不遗漏。 虽然当前本地材料对 MECE 的直接命中较少,但 5W2H 模型卡中明确强调结构化问题分析要 \"抓住核心要点,不遗漏重要讯息\"；金字塔原理要求"
+        },
+        {
+          "concept": "Pain-Gain-Map",
+          "slug": "pain-gain-map",
+          "file": "assets/_compiled/concepts-golden/pain-gain-map.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Pain-Gain Map 是围绕一个用户任务 (JTBD) 梳理\"完成任务时有什么痛、完成任务后想得到什么好处\"的分析工具。 - **Pain 痛点**: 用户在完成任务时遇到的困难、风险、阻碍、恐惧、成本或不爽 - **Gain 收益**: 用户完成任务后期待获得的功能结果、情绪感受、社交认同或意外惊喜 247 书"
+        },
+        {
+          "concept": "Perceptual-Map",
+          "slug": "perceptual-map",
+          "file": "assets/_compiled/concepts-golden/perceptual-map.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Perceptual Map 是用二维坐标展示品牌/产品在用户心智或竞争维度上的相对位置的可视化工具。常见做法是选择两个关键维度,例如\"价格高低 × 天然成分强调程度\",把自己和竞品放到同一张图中。 247 书强调: 定位图能帮助团队理解\"战场地形\"和\"各方势力分布\",直观看到拥挤区域、空白区域和品牌当前位置是否符合战"
+        },
+        {
+          "concept": "Persona-5W2H",
+          "slug": "persona-5w2h",
+          "file": "assets/_compiled/concepts-golden/persona-5w2h.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Persona-5W2H 是一种把目标用户从\"一群人\"具体化为\"一个可理解的人\"的画像方法。它以 User Persona 为主体,再用 5W2H 问题补齐场景、动机和决策细节: - **Who**: 他是谁,基本人口特征、职业、生活状态 - **What**: 他要解决什么问题,正在购买/使用什么 - **Why**"
+        },
+        {
+          "concept": "PESTEL",
+          "slug": "pestel",
+          "file": "assets/_compiled/concepts-golden/pestel.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "PESTEL 是一种宏观环境分析框架,用于从外部大环境识别行业机会与风险。经典 PEST 包含四类因素: Political 政治/法律、Economic 经济、Social 社会文化、Technological 技术；PESTEL 进一步加入 Environmental 环境与 Legal 法律,使分析更适合监管、可"
+        },
+        {
+          "concept": "Product-House",
+          "slug": "product-house",
+          "file": "assets/_compiled/concepts-golden/product-house.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "产品屋是把一个产品如何被消费者理解、选择和相信讲清楚的结构化工具。品牌屋回答\"品牌是谁\",产品屋回答\"这款产品是什么、解决谁的问题、为什么值得买\"。 Seven 方法论摘要给出的核心定义是: 产品屋 = 对内组织协作 + 对外沟通表达。对内,它让产品、品牌、市场、渠道、运营、内容团队同频；对外,它决定详情页、种草笔记、"
+        },
+        {
+          "concept": "Pyramid-Principle",
+          "slug": "pyramid-principle",
+          "file": "assets/_compiled/concepts-golden/pyramid-principle.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "金字塔原理是一套结构化思考与表达方法,核心是先说结论,再说论据；先总结所以,后解释因为。 Barbara Minto 在《金字塔原理》中系统化了这一咨询表达方法。模型卡给出的关键规则是: 塔尖用一两句话说出结论,塔往下依次展开论据；从上而下先陈述论点,后用论据支持。它特别适用于提案、沟通和思考,能让复杂信息在短时间内被"
+        },
+        {
+          "concept": "RTB",
+          "slug": "rtb",
+          "file": "assets/_compiled/concepts-golden/rtb.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "RTB (Reason to Believe) 是支撑品牌承诺或产品宣称的可信理由,中文可称为信任状。 Seven 247 书给出的核心判断很直接: 光有定位和承诺还不够,消费者凭什么相信你? RTB 就是把内部优势翻译成用户可理解、可感知、可验证的外部证据。它通常来自产品技术、服务流程、资质认证、专利奖项、用户证言、"
+        },
+        {
+          "concept": "S-Curve",
+          "slug": "s-curve",
+          "file": "assets/_compiled/concepts-golden/s-curve.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "S-Curve 是描述技术、产品或行业从诞生、扩散、成熟到衰退的发展曲线,形状像拉长的 S。 Seven 247 书在市场分析章节中把 S 曲线用于判断行业发展阶段: 导入期增长慢、成长期加速、成熟期放缓、衰退期下降。它和行业生命周期相近,但更强调增长速度、渗透率和技术扩散的变化。判断 S 曲线位置,可以回答未来增长空"
+        },
+        {
+          "concept": "SCQA",
+          "slug": "scqa",
+          "file": "assets/_compiled/concepts-golden/scqa.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "SCQA 是一种结构化叙事模型,由 Situation、Complication、Question、Answer 四部分组成: 先讲共同情景,再指出冲突,引出关键问题,最后给出答案。 模型卡显示,SCQA 来源于麦肯锡咨询顾问 Barbara Minto 的《金字塔原理》。S 是情景,从大家熟悉的事实切入；C 是冲突,"
+        },
+        {
+          "concept": "Slogan-7-Principles",
+          "slug": "slogan-7-principles",
+          "file": "assets/_compiled/concepts-golden/slogan-7-principles.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌口号 (Slogan) 是品牌面向用户高频传播的一句话,用于压缩品牌定位、价值主张和情绪召唤。247 书强调,好 Slogan 能传递核心价值、引发情感共鸣、鼓励行动并增强记忆。 本黄金版将 247 书标准与 Seven 方法论整合为 7 条原则: 1. **简洁有力**: 短、顺、好念、好记 2. **聚焦核心*"
+        },
+        {
+          "concept": "SWOT",
+          "slug": "swot",
+          "file": "assets/_compiled/concepts-golden/swot.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "SWOT 是一个战略分析与决策工具,把与品牌/业务相关的内外部因素归纳到四个象限: - **S - 优势 (Strengths)**: 内部有利因素 — 你擅长什么、有什么独特资源 - **W - 劣势 (Weaknesses)**: 内部不利因素 — 你欠缺什么、哪些方面不如对手 - **O - 机会 (Opport"
+        },
+        {
+          "concept": "TOWS",
+          "slug": "tows",
+          "file": "assets/_compiled/concepts-golden/tows.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "TOWS 矩阵是 SWOT 之后的策略生成工具,通过交叉匹配优势、劣势、机会和威胁,形成 SO、ST、WO、WT 四类行动策略。 Heinz Weihrich 在 1982 年系统化提出 TOWS Matrix,强调从外部机会/威胁与内部优势/劣势的组合中制定战略。Seven 247 书里的表述更适合品牌策略: 完成 "
+        },
+        {
+          "concept": "Value-Chain",
+          "slug": "value-chain",
+          "file": "assets/_compiled/concepts-golden/value-chain.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "价值链是把企业或产业中创造价值的活动拆成一组相互连接的环节,用来识别价值增值位置、成本结构、利润池和竞争优势来源。 Michael Porter 在 1985 年提出企业价值链框架,将企业活动分为基本活动和支持性活动。Seven 247 书在行业分析里采用更适合品牌策略的产业链视角: 产品从原材料到最终消费者手中会经历"
+        },
+        {
+          "concept": "Visual-Hammer-Verbal-Nail",
+          "slug": "visual-hammer-verbal-nail",
+          "file": "assets/_compiled/concepts-golden/visual-hammer-verbal-nail.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "视觉锤 (Visual Hammer) 与语言钉 (Verbal Nail) 来自定位理论语境。语言钉是那句把定位说清楚、钉进心智的话；视觉锤是强化这句话的视觉符号、动作、场景、形象或产品识别。 本地策略辞典解释: 视觉锤出自劳拉·里斯《视觉锤》,是品牌形象的视觉力量,是战略端的品牌配称。\"以文字为钉子,以视觉为锤子,"
+        },
+        {
+          "concept": "VMV",
+          "slug": "vmv",
+          "file": "assets/_compiled/concepts-golden/vmv.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "VMV 是 Vision、Mission、Values 的缩写,中文是愿景、使命、价值观。它回答三个问题: 品牌想成为什么,品牌为什么存在,品牌相信什么。 Seven 247 书将 VMV 称为品牌灵魂: 在研究目标市场和定位策略之前,先回答品牌为何存在、最终想成为什么、信仰什么。VMV 不是墙上的空洞口号,而是品牌战"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "AARRR-Funnel",
+          "slug": "aarrr-funnel",
+          "file": "assets/_compiled/concepts-golden/aarrr-funnel.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "AARRR 是用户增长漏斗模型,用于设计一套可循环裂变的用户增长体系。模型卡的表达很直接: 让用户看到就想来,来了就想留,留下就想付费,付费后还想邀请朋友。 五个阶段: - **Acquisition 获取**: 用户如何找到我们? - **Activation 激活**: 用户首次体验是否感到价值? - **Rete"
+        },
+        {
+          "concept": "Ansoff-Matrix",
+          "slug": "ansoff-matrix",
+          "file": "assets/_compiled/concepts-golden/ansoff-matrix.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "安索夫矩阵是用产品和市场两个维度判断增长路径的 2x2 工具,也叫产品市场扩张方格。 模型卡显示,安索夫矩阵由 Igor Ansoff 提出,以现有/新产品和现有/新市场组成四种组合: 市场渗透、市场开发、产品开发、多元化。它帮助企业在增长时判断风险和资源投入,避免把 \"增长\" 说成一个笼统愿望。 在 PPTAgent"
+        },
+        {
+          "concept": "Big-Idea",
+          "slug": "big-idea",
+          "file": "assets/_compiled/concepts-golden/big-idea.md",
+          "category": "term",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "Big Idea 是能够统领传播主题、内容发散、媒介玩法和用户参与的核心创意母题。 Seven 方案策略辞典中关于 \"大创意\" 的表述很清楚: 内容传播需要以大创意为核心,进行全方位、多维度的创意发散；检验创意成功与否的一个标准,是它能否被多角度解读和发散。大创意不是一句漂亮口号,也不是一次活动点子,而是能承载品牌战略"
+        },
+        {
+          "concept": "Brand-Architecture",
+          "slug": "brand-architecture",
+          "file": "assets/_compiled/concepts-golden/brand-architecture.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "品牌架构是企业旗下多个品牌、子品牌、产品线之间的关系和组织结构管理方式,用于明确各品牌定位、层级、协同关系和资源配置。 本概念在 CONCEPTS-TO-COMPILE 中来自 MAP-STRUCTURE 03-品牌层的 \"品牌架构与延伸\",本地 QA 给出极简定义: 品牌架构旨在明确各品牌定位、层级和协同关系,优化资"
+        },
+        {
+          "concept": "Brand-Asset-5-Star",
+          "slug": "brand-asset-5-star",
+          "file": "assets/_compiled/concepts-golden/brand-asset-5-star.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "Brand-Asset-5-Star 是 PPTAgent 内部使用的品牌资产体检框架,用于从五个维度评估品牌是否在沉淀长期资产。 该概念来自全景图中的 \"品牌资产指标/品牌健康度/品牌资产管理\" 位置,不是单一外部经典模型。为了避免空转,本黄金版用 Aaker 品牌资产三要义和 Keller CBBE 做证据补强: "
+        },
+        {
+          "concept": "Brand-Asset-Management",
+          "slug": "brand-asset-management",
+          "file": "assets/_compiled/concepts-golden/brand-asset-management.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "品牌资产管理是把品牌战略、视觉、语言、内容、证据、案例、模板和使用规则沉淀为可查找、可复用、可审批、可更新的管理机制。 本概念来自 MAP-STRUCTURE 03-品牌层和 08-管理层的共同节点: 品牌资产管理。Seven 方法论中虽然没有单独专章,但在品牌策略方法论里明确提到,品牌策略需要通过 Brand Boo"
+        },
+        {
+          "concept": "Crisis-Management",
+          "slug": "crisis-management",
+          "file": "assets/_compiled/concepts-golden/crisis-management.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "危机管理是品牌在声誉、产品、服务、传播或组织风险出现时,通过预警监测、快速响应、评估决策、沟通处理和复盘改进来保护信任的管理方法。 本概念来自 MAP-STRUCTURE 08-管理层的 \"风险与危机管理\",属于全景图新增候选,缺少 247 书中的独立专章。本地品牌沟通 SOP 明确提醒,当出现对品牌声誉不利的舆情时,"
+        },
+        {
+          "concept": "Growth-Flywheel",
+          "slug": "growth-flywheel",
+          "file": "assets/_compiled/concepts-golden/growth-flywheel.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "增长飞轮是把用户获取、产品体验、价值兑现、口碑传播、复购推荐和数据优化设计成持续自增强循环的增长模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"增长飞轮模型\",属于全景图新增候选,缺少 247 书中的独立专章。结合 AARRR、GROW 和渠道章节,它在 PPTAgent 中用于回答: 品牌增长不是一"
+        },
+        {
+          "concept": "GTM",
+          "slug": "gtm",
+          "file": "assets/_compiled/concepts-golden/gtm.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "GTM (Go-to-Market) 是把产品或品牌推向市场的一套进入策略,用于明确首批用户、上市主张、渠道组合、传播节奏、销售路径、预算分配和复盘指标。 本概念在 Phase 1 中来自 MAP-STRUCTURE 的传播层与增长层连接: 它把品牌定位、产品卖点、渠道选择和增长动作串成一段可执行的上市路径。它缺少 S"
+        },
+        {
+          "concept": "ICE",
+          "slug": "ice",
+          "file": "assets/_compiled/concepts-golden/ice.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "ICE 是一种优先级评分模型,用 Impact (影响力)、Confidence (信心)、Ease (易实施度) 三个维度评估行动、实验或项目的优先级。 本概念来自 MAP-STRUCTURE 07-增长层的 \"ICE 优先级模型\",属于全景图新增候选,缺少 247 书中的独立专章。本地年度规划材料反复强调资源有限、"
+        },
+        {
+          "concept": "IMC",
+          "slug": "imc",
+          "file": "assets/_compiled/concepts-golden/imc.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "IMC (Integrated Marketing Communications) 是从品牌战略出发,规划、执行和评估协调一致、可衡量、有说服力的品牌传播计划。 Seven 247 书用一句大白话概括: 用户不会主动拼凑你散落在各处的信息碎片。只有品牌用一个声音、通过多种渠道、围绕一个核心信息持续沟通,才可能被听到、被"
+        },
+        {
+          "concept": "LTV-CAC",
+          "slug": "ltv-cac",
+          "file": "assets/_compiled/concepts-golden/ltv-cac.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "LTV/CAC 是用客户生命周期价值 (Lifetime Value) 与获客成本 (Customer Acquisition Cost) 的比值判断增长效率和商业健康度的模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"LTV/CAC 生命周期价值模型\",属于全景图新增候选,缺少 247 书中的独立专"
+        },
+        {
+          "concept": "Maslow",
+          "slug": "maslow",
+          "file": "assets/_compiled/concepts-golden/maslow.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "马斯洛需求层次理论由美国心理学家 Abraham Maslow 在 1943 年提出,从人类动机角度解释需求如何影响行为。经典五层为: 1. **生理需求**: 生存、食物、睡眠、身体舒适 2. **安全需求**: 稳定、可靠、健康、风险可控 3. **社交需求**: 归属、关系、陪伴、被接纳 4. **尊重需求**:"
+        },
+        {
+          "concept": "North-Star-Metric",
+          "slug": "north-star-metric",
+          "file": "assets/_compiled/concepts-golden/north-star-metric.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "北极星指标是一个能够同时代表用户核心价值和业务长期增长的核心指标,用于统一团队增长方向。 本概念来自全景图 07-增长层的 \"北极星指标\",属于 MAP-STRUCTURE 新增候选。Seven 247 书在用户趋势章节中有 \"看到满天繁星,但要找到属于你的那颗北极星\" 的表达,可作为品牌策略语境: 增长指标很多,但真"
+        },
+        {
+          "concept": "OGSM",
+          "slug": "ogsm",
+          "file": "assets/_compiled/concepts-golden/ogsm.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "OGSM 是一种战略落地框架,用 Objective、Goals、Strategies、Measures 四个部分把战略方向转成可衡量行动。 本概念来自全景图 02-战略层的 \"OGSM 模型\",属于 MAP-STRUCTURE 新增候选,缺 P1 七书专章。结合 Seven 品牌战略 SOP 中 \"愿景/战略目标/竞"
+        },
+        {
+          "concept": "OKR",
+          "slug": "okr",
+          "file": "assets/_compiled/concepts-golden/okr.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "OKR (Objectives and Key Results) 是目标管理工具,源自英特尔,用于把方向性目标 (O) 拆解为可衡量的关键结果 (KR)。模型卡强调: OKR 的价值是清晰目标、明确如何实现目标,并让各层级目标方向统一。 在品牌年度规划里,OKR 的作用是把\"提升品牌势能\"\"做强心智\"\"拉动增长\"这类愿"
+        },
+        {
+          "concept": "Porter-5-Forces",
+          "slug": "porter-5-forces",
+          "file": "assets/_compiled/concepts-golden/porter-5-forces.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "波特五力竞争模型由 Michael Porter 提出,用于分析一个行业的结构性吸引力和盈利压力。五种力量分别是: 1. **现有竞争者竞争强度** 2. **潜在进入者威胁** 3. **替代品威胁** 4. **供应商议价能力** 5. **购买者议价能力** 模型卡强调: 企业间直接竞争通常是五力中最显性的力量,"
+        }
+      ]
+    },
+    "brand_building": {
+      "must_load": [
+        {
+          "concept": "Brand-House",
+          "slug": "brand-house",
+          "file": "assets/_compiled/concepts-golden/brand-house.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "品牌屋 (全称: **品牌信息屋 Brand Message House**) 是一套**战略信息的传达系统**。 **核心定位**: 品牌屋 = **战略意图 + 战术落地** = **对内组织统领 + 对外信息统一**。 - **对内**: 作为\"企业宪法\"保证组织效率, 做到\"有法可依, 有法必依\" — 提升组织"
+        },
+        {
+          "concept": "Product-House",
+          "slug": "product-house",
+          "file": "assets/_compiled/concepts-golden/product-house.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "产品屋是把一个产品如何被消费者理解、选择和相信讲清楚的结构化工具。品牌屋回答\"品牌是谁\",产品屋回答\"这款产品是什么、解决谁的问题、为什么值得买\"。 Seven 方法论摘要给出的核心定义是: 产品屋 = 对内组织协作 + 对外沟通表达。对内,它让产品、品牌、市场、渠道、运营、内容团队同频；对外,它决定详情页、种草笔记、"
+        },
+        {
+          "concept": "Slogan-7-Principles",
+          "slug": "slogan-7-principles",
+          "file": "assets/_compiled/concepts-golden/slogan-7-principles.md",
+          "category": "methodology",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "品牌口号 (Slogan) 是品牌面向用户高频传播的一句话,用于压缩品牌定位、价值主张和情绪召唤。247 书强调,好 Slogan 能传递核心价值、引发情感共鸣、鼓励行动并增强记忆。 本黄金版将 247 书标准与 Seven 方法论整合为 7 条原则: 1. **简洁有力**: 短、顺、好念、好记 2. **聚焦核心*"
+        },
+        {
+          "concept": "Visual-Hammer-Verbal-Nail",
+          "slug": "visual-hammer-verbal-nail",
+          "file": "assets/_compiled/concepts-golden/visual-hammer-verbal-nail.md",
+          "category": "term",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "视觉锤 (Visual Hammer) 与语言钉 (Verbal Nail) 来自定位理论语境。语言钉是那句把定位说清楚、钉进心智的话；视觉锤是强化这句话的视觉符号、动作、场景、形象或产品识别。 本地策略辞典解释: 视觉锤出自劳拉·里斯《视觉锤》,是品牌形象的视觉力量,是战略端的品牌配称。\"以文字为钉子,以视觉为锤子,"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "4A-Funnel",
+          "slug": "4a-funnel",
+          "file": "assets/_compiled/concepts-golden/4a-funnel.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4A-Funnel 是 PPTAgent 内部用于品牌策略诊断的行为漏斗: 把用户从\"知道品牌\"到\"愿意行动并推荐\"分为 4 个阶段。 ```text Awareness 认知 → Attitude 态度/好感 → Action 行动/购买 → Advocacy 拥护/推荐 ``` 本地材料中直接出现的是\"销售漏斗 /"
+        },
+        {
+          "concept": "4P",
+          "slug": "4p",
+          "file": "assets/_compiled/concepts-golden/4p.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P 是经典营销组合模型,从企业视角组织产品、价格、渠道和推广四个可控变量: Product、Price、Place、Promotion。 模型卡将 4P 归为菲利普·科特勒体系中的营销理论: 消费者购买的是产品的使用价值,产品应该卖多少钱,在哪里卖,用什么促销/推广方式,共同构成营销闭环。Seven 247 书在竞品"
+        },
+        {
+          "concept": "Aaker-Brand-Personality",
+          "slug": "aaker-brand-personality",
+          "file": "assets/_compiled/concepts-golden/aaker-brand-personality.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Aaker 品牌人格是把品牌拟人化为一组稳定性格特征的模型,帮助团队回答: \"如果品牌是一个人,他会怎么说话、怎么做事、给人什么感觉?\" Jennifer Aaker 在 1997 年提出品牌人格五维度框架,常见维度包括真诚、刺激、能力、精致、粗犷。Seven 247 书在品牌语言识别章节中更偏实操: 先把品牌想成一个"
+        },
+        {
+          "concept": "Action-Title",
+          "slug": "action-title",
+          "file": "assets/_compiled/concepts-golden/action-title.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Action Title 是咨询式 PPT 页面标题写法,用一句结论或行动建议概括本页观点,而不是只描述图表内容。 它的底层来自金字塔原理的 \"先说结论,后说论据\"。模型卡强调,表达要先总结所以,后过程因为；塔尖用一两句话说出结论,下方再用论据支持。Action Title 就是把这个原则落到每一页 PPT: 标题先告"
+        },
+        {
+          "concept": "BCG-Matrix",
+          "slug": "bcg-matrix",
+          "file": "assets/_compiled/concepts-golden/bcg-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "BCG 矩阵是用于分析和规划产品组合的工具,用市场增长率和相对市场占有率两个维度,将业务或产品分成明星、金牛、问题、瘦狗四类。 模型卡显示,波士顿矩阵由美国管理学家 Bruce Henderson 提出,目的是让企业根据不同产品的增长与份额状态合理分配资源。高增长高份额是明星产品,低增长高份额是金牛产品,高增长低份额是"
+        },
+        {
+          "concept": "Big-Idea",
+          "slug": "big-idea",
+          "file": "assets/_compiled/concepts-golden/big-idea.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Big Idea 是能够统领传播主题、内容发散、媒介玩法和用户参与的核心创意母题。 Seven 方案策略辞典中关于 \"大创意\" 的表述很清楚: 内容传播需要以大创意为核心,进行全方位、多维度的创意发散；检验创意成功与否的一个标准,是它能否被多角度解读和发散。大创意不是一句漂亮口号,也不是一次活动点子,而是能承载品牌战略"
+        },
+        {
+          "concept": "Brand-Architecture",
+          "slug": "brand-architecture",
+          "file": "assets/_compiled/concepts-golden/brand-architecture.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌架构是企业旗下多个品牌、子品牌、产品线之间的关系和组织结构管理方式,用于明确各品牌定位、层级、协同关系和资源配置。 本概念在 CONCEPTS-TO-COMPILE 中来自 MAP-STRUCTURE 03-品牌层的 \"品牌架构与延伸\",本地 QA 给出极简定义: 品牌架构旨在明确各品牌定位、层级和协同关系,优化资"
+        },
+        {
+          "concept": "Brand-Asset-5-Star",
+          "slug": "brand-asset-5-star",
+          "file": "assets/_compiled/concepts-golden/brand-asset-5-star.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Brand-Asset-5-Star 是 PPTAgent 内部使用的品牌资产体检框架,用于从五个维度评估品牌是否在沉淀长期资产。 该概念来自全景图中的 \"品牌资产指标/品牌健康度/品牌资产管理\" 位置,不是单一外部经典模型。为了避免空转,本黄金版用 Aaker 品牌资产三要义和 Keller CBBE 做证据补强: "
+        },
+        {
+          "concept": "Brand-Asset-Management",
+          "slug": "brand-asset-management",
+          "file": "assets/_compiled/concepts-golden/brand-asset-management.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌资产管理是把品牌战略、视觉、语言、内容、证据、案例、模板和使用规则沉淀为可查找、可复用、可审批、可更新的管理机制。 本概念来自 MAP-STRUCTURE 03-品牌层和 08-管理层的共同节点: 品牌资产管理。Seven 方法论中虽然没有单独专章,但在品牌策略方法论里明确提到,品牌策略需要通过 Brand Boo"
+        },
+        {
+          "concept": "Brand-Positioning-Triangle",
+          "slug": "brand-positioning-triangle",
+          "file": "assets/_compiled/concepts-golden/brand-positioning-triangle.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌定位三角是奥美常用的定位表达模型,围绕三个关键点构建品牌定位: - **TA (Target Audience)**: 为了什么样的人 - **Benefit / Positioning**: 提供什么样的核心好处,占据什么心智位置 - **RTB (Reason to Believe)**: 凭什么相信你能做到 "
+        },
+        {
+          "concept": "Brand-Story-Hero-Journey",
+          "slug": "brand-story-hero-journey",
+          "file": "assets/_compiled/concepts-golden/brand-story-hero-journey.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌故事是用真实、动人、可传播的叙事,解释品牌为什么存在、为谁而做、如何兑现承诺、带来什么改变。 Seven 247 书强调: 事实讲道理,故事传情感。在信息泛滥的时代,一个好的品牌故事比硬邦邦的产品介绍更能打动人心,也更容易被记住和传播。品牌故事可以采用创始人故事、用户改变故事、产品工艺故事、文化传承故事、概念再造故"
+        },
+        {
+          "concept": "Communication-Theory-34",
+          "slug": "communication-theory-34",
+          "file": "assets/_compiled/concepts-golden/communication-theory-34.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "34 个传播学理论是一个传播策略选择库,用于帮助策略 Agent 判断: 说什么、对谁说、通过什么媒介说、用户如何理解、信息如何扩散、风险如何控制。 Seven 本地方法论强调,传播不是简单输出信息,而是影响注意力、理解方式、社会认同和行为决策。这 34 个理论覆盖议程设置、编码解码、叙事理论、把关人、基模、沉默的螺旋"
+        },
+        {
+          "concept": "IMC",
+          "slug": "imc",
+          "file": "assets/_compiled/concepts-golden/imc.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "IMC (Integrated Marketing Communications) 是从品牌战略出发,规划、执行和评估协调一致、可衡量、有说服力的品牌传播计划。 Seven 247 书用一句大白话概括: 用户不会主动拼凑你散落在各处的信息碎片。只有品牌用一个声音、通过多种渠道、围绕一个核心信息持续沟通,才可能被听到、被"
+        },
+        {
+          "concept": "KANO",
+          "slug": "kano",
+          "file": "assets/_compiled/concepts-golden/kano.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "KANO 模型是一种产品需求分类和优先级判断工具,用于分析不同需求满足程度对用户满意度的影响。 模型卡显示,KANO 模型由东京理工大学教授狩野纪昭提出,把需求分为魅力属性、期待属性、必备属性、无关属性。Seven 247 书在用户需求小科普中也使用 KANO: 基本需求没有会不满意,期望需求有就满意没有就不满意,兴奋"
+        },
+        {
+          "concept": "Marketing-Calendar",
+          "slug": "marketing-calendar",
+          "file": "assets/_compiled/concepts-golden/marketing-calendar.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "营销日历是把年度品牌目标、营销节点、传播主题、渠道动作、预算和负责人按时间展开的执行管理工具。QA 资料中对品牌年案的定义包含市场分析、策略方向、关键举措、预算分配、执行排期和效果评估,营销日历就是其中的\"执行排期\"骨架。 策略辞典中的\"卡点\"提醒: 营销节奏常常需要卡住准确时间点,例如双十一、女神节、开学季、行业展会"
+        },
+        {
+          "concept": "Pain-Gain-Map",
+          "slug": "pain-gain-map",
+          "file": "assets/_compiled/concepts-golden/pain-gain-map.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Pain-Gain Map 是围绕一个用户任务 (JTBD) 梳理\"完成任务时有什么痛、完成任务后想得到什么好处\"的分析工具。 - **Pain 痛点**: 用户在完成任务时遇到的困难、风险、阻碍、恐惧、成本或不爽 - **Gain 收益**: 用户完成任务后期待获得的功能结果、情绪感受、社交认同或意外惊喜 247 书"
+        },
+        {
+          "concept": "PDCA",
+          "slug": "pdca",
+          "file": "assets/_compiled/concepts-golden/pdca.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "PDCA 是 Plan、Do、Check、Action 四步循环,中文常称戴明环,用于把计划、执行、检查和改进行动连接成持续优化闭环。 模型卡中将 PDCA 定义为全面质量管理遵循的科学程序: P 是计划目标,D 是执行内容,C 是检查结果并找出问题,A 是处理检查结果,将成功经验标准化,将失败教训规避,未解决问题进入"
+        },
+        {
+          "concept": "Pyramid-Principle",
+          "slug": "pyramid-principle",
+          "file": "assets/_compiled/concepts-golden/pyramid-principle.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "金字塔原理是一套结构化思考与表达方法,核心是先说结论,再说论据；先总结所以,后解释因为。 Barbara Minto 在《金字塔原理》中系统化了这一咨询表达方法。模型卡给出的关键规则是: 塔尖用一两句话说出结论,塔往下依次展开论据；从上而下先陈述论点,后用论据支持。它特别适用于提案、沟通和思考,能让复杂信息在短时间内被"
+        },
+        {
+          "concept": "RTB",
+          "slug": "rtb",
+          "file": "assets/_compiled/concepts-golden/rtb.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "RTB (Reason to Believe) 是支撑品牌承诺或产品宣称的可信理由,中文可称为信任状。 Seven 247 书给出的核心判断很直接: 光有定位和承诺还不够,消费者凭什么相信你? RTB 就是把内部优势翻译成用户可理解、可感知、可验证的外部证据。它通常来自产品技术、服务流程、资质认证、专利奖项、用户证言、"
+        },
+        {
+          "concept": "SCQA",
+          "slug": "scqa",
+          "file": "assets/_compiled/concepts-golden/scqa.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "SCQA 是一种结构化叙事模型,由 Situation、Complication、Question、Answer 四部分组成: 先讲共同情景,再指出冲突,引出关键问题,最后给出答案。 模型卡显示,SCQA 来源于麦肯锡咨询顾问 Barbara Minto 的《金字塔原理》。S 是情景,从大家熟悉的事实切入；C 是冲突,"
+        },
+        {
+          "concept": "User-Journey",
+          "slug": "user-journey",
+          "file": "assets/_compiled/concepts-golden/user-journey.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "用户旅程 (Customer Journey) 是用户从首次意识到需求或接触品牌,到了解、比较、购买、使用、复购、推荐或流失的全过程路径。用户旅程地图 (CJM) 则把每个阶段的行为、想法、情绪、触点、痛点和机会点可视化。 247 书给出的核心价值是: 让团队\"穿上用户的鞋子走路\",跳出\"我觉得\"的品牌视角,完整审视用"
+        },
+        {
+          "concept": "Value-Prop-Canvas",
+          "slug": "value-prop-canvas",
+          "file": "assets/_compiled/concepts-golden/value-prop-canvas.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "价值主张画布 (Value Proposition Canvas, VPC) 由 Alexander Osterwalder 等提出,用于检查产品/服务是否真正匹配客户任务、痛点和收益。247 书将它解释为提炼品牌价值主张的结构化工具。 画布分两侧: - **右侧: 客户档案 Customer Profile**: 客"
+        },
+        {
+          "concept": "VMV",
+          "slug": "vmv",
+          "file": "assets/_compiled/concepts-golden/vmv.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "VMV 是 Vision、Mission、Values 的缩写,中文是愿景、使命、价值观。它回答三个问题: 品牌想成为什么,品牌为什么存在,品牌相信什么。 Seven 247 书将 VMV 称为品牌灵魂: 在研究目标市场和定位策略之前,先回答品牌为何存在、最终想成为什么、信仰什么。VMV 不是墙上的空洞口号,而是品牌战"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "Budget-Allocation",
+          "slug": "budget-allocation",
+          "file": "assets/_compiled/concepts-golden/budget-allocation.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "预算分配是把有限资源按品牌目标、关键问题、渠道角色、项目优先级和预期回报进行配置的方法。 本概念的 P1 来源是品牌年度规划方案: \"年度规划,实际上是资源的分配\",现实是预算有限、野心和创意无限,因此不能什么都想做,一定要锁定最需要发力的点,预算分配可参照二八法则。MAP-STRUCTURE 08-管理层也把资源与预"
+        },
+        {
+          "concept": "Crisis-Management",
+          "slug": "crisis-management",
+          "file": "assets/_compiled/concepts-golden/crisis-management.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "危机管理是品牌在声誉、产品、服务、传播或组织风险出现时,通过预警监测、快速响应、评估决策、沟通处理和复盘改进来保护信任的管理方法。 本概念来自 MAP-STRUCTURE 08-管理层的 \"风险与危机管理\",属于全景图新增候选,缺少 247 书中的独立专章。本地品牌沟通 SOP 明确提醒,当出现对品牌声誉不利的舆情时,"
+        },
+        {
+          "concept": "Growth-Flywheel",
+          "slug": "growth-flywheel",
+          "file": "assets/_compiled/concepts-golden/growth-flywheel.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "增长飞轮是把用户获取、产品体验、价值兑现、口碑传播、复购推荐和数据优化设计成持续自增强循环的增长模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"增长飞轮模型\",属于全景图新增候选,缺少 247 书中的独立专章。结合 AARRR、GROW 和渠道章节,它在 PPTAgent 中用于回答: 品牌增长不是一"
+        },
+        {
+          "concept": "HEART",
+          "slug": "heart",
+          "file": "assets/_compiled/concepts-golden/heart.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "HEART 是一套用户体验指标框架,通常由 Happiness、Engagement、Adoption、Retention、Task Success 五类指标组成,用于衡量用户是否满意、是否参与、是否采用、是否留存、是否顺利完成任务。 本概念来自全景图 06-体验层的 \"HEART 指标体系\",属于 MAP-STRUC"
+        },
+        {
+          "concept": "KOL-KOC",
+          "slug": "kol-koc",
+          "file": "assets/_compiled/concepts-golden/kol-koc.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "KOL/KOC 合作是品牌借助关键意见领袖和关键意见消费者进行内容种草、信任背书、口碑扩散和销售转化的传播方法。 本概念来自 MAP-STRUCTURE 05-传播层的 \"KOL/KOC 合作\",属于全景图新增候选,缺少 Seven 247 书中的独立专章。但在本地材料中,KOL/KOC 多次出现在渠道选择、用户洞察、"
+        },
+        {
+          "concept": "Service-Blueprint",
+          "slug": "service-blueprint",
+          "file": "assets/_compiled/concepts-golden/service-blueprint.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "服务蓝图是把用户行为、前台触点、后台支持、系统流程和证据物串起来的服务设计工具,用于看清一段体验如何被组织交付。 本概念在 Phase 1 中主要来自全景图 06-体验层的 \"服务蓝图 Service Blueprint\",属于 MAP-STRUCTURE 新增候选,缺少 247 书中的完整专章。结合品牌全案框架和用户"
+        }
+      ]
+    },
+    "annual_planning": {
+      "must_load": [
+        {
+          "concept": "4P-Rhythm",
+          "slug": "4p-rhythm",
+          "file": "assets/_compiled/concepts-golden/4p-rhythm.md",
+          "category": "term",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "4P-Rhythm 是把营销组合 4P (Product 产品、Price 价格、Place 渠道、Promotion 传播/促销) 按时间节奏展开的年度执行工具。它回答的不是\"4P 分别是什么\",而是\"在不同阶段,产品、价格、渠道、传播应该先后怎么推进\"。 本地策略辞典中\"营销节奏\"\"传播节奏\"\"卡点\"等词条强调,营"
+        },
+        {
+          "concept": "AARRR-Funnel",
+          "slug": "aarrr-funnel",
+          "file": "assets/_compiled/concepts-golden/aarrr-funnel.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "AARRR 是用户增长漏斗模型,用于设计一套可循环裂变的用户增长体系。模型卡的表达很直接: 让用户看到就想来,来了就想留,留下就想付费,付费后还想邀请朋友。 五个阶段: - **Acquisition 获取**: 用户如何找到我们? - **Activation 激活**: 用户首次体验是否感到价值? - **Rete"
+        },
+        {
+          "concept": "Marketing-Calendar",
+          "slug": "marketing-calendar",
+          "file": "assets/_compiled/concepts-golden/marketing-calendar.md",
+          "category": "term",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "营销日历是把年度品牌目标、营销节点、传播主题、渠道动作、预算和负责人按时间展开的执行管理工具。QA 资料中对品牌年案的定义包含市场分析、策略方向、关键举措、预算分配、执行排期和效果评估,营销日历就是其中的\"执行排期\"骨架。 策略辞典中的\"卡点\"提醒: 营销节奏常常需要卡住准确时间点,例如双十一、女神节、开学季、行业展会"
+        },
+        {
+          "concept": "OKR",
+          "slug": "okr",
+          "file": "assets/_compiled/concepts-golden/okr.md",
+          "category": "model",
+          "role": "主框架",
+          "tier": "must_load",
+          "reason": "OKR (Objectives and Key Results) 是目标管理工具,源自英特尔,用于把方向性目标 (O) 拆解为可衡量的关键结果 (KR)。模型卡强调: OKR 的价值是清晰目标、明确如何实现目标,并让各层级目标方向统一。 在品牌年度规划里,OKR 的作用是把\"提升品牌势能\"\"做强心智\"\"拉动增长\"这类愿"
+        }
+      ],
+      "recommended": [
+        {
+          "concept": "4A-Funnel",
+          "slug": "4a-funnel",
+          "file": "assets/_compiled/concepts-golden/4a-funnel.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4A-Funnel 是 PPTAgent 内部用于品牌策略诊断的行为漏斗: 把用户从\"知道品牌\"到\"愿意行动并推荐\"分为 4 个阶段。 ```text Awareness 认知 → Attitude 态度/好感 → Action 行动/购买 → Advocacy 拥护/推荐 ``` 本地材料中直接出现的是\"销售漏斗 /"
+        },
+        {
+          "concept": "4C",
+          "slug": "4c",
+          "file": "assets/_compiled/concepts-golden/4c.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4C 是从顾客视角重构营销组合的模型,包含 Customer Needs、Cost、Convenience、Communication。 Robert Lauterborn 在 1990 年提出 4C,主张当竞争加剧、产品供过于求时,企业应从产品本位转向消费者本位: Product 转向 Customer, Price"
+        },
+        {
+          "concept": "4P",
+          "slug": "4p",
+          "file": "assets/_compiled/concepts-golden/4p.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "4P 是经典营销组合模型,从企业视角组织产品、价格、渠道和推广四个可控变量: Product、Price、Place、Promotion。 模型卡将 4P 归为菲利普·科特勒体系中的营销理论: 消费者购买的是产品的使用价值,产品应该卖多少钱,在哪里卖,用什么促销/推广方式,共同构成营销闭环。Seven 247 书在竞品"
+        },
+        {
+          "concept": "Action-Title",
+          "slug": "action-title",
+          "file": "assets/_compiled/concepts-golden/action-title.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Action Title 是咨询式 PPT 页面标题写法,用一句结论或行动建议概括本页观点,而不是只描述图表内容。 它的底层来自金字塔原理的 \"先说结论,后说论据\"。模型卡强调,表达要先总结所以,后过程因为；塔尖用一两句话说出结论,下方再用论据支持。Action Title 就是把这个原则落到每一页 PPT: 标题先告"
+        },
+        {
+          "concept": "Ansoff-Matrix",
+          "slug": "ansoff-matrix",
+          "file": "assets/_compiled/concepts-golden/ansoff-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "安索夫矩阵是用产品和市场两个维度判断增长路径的 2x2 工具,也叫产品市场扩张方格。 模型卡显示,安索夫矩阵由 Igor Ansoff 提出,以现有/新产品和现有/新市场组成四种组合: 市场渗透、市场开发、产品开发、多元化。它帮助企业在增长时判断风险和资源投入,避免把 \"增长\" 说成一个笼统愿望。 在 PPTAgent"
+        },
+        {
+          "concept": "BCG-Matrix",
+          "slug": "bcg-matrix",
+          "file": "assets/_compiled/concepts-golden/bcg-matrix.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "BCG 矩阵是用于分析和规划产品组合的工具,用市场增长率和相对市场占有率两个维度,将业务或产品分成明星、金牛、问题、瘦狗四类。 模型卡显示,波士顿矩阵由美国管理学家 Bruce Henderson 提出,目的是让企业根据不同产品的增长与份额状态合理分配资源。高增长高份额是明星产品,低增长高份额是金牛产品,高增长低份额是"
+        },
+        {
+          "concept": "Big-Idea",
+          "slug": "big-idea",
+          "file": "assets/_compiled/concepts-golden/big-idea.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Big Idea 是能够统领传播主题、内容发散、媒介玩法和用户参与的核心创意母题。 Seven 方案策略辞典中关于 \"大创意\" 的表述很清楚: 内容传播需要以大创意为核心,进行全方位、多维度的创意发散；检验创意成功与否的一个标准,是它能否被多角度解读和发散。大创意不是一句漂亮口号,也不是一次活动点子,而是能承载品牌战略"
+        },
+        {
+          "concept": "Brand-Asset-5-Star",
+          "slug": "brand-asset-5-star",
+          "file": "assets/_compiled/concepts-golden/brand-asset-5-star.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "Brand-Asset-5-Star 是 PPTAgent 内部使用的品牌资产体检框架,用于从五个维度评估品牌是否在沉淀长期资产。 该概念来自全景图中的 \"品牌资产指标/品牌健康度/品牌资产管理\" 位置,不是单一外部经典模型。为了避免空转,本黄金版用 Aaker 品牌资产三要义和 Keller CBBE 做证据补强: "
+        },
+        {
+          "concept": "Brand-Asset-Management",
+          "slug": "brand-asset-management",
+          "file": "assets/_compiled/concepts-golden/brand-asset-management.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌资产管理是把品牌战略、视觉、语言、内容、证据、案例、模板和使用规则沉淀为可查找、可复用、可审批、可更新的管理机制。 本概念来自 MAP-STRUCTURE 03-品牌层和 08-管理层的共同节点: 品牌资产管理。Seven 方法论中虽然没有单独专章,但在品牌策略方法论里明确提到,品牌策略需要通过 Brand Boo"
+        },
+        {
+          "concept": "Brand-Story-Hero-Journey",
+          "slug": "brand-story-hero-journey",
+          "file": "assets/_compiled/concepts-golden/brand-story-hero-journey.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "品牌故事是用真实、动人、可传播的叙事,解释品牌为什么存在、为谁而做、如何兑现承诺、带来什么改变。 Seven 247 书强调: 事实讲道理,故事传情感。在信息泛滥的时代,一个好的品牌故事比硬邦邦的产品介绍更能打动人心,也更容易被记住和传播。品牌故事可以采用创始人故事、用户改变故事、产品工艺故事、文化传承故事、概念再造故"
+        },
+        {
+          "concept": "Budget-Allocation",
+          "slug": "budget-allocation",
+          "file": "assets/_compiled/concepts-golden/budget-allocation.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "预算分配是把有限资源按品牌目标、关键问题、渠道角色、项目优先级和预期回报进行配置的方法。 本概念的 P1 来源是品牌年度规划方案: \"年度规划,实际上是资源的分配\",现实是预算有限、野心和创意无限,因此不能什么都想做,一定要锁定最需要发力的点,预算分配可参照二八法则。MAP-STRUCTURE 08-管理层也把资源与预"
+        },
+        {
+          "concept": "Business-Model-Canvas",
+          "slug": "business-model-canvas",
+          "file": "assets/_compiled/concepts-golden/business-model-canvas.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "商业模式画布 (BMC) 是由 **Alexander Osterwalder** 与 Yves Pigneur 在《商业模式新生代》(2010) 提出的可视化战略工具,把复杂商业模式分解为 **9 个相互关联的构造块**,帮助系统性思考\"企业如何**创造价值、传递价值、获取价值**\"。 **第一性原理**: 商业模式"
+        },
+        {
+          "concept": "Communication-Theory-34",
+          "slug": "communication-theory-34",
+          "file": "assets/_compiled/concepts-golden/communication-theory-34.md",
+          "category": "term",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "34 个传播学理论是一个传播策略选择库,用于帮助策略 Agent 判断: 说什么、对谁说、通过什么媒介说、用户如何理解、信息如何扩散、风险如何控制。 Seven 本地方法论强调,传播不是简单输出信息,而是影响注意力、理解方式、社会认同和行为决策。这 34 个理论覆盖议程设置、编码解码、叙事理论、把关人、基模、沉默的螺旋"
+        },
+        {
+          "concept": "Crisis-Management",
+          "slug": "crisis-management",
+          "file": "assets/_compiled/concepts-golden/crisis-management.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "危机管理是品牌在声誉、产品、服务、传播或组织风险出现时,通过预警监测、快速响应、评估决策、沟通处理和复盘改进来保护信任的管理方法。 本概念来自 MAP-STRUCTURE 08-管理层的 \"风险与危机管理\",属于全景图新增候选,缺少 247 书中的独立专章。本地品牌沟通 SOP 明确提醒,当出现对品牌声誉不利的舆情时,"
+        },
+        {
+          "concept": "Growth-Flywheel",
+          "slug": "growth-flywheel",
+          "file": "assets/_compiled/concepts-golden/growth-flywheel.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "增长飞轮是把用户获取、产品体验、价值兑现、口碑传播、复购推荐和数据优化设计成持续自增强循环的增长模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"增长飞轮模型\",属于全景图新增候选,缺少 247 书中的独立专章。结合 AARRR、GROW 和渠道章节,它在 PPTAgent 中用于回答: 品牌增长不是一"
+        },
+        {
+          "concept": "GTM",
+          "slug": "gtm",
+          "file": "assets/_compiled/concepts-golden/gtm.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "GTM (Go-to-Market) 是把产品或品牌推向市场的一套进入策略,用于明确首批用户、上市主张、渠道组合、传播节奏、销售路径、预算分配和复盘指标。 本概念在 Phase 1 中来自 MAP-STRUCTURE 的传播层与增长层连接: 它把品牌定位、产品卖点、渠道选择和增长动作串成一段可执行的上市路径。它缺少 S"
+        },
+        {
+          "concept": "HEART",
+          "slug": "heart",
+          "file": "assets/_compiled/concepts-golden/heart.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "HEART 是一套用户体验指标框架,通常由 Happiness、Engagement、Adoption、Retention、Task Success 五类指标组成,用于衡量用户是否满意、是否参与、是否采用、是否留存、是否顺利完成任务。 本概念来自全景图 06-体验层的 \"HEART 指标体系\",属于 MAP-STRUC"
+        },
+        {
+          "concept": "ICE",
+          "slug": "ice",
+          "file": "assets/_compiled/concepts-golden/ice.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "ICE 是一种优先级评分模型,用 Impact (影响力)、Confidence (信心)、Ease (易实施度) 三个维度评估行动、实验或项目的优先级。 本概念来自 MAP-STRUCTURE 07-增长层的 \"ICE 优先级模型\",属于全景图新增候选,缺少 247 书中的独立专章。本地年度规划材料反复强调资源有限、"
+        },
+        {
+          "concept": "IMC",
+          "slug": "imc",
+          "file": "assets/_compiled/concepts-golden/imc.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "IMC (Integrated Marketing Communications) 是从品牌战略出发,规划、执行和评估协调一致、可衡量、有说服力的品牌传播计划。 Seven 247 书用一句大白话概括: 用户不会主动拼凑你散落在各处的信息碎片。只有品牌用一个声音、通过多种渠道、围绕一个核心信息持续沟通,才可能被听到、被"
+        },
+        {
+          "concept": "Industry-Lifecycle",
+          "slug": "industry-lifecycle",
+          "file": "assets/_compiled/concepts-golden/industry-lifecycle.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "行业生命周期是判断一个行业从出现、增长、成熟到衰退或变革所处阶段的分析模型。常见阶段包括导入期、成长期、成熟期、衰退期,也可结合 S-Curve 表达行业增长速度的变化。 247 书强调: 判断行业处于哪个阶段,能帮助我们理解未来增长空间、当前竞争焦点和适合的策略。一个成长期行业要抢速度和心智,一个成熟期行业要拼效率、"
+        },
+        {
+          "concept": "KOL-KOC",
+          "slug": "kol-koc",
+          "file": "assets/_compiled/concepts-golden/kol-koc.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "KOL/KOC 合作是品牌借助关键意见领袖和关键意见消费者进行内容种草、信任背书、口碑扩散和销售转化的传播方法。 本概念来自 MAP-STRUCTURE 05-传播层的 \"KOL/KOC 合作\",属于全景图新增候选,缺少 Seven 247 书中的独立专章。但在本地材料中,KOL/KOC 多次出现在渠道选择、用户洞察、"
+        },
+        {
+          "concept": "LTV-CAC",
+          "slug": "ltv-cac",
+          "file": "assets/_compiled/concepts-golden/ltv-cac.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "LTV/CAC 是用客户生命周期价值 (Lifetime Value) 与获客成本 (Customer Acquisition Cost) 的比值判断增长效率和商业健康度的模型。 本概念来自 MAP-STRUCTURE 07-增长层的 \"LTV/CAC 生命周期价值模型\",属于全景图新增候选,缺少 247 书中的独立专"
+        },
+        {
+          "concept": "MECE",
+          "slug": "mece",
+          "file": "assets/_compiled/concepts-golden/mece.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "MECE 是 Mutually Exclusive, Collectively Exhaustive 的缩写,中文常译为相互独立、完全穷尽。它要求分类之间不重叠,整体上不遗漏。 虽然当前本地材料对 MECE 的直接命中较少,但 5W2H 模型卡中明确强调结构化问题分析要 \"抓住核心要点,不遗漏重要讯息\"；金字塔原理要求"
+        },
+        {
+          "concept": "North-Star-Metric",
+          "slug": "north-star-metric",
+          "file": "assets/_compiled/concepts-golden/north-star-metric.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "北极星指标是一个能够同时代表用户核心价值和业务长期增长的核心指标,用于统一团队增长方向。 本概念来自全景图 07-增长层的 \"北极星指标\",属于 MAP-STRUCTURE 新增候选。Seven 247 书在用户趋势章节中有 \"看到满天繁星,但要找到属于你的那颗北极星\" 的表达,可作为品牌策略语境: 增长指标很多,但真"
+        },
+        {
+          "concept": "OGSM",
+          "slug": "ogsm",
+          "file": "assets/_compiled/concepts-golden/ogsm.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "OGSM 是一种战略落地框架,用 Objective、Goals、Strategies、Measures 四个部分把战略方向转成可衡量行动。 本概念来自全景图 02-战略层的 \"OGSM 模型\",属于 MAP-STRUCTURE 新增候选,缺 P1 七书专章。结合 Seven 品牌战略 SOP 中 \"愿景/战略目标/竞"
+        },
+        {
+          "concept": "PDCA",
+          "slug": "pdca",
+          "file": "assets/_compiled/concepts-golden/pdca.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "PDCA 是 Plan、Do、Check、Action 四步循环,中文常称戴明环,用于把计划、执行、检查和改进行动连接成持续优化闭环。 模型卡中将 PDCA 定义为全面质量管理遵循的科学程序: P 是计划目标,D 是执行内容,C 是检查结果并找出问题,A 是处理检查结果,将成功经验标准化,将失败教训规避,未解决问题进入"
+        },
+        {
+          "concept": "Pyramid-Principle",
+          "slug": "pyramid-principle",
+          "file": "assets/_compiled/concepts-golden/pyramid-principle.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "金字塔原理是一套结构化思考与表达方法,核心是先说结论,再说论据；先总结所以,后解释因为。 Barbara Minto 在《金字塔原理》中系统化了这一咨询表达方法。模型卡给出的关键规则是: 塔尖用一两句话说出结论,塔往下依次展开论据；从上而下先陈述论点,后用论据支持。它特别适用于提案、沟通和思考,能让复杂信息在短时间内被"
+        },
+        {
+          "concept": "S-Curve",
+          "slug": "s-curve",
+          "file": "assets/_compiled/concepts-golden/s-curve.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "S-Curve 是描述技术、产品或行业从诞生、扩散、成熟到衰退的发展曲线,形状像拉长的 S。 Seven 247 书在市场分析章节中把 S 曲线用于判断行业发展阶段: 导入期增长慢、成长期加速、成熟期放缓、衰退期下降。它和行业生命周期相近,但更强调增长速度、渗透率和技术扩散的变化。判断 S 曲线位置,可以回答未来增长空"
+        },
+        {
+          "concept": "SCQA",
+          "slug": "scqa",
+          "file": "assets/_compiled/concepts-golden/scqa.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "SCQA 是一种结构化叙事模型,由 Situation、Complication、Question、Answer 四部分组成: 先讲共同情景,再指出冲突,引出关键问题,最后给出答案。 模型卡显示,SCQA 来源于麦肯锡咨询顾问 Barbara Minto 的《金字塔原理》。S 是情景,从大家熟悉的事实切入；C 是冲突,"
+        },
+        {
+          "concept": "TOWS",
+          "slug": "tows",
+          "file": "assets/_compiled/concepts-golden/tows.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "TOWS 矩阵是 SWOT 之后的策略生成工具,通过交叉匹配优势、劣势、机会和威胁,形成 SO、ST、WO、WT 四类行动策略。 Heinz Weihrich 在 1982 年系统化提出 TOWS Matrix,强调从外部机会/威胁与内部优势/劣势的组合中制定战略。Seven 247 书里的表述更适合品牌策略: 完成 "
+        },
+        {
+          "concept": "User-Journey",
+          "slug": "user-journey",
+          "file": "assets/_compiled/concepts-golden/user-journey.md",
+          "category": "methodology",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "用户旅程 (Customer Journey) 是用户从首次意识到需求或接触品牌,到了解、比较、购买、使用、复购、推荐或流失的全过程路径。用户旅程地图 (CJM) 则把每个阶段的行为、想法、情绪、触点、痛点和机会点可视化。 247 书给出的核心价值是: 让团队\"穿上用户的鞋子走路\",跳出\"我觉得\"的品牌视角,完整审视用"
+        },
+        {
+          "concept": "VMV",
+          "slug": "vmv",
+          "file": "assets/_compiled/concepts-golden/vmv.md",
+          "category": "model",
+          "role": "辅助工具",
+          "tier": "recommended",
+          "reason": "VMV 是 Vision、Mission、Values 的缩写,中文是愿景、使命、价值观。它回答三个问题: 品牌想成为什么,品牌为什么存在,品牌相信什么。 Seven 247 书将 VMV 称为品牌灵魂: 在研究目标市场和定位策略之前,先回答品牌为何存在、最终想成为什么、信仰什么。VMV 不是墙上的空洞口号,而是品牌战"
+        }
+      ],
+      "optional": [
+        {
+          "concept": "4P-Comparison",
+          "slug": "4p-comparison",
+          "file": "assets/_compiled/concepts-golden/4p-comparison.md",
+          "category": "methodology",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "4P-Comparison 是把多个竞品放在同一张 4P 矩阵中横向比较的方法,用于识别产品、价格、渠道和推广策略的差异与机会。 它不是重新定义 4P,而是 4P 在竞品分析中的应用。Seven 247 书明确指出,初创品牌最实用的往往是从用户评价出发,结合 4P/4C 分析,快速了解对手的产品、价格、渠道、营销以及用"
+        },
+        {
+          "concept": "Brand-Architecture",
+          "slug": "brand-architecture",
+          "file": "assets/_compiled/concepts-golden/brand-architecture.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "品牌架构是企业旗下多个品牌、子品牌、产品线之间的关系和组织结构管理方式,用于明确各品牌定位、层级、协同关系和资源配置。 本概念在 CONCEPTS-TO-COMPILE 中来自 MAP-STRUCTURE 03-品牌层的 \"品牌架构与延伸\",本地 QA 给出极简定义: 品牌架构旨在明确各品牌定位、层级和协同关系,优化资"
+        },
+        {
+          "concept": "KANO",
+          "slug": "kano",
+          "file": "assets/_compiled/concepts-golden/kano.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "KANO 模型是一种产品需求分类和优先级判断工具,用于分析不同需求满足程度对用户满意度的影响。 模型卡显示,KANO 模型由东京理工大学教授狩野纪昭提出,把需求分为魅力属性、期待属性、必备属性、无关属性。Seven 247 书在用户需求小科普中也使用 KANO: 基本需求没有会不满意,期望需求有就满意没有就不满意,兴奋"
+        },
+        {
+          "concept": "Service-Blueprint",
+          "slug": "service-blueprint",
+          "file": "assets/_compiled/concepts-golden/service-blueprint.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "服务蓝图是把用户行为、前台触点、后台支持、系统流程和证据物串起来的服务设计工具,用于看清一段体验如何被组织交付。 本概念在 Phase 1 中主要来自全景图 06-体验层的 \"服务蓝图 Service Blueprint\",属于 MAP-STRUCTURE 新增候选,缺少 247 书中的完整专章。结合品牌全案框架和用户"
+        },
+        {
+          "concept": "SWOT",
+          "slug": "swot",
+          "file": "assets/_compiled/concepts-golden/swot.md",
+          "category": "model",
+          "role": "可选引用",
+          "tier": "optional",
+          "reason": "SWOT 是一个战略分析与决策工具,把与品牌/业务相关的内外部因素归纳到四个象限: - **S - 优势 (Strengths)**: 内部有利因素 — 你擅长什么、有什么独特资源 - **W - 劣势 (Weaknesses)**: 内部不利因素 — 你欠缺什么、哪些方面不如对手 - **O - 机会 (Opport"
+        }
+      ]
+    }
+  },
+  "cross_methodologies": {
+    "essence_seeker": [
+      {
+        "concept": "5-Why-Essence",
+        "slug": "5-why-essence",
+        "file": "assets/_compiled/concepts-golden/5-why-essence.md",
+        "category": "methodology",
+        "reason": "5-Why-Essence 是用连续追问 \"为什么\" 来穿透表象、找到问题本质和底层动机的方法。 它借鉴丰田生产方式中的 5 Whys 根因分析,在 Seven 方法论中被扩展为品牌策略的本质思维: 不只问发生了什么,更问为什么发生、成立条件是什么、真正驱动行为的是什么。找本质的前提是行业和领域积累,方法包括第一性原理"
+      }
+    ],
+    "swot": [
+      {
+        "concept": "SWOT",
+        "slug": "swot",
+        "file": "assets/_compiled/concepts-golden/swot.md",
+        "category": "model",
+        "reason": "SWOT 是一个战略分析与决策工具,把与品牌/业务相关的内外部因素归纳到四个象限: - **S - 优势 (Strengths)**: 内部有利因素 — 你擅长什么、有什么独特资源 - **W - 劣势 (Weaknesses)**: 内部不利因素 — 你欠缺什么、哪些方面不如对手 - **O - 机会 (Opport"
+      }
+    ],
+    "communication_theory_34": [
+      {
+        "concept": "Communication-Theory-34",
+        "slug": "communication-theory-34",
+        "file": "assets/_compiled/concepts-golden/communication-theory-34.md",
+        "category": "term",
+        "reason": "34 个传播学理论是一个传播策略选择库,用于帮助策略 Agent 判断: 说什么、对谁说、通过什么媒介说、用户如何理解、信息如何扩散、风险如何控制。 Seven 本地方法论强调,传播不是简单输出信息,而是影响注意力、理解方式、社会认同和行为决策。这 34 个理论覆盖议程设置、编码解码、叙事理论、把关人、基模、沉默的螺旋"
+      }
+    ],
+    "mece": [
+      {
+        "concept": "MECE",
+        "slug": "mece",
+        "file": "assets/_compiled/concepts-golden/mece.md",
+        "category": "methodology",
+        "reason": "MECE 是 Mutually Exclusive, Collectively Exhaustive 的缩写,中文常译为相互独立、完全穷尽。它要求分类之间不重叠,整体上不遗漏。 虽然当前本地材料对 MECE 的直接命中较少,但 5W2H 模型卡中明确强调结构化问题分析要 \"抓住核心要点,不遗漏重要讯息\"；金字塔原理要求"
+      }
+    ],
+    "pyramid_principle": [
+      {
+        "concept": "Pyramid-Principle",
+        "slug": "pyramid-principle",
+        "file": "assets/_compiled/concepts-golden/pyramid-principle.md",
+        "category": "methodology",
+        "reason": "金字塔原理是一套结构化思考与表达方法,核心是先说结论,再说论据；先总结所以,后解释因为。 Barbara Minto 在《金字塔原理》中系统化了这一咨询表达方法。模型卡给出的关键规则是: 塔尖用一两句话说出结论,塔往下依次展开论据；从上而下先陈述论点,后用论据支持。它特别适用于提案、沟通和思考,能让复杂信息在短时间内被"
+      }
+    ],
+    "action_title": [
+      {
+        "concept": "Action-Title",
+        "slug": "action-title",
+        "file": "assets/_compiled/concepts-golden/action-title.md",
+        "category": "term",
+        "reason": "Action Title 是咨询式 PPT 页面标题写法,用一句结论或行动建议概括本页观点,而不是只描述图表内容。 它的底层来自金字塔原理的 \"先说结论,后说论据\"。模型卡强调,表达要先总结所以,后过程因为；塔尖用一两句话说出结论,下方再用论据支持。Action Title 就是把这个原则落到每一页 PPT: 标题先告"
+      }
+    ]
+  },
+  "coverage_stats": {
+    "consumer_insight": {
+      "total": 16,
+      "must_load_count": 3,
+      "recommended_count": 10,
+      "optional_count": 3
+    },
+    "industry_analysis": {
+      "total": 8,
+      "must_load_count": 3,
+      "recommended_count": 4,
+      "optional_count": 1
+    },
+    "competitor_analysis": {
+      "total": 20,
+      "must_load_count": 3,
+      "recommended_count": 15,
+      "optional_count": 2
+    },
+    "brand_positioning": {
+      "total": 44,
+      "must_load_count": 4,
+      "recommended_count": 23,
+      "optional_count": 17
+    },
+    "brand_building": {
+      "total": 33,
+      "must_load_count": 4,
+      "recommended_count": 23,
+      "optional_count": 6
+    },
+    "annual_planning": {
+      "total": 41,
+      "must_load_count": 4,
+      "recommended_count": 32,
+      "optional_count": 5
+    },
+    "overall": {
+      "mapped_unique_concepts": 60,
+      "golden_concepts_count": 60,
+      "coverage_ratio": 1
+    }
+  }
+}

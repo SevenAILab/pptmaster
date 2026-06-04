@@ -1,0 +1,31 @@
+给售前看的结论
+================
+
+源文件: /Users/seven/Documents/文档/PPT方案大师/pptmaster/output/demo/table-deck.html
+识别到的页面选择器: .S
+识别到的页数: 1
+预检风险级别: 低风险
+
+优先打开:
+1) /Users/seven/Documents/文档/PPT方案大师/pptmaster/output/demo/table-pptx/table-deck_推荐可编辑版.pptx
+
+如果文字仍然经常点到图片:
+2) /Users/seven/Documents/文档/PPT方案大师/pptmaster/output/demo/table-pptx/table-deck_最大可编辑版.pptx
+
+如果只做展示、追求视觉一致:
+3) /Users/seven/Documents/文档/PPT方案大师/pptmaster/output/demo/table-pptx/table-deck_原始保真版.pptx
+
+本次转换概况:
+- 总页数: 1
+- 原生PPT表格: 1
+- HTML原生表格: 1
+- 视觉矩阵候选: 0
+- 旧式div表格候选: 0
+- 检测到叠图数量: 1
+- 大叠图页数(>=5%): 1
+- 叠图较多页数(>=8张): 0
+
+现场改稿建议:
+- 先用 推荐可编辑版 改文字。
+- 如果仍点到图片，切到 最大可编辑版。
+- 最终交付前抽检封面、目录、复杂图表页。

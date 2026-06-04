@@ -24,9 +24,21 @@
     "compile:golden": "node scripts/compile/build-golden.mjs",
     "compile:matrix": "node scripts/compile/build-application-matrix.mjs",
     "search:test": "node scripts/web-search.mjs --test",
-    "run:positioning": "node scripts/run-sub-agent.mjs brand_positioning"
+    "run:positioning": "node scripts/run-sub-agent.mjs brand_positioning",
+    "blueprint:suite": "node scripts/run-blueprint-suite.mjs",
+    "blueprint:assemble": "node scripts/assemble-by-blueprint.mjs",
+    "blueprint:validate": "node scripts/validate-blueprint.mjs",
+    "blueprint:demo": "node scripts/generate-blueprint-demo.mjs",
+    "blueprint:deck": "echo 'Usage: npm run blueprint:suite -- <slug> --scheme <type> && npm run blueprint:assemble -- <slug> --scheme <type> && node scripts/render-deck.mjs <slug>-blueprint'",
+    "prelaunch:check": "node scripts/prelaunch-readiness.mjs",
+    "deck:s": "node scripts/render-deck-s.mjs",
+    "deck:pptx": "node scripts/deck-to-pptx.mjs",
+    "check:discipline": "node scripts/check-content-discipline.mjs",
+    "check:evidence": "node scripts/check-evidence-coverage.mjs"
   },
   "dependencies": {
-    "dotenv": "^16.4.0"
+    "@anthropic-ai/sdk": "^0.99.0",
+    "dotenv": "^16.4.0",
+    "openai": "^6.39.0"
   }
 }

@@ -1,0 +1,26 @@
+# Cursor Project Rules for PPTAgent (pptmaster)
+
+You are using the PPTAgent framework. When user asks for "品牌定位 / 品牌全案 / Sub-Agent 调用", follow these steps:
+
+1. Read `prompts/brand_positioning/system.md` as the Sub-Agent ④ system prompt.
+2. Read `assets/_compiled/concept-application-matrix.json`.
+3. For each `must_load` concept in `matrix.brand_positioning.must_load`, read `assets/_compiled/concepts-golden/{slug}.md`.
+4. Collect user input from `inputs/{client_slug}/form.json` and `inputs/{client_slug}/summary.md`.
+5. Generate strict JSON output per `system.md` contract.
+6. Write to `outputs/{client_slug}-positioning/raw-output.json`.
+7. Run `node validators/brand_positioning/content-check.mjs outputs/{client_slug}-positioning/raw-output.json`.
+8. Run `node validators/brand_positioning/methodology-check.mjs outputs/{client_slug}-positioning/raw-output.json`.
+9. Run `node scripts/render-deck.mjs outputs/{client_slug}-positioning/raw-output.json outputs/{client_slug}-positioning/index.html --style=swiss`.
+
+P0 red lines:
+
+- P0-2: All SmallRig examples must reference `_raw/cases/标杆案例/smallrig/page-NNN.md`.
+- P0-3: 植愈坊 examples must tag "教学性虚拟案例".
+- P0-4: Every example must have 案例可追溯报告 blockquote.
+- P0-6: Use 4-tier fallback strategy when SmallRig / 植愈坊 do not have content.
+- Never put real API keys in tracked files.
+
+Tools available:
+
+- Read / Edit / Bash for local files and validators.
+- Web search only for Sub-Agent ②③ when prompt requires it.

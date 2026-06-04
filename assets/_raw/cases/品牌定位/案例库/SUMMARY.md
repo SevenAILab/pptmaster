@@ -1,0 +1,96 @@
+# brand-positioning-cases · PPTX 拆解索引
+
+- 来源: 品牌定位案例.pptx
+- 总页数: 86
+- 图片引用: 80
+- OCR 页数: 80
+- 拆解时间: 2026-05-26T13:55:05.976Z
+
+## 页索引
+
+- [Slide 1](slide-001.md) · BRIEF · images=1 · chars=235
+- [Slide 2](slide-002.md) · 国产奶粉品牌 · images=1 · chars=13
+- [Slide 3](slide-003.md) · CONTENTS · images=1 · chars=43
+- [Slide 4](slide-004.md) · 品牌定位的升级 · images=1 · chars=35
+- [Slide 5](slide-005.md) · 贝比赋恰逢国产复兴，在二次增长曲线上已窥见先机 · images=1 · chars=157
+- [Slide 6](slide-006.md) · 在复兴浪潮中，贝比赋并非唯一选手 · images=1 · chars=85
+- [Slide 7](slide-007.md) · 因此，在贝比赋面前，有且只有一个目标 · images=1 · chars=33
+- [Slide 8](slide-008.md) · 基建层盘点 · images=1 · chars=253
+- [Slide 9](slide-009.md) · 业务层盘点 · images=1 · chars=269
+- [Slide 10](slide-010.md) · 运营层盘点 · images=1 · chars=353
+- [Slide 11](slide-011.md) · 「核心问题」 · images=1 · chars=107
+- [Slide 12](slide-012.md) · 「解决思路」 · images=1 · chars=69
+- [Slide 13](slide-013.md) · 研究策略思路 · images=1 · chars=126
+- [Slide 14](slide-014.md) · PART 2 · images=1 · chars=11
+- [Slide 15](slide-015.md) · 「市场扫描」 · images=1 · chars=222
+- [Slide 16](slide-016.md) · 「市场扫描」 · images=1 · chars=85
+- [Slide 17](slide-017.md) · 「市场扫描」 · images=1 · chars=104
+- [Slide 18](slide-018.md) · 「市场扫描」 · images=1 · chars=101
+- [Slide 19](slide-019.md) · 「竞争态势」 · images=1 · chars=123
+- [Slide 20](slide-020.md) · 「竞争态势」 · images=1 · chars=110
+- [Slide 21](slide-021.md) · 「竞争态势」 · images=1 · chars=90
+- [Slide 22](slide-022.md) · 「竞争态势」 · images=1 · chars=140
+- [Slide 23](slide-023.md) · 「竞争态势」 · images=1 · chars=108
+- [Slide 24](slide-024.md) · 小结 · images=1 · chars=32
+- [Slide 25](slide-025.md) · 「消费者画像」 · images=1 · chars=173
+- [Slide 26](slide-026.md) · 「消费者画像」 · images=1 · chars=136
+- [Slide 27](slide-027.md) · 「消费者画像」 · images=1 · chars=214
+- [Slide 28](slide-028.md) · 「消费者画像」 · images=1 · chars=99
+- [Slide 29](slide-029.md) · 「消费心智」 · images=1 · chars=82
+- [Slide 30](slide-030.md) · 「消费心智」 · images=1 · chars=51
+- [Slide 31](slide-031.md) · 小结 · images=1 · chars=32
+- [Slide 32](slide-032.md) · 研究策略思路 · images=1 · chars=128
+- [Slide 33](slide-033.md) · 「品牌资产」 · images=1 · chars=91
+- [Slide 34](slide-034.md) · 「品牌沟通」 · images=1 · chars=140
+- [Slide 35](slide-035.md) · 消费者心智抽屉有限 · images=1 · chars=44
+- [Slide 36](slide-036.md) · 「品牌优势」 · images=1 · chars=87
+- [Slide 37](slide-037.md) · 「品牌优势」 · images=1 · chars=90
+- [Slide 38](slide-038.md) · 小结 · images=1 · chars=32
+- [Slide 39](slide-039.md) · 「分析结论J · images=1 · chars=129
+- [Slide 40](slide-040.md) · PART 3 · images=1 · chars=12
+- [Slide 41](slide-041.md) · 「用科学方式，致力精选营养配方的高端婴幼儿奶粉」 · images=1 · chars=38
+- [Slide 42](slide-042.md) · 「心智第一联想」 · images=1 · chars=88
+- [Slide 43](slide-043.md) · 「定位表达」 · images=1 · chars=144
+- [Slide 44](slide-044.md) · 沟通落地 · images=1 · chars=25
+- [Slide 45](slide-045.md) · 沟通落地 · images=1 · chars=25
+- [Slide 46](slide-046.md) · 「传播口号」 · images=1 · chars=107
+- [Slide 47](slide-047.md) · 「定位下品牌核心竞争力塑造」 · images=1 · chars=162
+- [Slide 48](slide-048.md) · 「消费沟通逻辑」 · images=1 · chars=212
+- [Slide 49](slide-049.md) · 沟通落地 · images=1 · chars=25
+- [Slide 50](slide-050.md) · 「VI」 -「LOGO」 · images=1 · chars=33
+- [Slide 51](slide-051.md) · 「VI」—「ICON」 · images=1 · chars=84
+- [Slide 52](slide-052.md) · 「VI」一「主视」 · images=1 · chars=52
+- [Slide 53](slide-053.md) · 沟通落地 · images=1 · chars=25
+- [Slide 54](slide-054.md) · 「营销传播策略」 · images=1 · chars=86
+- [Slide 55](slide-055.md) · 「看点」 · images=1 · chars=35
+- [Slide 56](slide-056.md) · 「看点」 · images=1 · chars=44
+- [Slide 57](slide-057.md) · 「燃点」 · images=1 · chars=56
+- [Slide 58](slide-058.md) · 国家正处于百年未有之大变局 · images=1 · chars=57
+- [Slide 59](slide-059.md) · 大好河山大变样，文化自信备受鼓舞 · images=1 · chars=69
+- [Slide 60](slide-060.md) · 「燃点J · images=1 · chars=87
+- [Slide 61](slide-061.md) · 天安门广场升旗仪式，祖国最肃穆的场合 · images=1 · chars=60
+- [Slide 62](slide-062.md) · 「燃点」 · images=1 · chars=62
+- [Slide 63](slide-063.md) · 「焦点」 · images=1 · chars=44
+- [Slide 64](slide-064.md) · 「焦点」一「Q1」 · images=1 · chars=98
+- [Slide 65](slide-065.md) · 「焦点」一「Q1」 · images=1 · chars=85
+- [Slide 66](slide-066.md) · 「焦点」一「Q2」 · images=1 · chars=75
+- [Slide 67](slide-067.md) · 「焦点」一「Q2」 · images=1 · chars=99
+- [Slide 68](slide-068.md) · 「焦点」一「Q3」 · images=1 · chars=86
+- [Slide 69](slide-069.md) · 「焦点」一「Q3」 · images=1 · chars=85
+- [Slide 70](slide-070.md) · 「焦点」 「Q4」 · images=1 · chars=110
+- [Slide 71](slide-071.md) · 「焦点」一「Q1」 · images=1 · chars=81
+- [Slide 72](slide-072.md) · 「触点J · images=1 · chars=31
+- [Slide 73](slide-073.md) · 「触点」 · images=1 · chars=73
+- [Slide 74](slide-074.md) · 「触点」 · images=1 · chars=71
+- [Slide 75](slide-075.md) · 「触点」 · images=1 · chars=97
+- [Slide 76](slide-076.md) · PART 4 · images=1 · chars=11
+- [Slide 77](slide-077.md) · 「分析结论J · images=1 · chars=129
+- [Slide 78](slide-078.md) · 「心智第一联想」 · images=1 · chars=89
+- [Slide 79](slide-079.md) · 「品牌屋」 · images=1 · chars=231
+- [Slide 80](slide-080.md) · 品牌 · images=1 · chars=147
+- [Slide 81](slide-081.md) · Slide 81 · images=0 · chars=0
+- [Slide 82](slide-082.md) · Slide 82 · images=0 · chars=0
+- [Slide 83](slide-083.md) · Slide 83 · images=0 · chars=0
+- [Slide 84](slide-084.md) · Slide 84 · images=0 · chars=0
+- [Slide 85](slide-085.md) · Slide 85 · images=0 · chars=0
+- [Slide 86](slide-086.md) · Slide 86 · images=0 · chars=0

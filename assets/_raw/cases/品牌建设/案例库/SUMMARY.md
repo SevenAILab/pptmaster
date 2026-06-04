@@ -1,0 +1,105 @@
+# brand-building-cases · PPTX 拆解索引
+
+- 来源: 品牌建设案例.pptx
+- 总页数: 95
+- 图片引用: 94
+- OCR 页数: 94
+- 拆解时间: 2026-05-26T13:56:19.517Z
+
+## 页索引
+
+- [Slide 1](slide-001.md) · BRIEF · images=1 · chars=169
+- [Slide 2](slide-002.md) · 儿童底装品牌 · images=1 · chars=13
+- [Slide 3](slide-003.md) · CONTENTS · images=1 · chars=43
+- [Slide 4](slide-004.md) · PART1 · images=1 · chars=10
+- [Slide 5](slide-005.md) · 「赛道洞察」 · images=1 · chars=117
+- [Slide 6](slide-006.md) · 「赛道洞察」 · images=1 · chars=86
+- [Slide 7](slide-007.md) · 「赛道洞察」 · images=1 · chars=118
+- [Slide 8](slide-008.md) · 成人新锐底装降维，具备逻辑上的合理性 · images=1 · chars=24
+- [Slide 9](slide-009.md) · 「儿童底装市场现状」 · images=1 · chars=95
+- [Slide 10](slide-010.md) · 行业 · images=1 · chars=207
+- [Slide 11](slide-011.md) · 行业 · images=1 · chars=125
+- [Slide 12](slide-012.md) · 「产业格局」 · images=1 · chars=276
+- [Slide 13](slide-013.md) · 行业 · images=1 · chars=131
+- [Slide 14](slide-014.md) · 行业 · images=1 · chars=201
+- [Slide 15](slide-015.md) · 行业 · images=1 · chars=161
+- [Slide 16](slide-016.md) · 「竞争格局」 · images=1 · chars=78
+- [Slide 17](slide-017.md) · 竞争 · images=1 · chars=243
+- [Slide 18](slide-018.md) · 竞争 · images=1 · chars=231
+- [Slide 19](slide-019.md) · 「竞争者」一 强势外资品牌 · images=1 · chars=221
+- [Slide 20](slide-020.md) · 「竞争者」一新锐品牌 · images=1 · chars=231
+- [Slide 21](slide-021.md) · 「竞争者」一新锐品牌 · images=1 · chars=109
+- [Slide 22](slide-022.md) · 竞争 · images=1 · chars=137
+- [Slide 23](slide-023.md) · 消费者 · images=1 · chars=237
+- [Slide 24](slide-024.md) · 「人群画像」 · images=1 · chars=187
+- [Slide 25](slide-025.md) · 消费者 · images=1 · chars=97
+- [Slide 26](slide-026.md) · 「人群变化趋势」 · images=1 · chars=184
+- [Slide 27](slide-027.md) · 「自身优劣势」 · images=1 · chars=156
+- [Slide 28](slide-028.md) · 「SWOT」 · images=1 · chars=512
+- [Slide 29](slide-029.md) · 「SO策略」 · images=1 · chars=404
+- [Slide 30](slide-030.md) · 「ST策略」 · images=1 · chars=283
+- [Slide 31](slide-031.md) · 「WO策略」 · images=1 · chars=341
+- [Slide 32](slide-032.md) · 「WT策略」 · images=1 · chars=246
+- [Slide 33](slide-033.md) · PART 2 · images=1 · chars=11
+- [Slide 34](slide-034.md) · 品牌起步策略制定完成，长期来看 · images=1 · chars=24
+- [Slide 35](slide-035.md) · 破局点 · images=1 · chars=128
+- [Slide 36](slide-036.md) · 「战略引擎」 · images=1 · chars=121
+- [Slide 37](slide-037.md) · 「五年规划」 · images=1 · chars=361
+- [Slide 38](slide-038.md) · 战略体系 · images=1 · chars=68
+- [Slide 39](slide-039.md) · 「品牌定位」 · images=1 · chars=84
+- [Slide 40](slide-040.md) · 「品牌定位」 · images=1 · chars=80
+- [Slide 41](slide-041.md) · 战略体系 · images=1 · chars=90
+- [Slide 42](slide-042.md) · 「品牌口号」 · images=1 · chars=104
+- [Slide 43](slide-043.md) · 战略体系 · images=1 · chars=43
+- [Slide 44](slide-044.md) · 战略体系 · images=1 · chars=136
+- [Slide 45](slide-045.md) · 战略体系 · images=1 · chars=275
+- [Slide 46](slide-046.md) · 「目标人群」 · images=1 · chars=50
+- [Slide 47](slide-047.md) · 「目标人群」 · images=1 · chars=67
+- [Slide 48](slide-048.md) · 战略体系 · images=1 · chars=31
+- [Slide 49](slide-049.md) · 「品牌视觉」-「品牌色」 · images=1 · chars=39
+- [Slide 50](slide-050.md) · 「品牌视觉」-「LOGO设计」 · images=1 · chars=48
+- [Slide 51](slide-051.md) · 「品牌视觉」-「字体应用」 · images=1 · chars=38
+- [Slide 52](slide-052.md) · 「品牌视觉」-「KV设计参考」 · images=1 · chars=34
+- [Slide 53](slide-053.md) · 「品牌人格形象」 · images=1 · chars=113
+- [Slide 54](slide-054.md) · 「品牌人格形象」 · images=1 · chars=95
+- [Slide 55](slide-055.md) · PART 3 · images=1 · chars=11
+- [Slide 56](slide-056.md) · 定位之下的四大配称 · images=1 · chars=80
+- [Slide 57](slide-057.md) · 定位之下的四大配称 · images=1 · chars=80
+- [Slide 58](slide-058.md) · 「产品规划」 · images=1 · chars=200
+- [Slide 59](slide-059.md) · 「产品系列」-材质 · images=1 · chars=65
+- [Slide 60](slide-060.md) · 「产品系列」 · images=1 · chars=40
+- [Slide 61](slide-061.md) · 「产品系列」-价格 · images=1 · chars=231
+- [Slide 62](slide-062.md) · 「产品系列」-价格 · images=1 · chars=190
+- [Slide 63](slide-063.md) · 定位之下的四大配称 · images=1 · chars=80
+- [Slide 64](slide-064.md) · 「渠道布局」 · images=1 · chars=99
+- [Slide 65](slide-065.md) · 「渠道规划J · images=1 · chars=171
+- [Slide 66](slide-066.md) · 定位之下的四大配称 · images=1 · chars=80
+- [Slide 67](slide-067.md) · 「硬广」- TVC · images=1 · chars=224
+- [Slide 68](slide-068.md) · 「硬广J · images=1 · chars=38
+- [Slide 69](slide-069.md) · 「事件资产」 · images=1 · chars=88
+- [Slide 70](slide-070.md) · 「事件资产」 · images=1 · chars=101
+- [Slide 71](slide-071.md) · 「事件资产」 · images=1 · chars=96
+- [Slide 72](slide-072.md) · 「事件资产」 · images=1 · chars=126
+- [Slide 73](slide-073.md) · 「事件资产」 · images=1 · chars=91
+- [Slide 74](slide-074.md) · 「事件资产」 · images=1 · chars=104
+- [Slide 75](slide-075.md) · 「常规资产」 · images=1 · chars=59
+- [Slide 76](slide-076.md) · 「常规资产」 · images=1 · chars=186
+- [Slide 77](slide-077.md) · 「常规资产」 · images=1 · chars=128
+- [Slide 78](slide-078.md) · 「常规资产」 · images=1 · chars=267
+- [Slide 79](slide-079.md) · 「客户资产」 · images=1 · chars=230
+- [Slide 80](slide-080.md) · 「客户资产」 · images=1 · chars=91
+- [Slide 81](slide-081.md) · 定位之下的四大配称 · images=1 · chars=80
+- [Slide 82](slide-082.md) · 「客服话术体系」 · images=1 · chars=134
+- [Slide 83](slide-083.md) · 「客服话术体系」 · images=1 · chars=132
+- [Slide 84](slide-084.md) · 「包装设计」 · images=1 · chars=22
+- [Slide 85](slide-085.md) · 「产品辅料」 · images=1 · chars=34
+- [Slide 86](slide-086.md) · 「礼品计划」 · images=1 · chars=128
+- [Slide 87](slide-087.md) · PART 4 · images=1 · chars=11
+- [Slide 88](slide-088.md) · 「起步策略」 · images=1 · chars=297
+- [Slide 89](slide-089.md) · 破局点 · images=1 · chars=129
+- [Slide 90](slide-090.md) · 「五年规划」 · images=1 · chars=362
+- [Slide 91](slide-091.md) · 「品牌定位」 · images=1 · chars=80
+- [Slide 92](slide-092.md) · 「品牌口号」 · images=1 · chars=104
+- [Slide 93](slide-093.md) · 品牌 · images=1 · chars=365
+- [Slide 94](slide-094.md) · 「设计汇总」 · images=1 · chars=35
+- [Slide 95](slide-095.md) · Slide 95 · images=0 · chars=0

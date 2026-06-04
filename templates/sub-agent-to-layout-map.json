@@ -1,0 +1,26 @@
+{
+  "consumer_insight": {
+    "primary_layouts": ["S03", "S04", "S11", "S15"],
+    "supplementary": ["S05", "S16"]
+  },
+  "industry_analysis": {
+    "primary_layouts": ["S02", "S06", "S17", "S18"],
+    "supplementary": ["S07", "S20"]
+  },
+  "competitor_analysis": {
+    "primary_layouts": ["S07", "S08", "S15"],
+    "supplementary": ["S04", "S16"]
+  },
+  "brand_positioning": {
+    "primary_layouts": ["S03", "S09", "S12", "S13", "S17"],
+    "supplementary": ["S05", "S22"]
+  },
+  "brand_building": {
+    "primary_layouts": ["S05", "S14", "S17", "S19", "S21"],
+    "supplementary": ["S15", "S22"]
+  },
+  "annual_planning": {
+    "primary_layouts": ["S02", "S11", "S20", "S22"],
+    "supplementary": ["S06", "S19"]
+  }
+}

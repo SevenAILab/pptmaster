@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>表格护栏测试 · 品牌定位案</title>
+<style>
+/* ===== Engine V2 .S 导出版式系统（自包含 / 固定 1080×608 / 无外链字体） =====
+   字号规范（来自设计文档 §4③，硬约束）：
+   动作标题 22-26px / 卡片标题 >=13px(硬下限) / 正文 11-12px / 硬地板 9px / 页脚 8.5px(唯一例外)
+   反空心铁律：禁止用缩小字号塞内容；放不下就减内容或拆页，不要 inline 改小字号。 */
+:root{
+  --paper:#ffffff; --ink:#111827; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#002FA7; --accent-bg:#EEF2FF; --accent-line:#C7D2FE;
+  --ok:#059669; --warn:#D97706; --risk:#DC2626;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Helvetica Neue",Arial,sans-serif;background:#E5E7EB;color:var(--ink);line-height:1.45}
+.S{width:1080px;height:608px;margin:24px auto;background:var(--paper);position:relative;overflow:hidden;display:flex;flex-direction:column;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.TB{height:32px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex-shrink:0}
+.TB .logo{font-size:11px;font-weight:900;letter-spacing:.04em}
+.TB .meta{font-size:9px;color:rgba(255,255,255,.7)}
+.TS{padding:14px 40px 10px;border-bottom:1px solid var(--line);flex-shrink:0}
+.TS h1{font-size:24px;line-height:1.2;color:var(--ink);font-weight:900}
+.TS .sub{margin-top:4px;font-size:11px;color:var(--muted)}
+.BA{flex:1;padding:16px 40px 30px;overflow:hidden;font-size:12px;color:#374151}
+.PF{position:absolute;bottom:8px;height:16px;font-size:8.5px;color:#9CA3AF;display:flex;align-items:center}
+.PF.PFR{right:40px}.PF.PFL{left:40px}
+.points{list-style:none}
+.points li{padding:8px 0;border-top:1px solid var(--line);font-size:12px}
+.points li:first-child{border-top:0}
+.statement-points{list-style:none;display:flex;flex-direction:column;gap:6px}
+.statement-points li{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.statement-points li:first-child{border-top:0}
+.statement-points .num{font-size:13px;font-weight:900;color:var(--accent)}
+.statement-points .txt{font-size:12px;line-height:1.5}
+.ntbl{width:100%;border-collapse:collapse;font-size:11px}
+.ntbl th,.ntbl td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.ntbl th{background:var(--accent-bg);color:var(--accent);font-weight:900;font-size:12px}
+.card{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card-title{padding:7px 9px;background:var(--accent-bg);color:var(--accent);font-size:13px;font-weight:900;border-bottom:1px solid var(--accent-line)}
+.card-body{padding:8px 9px;font-size:12px;color:#374151}
+</style>
+</head>
+<body>
+<section class="S" data-page="1" data-layout="table">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta"></span></div>
+  <div class="TS"><h1>竞品对比</h1></div>
+  <div class="BA"><table data-pptx-role="native-table" class="ntbl"><thead><tr><th>品牌</th><th>定位</th><th>价格带</th></tr></thead><tbody><tr><td>A</td><td>高端</td><td>¥¥¥</td></tr><tr><td>B</td><td>性价比</td><td>¥</td></tr></tbody></table></div>
+  <div class="PF PFR">1</div>
+</section>
+</body>
+</html>

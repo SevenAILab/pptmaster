@@ -1,0 +1,22 @@
+---
+slide: 38
+total_slides: 86
+case_slug: brand-positioning-cases
+source: 品牌定位案例.pptx
+title: "小结"
+extraction: image-ocr
+image_count: 1
+char_count: 32
+---
+
+# Slide 38 · 小结
+
+## 页面图片
+
+![slide image](_images/slide-038-image1.png)
+
+## 图片 OCR 文本
+
+小结
+营养精选>营养标配
+未来品牌在坚守营养的路上，往更合理迈进

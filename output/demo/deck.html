@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>pptagent · 品牌定位案</title>
+<style>
+/* ===== Engine V2 .S 导出版式系统（自包含 / 固定 1080×608 / 无外链字体） =====
+   字号规范（来自设计文档 §4③，硬约束）：
+   动作标题 22-26px / 卡片标题 >=13px(硬下限) / 正文 11-12px / 硬地板 9px / 页脚 8.5px(唯一例外)
+   反空心铁律：禁止用缩小字号塞内容；放不下就减内容或拆页，不要 inline 改小字号。 */
+:root{
+  --paper:#ffffff; --ink:#111827; --muted:#6B7280; --line:#E5E7EB;
+  --accent:#002FA7; --accent-bg:#EEF2FF; --accent-line:#C7D2FE;
+  --ok:#059669; --warn:#D97706; --risk:#DC2626;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Helvetica Neue",Arial,sans-serif;background:#E5E7EB;color:var(--ink);line-height:1.45}
+.S{width:1080px;height:608px;margin:24px auto;background:var(--paper);position:relative;overflow:hidden;display:flex;flex-direction:column;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.TB{height:32px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex-shrink:0}
+.TB .logo{font-size:11px;font-weight:900;letter-spacing:.04em}
+.TB .meta{font-size:9px;color:rgba(255,255,255,.7)}
+.TS{padding:14px 40px 10px;border-bottom:1px solid var(--line);flex-shrink:0}
+.TS h1{font-size:24px;line-height:1.2;color:var(--ink);font-weight:900}
+.TS .sub{margin-top:4px;font-size:11px;color:var(--muted)}
+.BA{flex:1;padding:16px 40px 30px;overflow:hidden;font-size:12px;color:#374151}
+.PF{position:absolute;bottom:8px;height:16px;font-size:8.5px;color:#9CA3AF;display:flex;align-items:center}
+.PF.PFR{right:40px}.PF.PFL{left:40px}
+.points{list-style:none}
+.points li{padding:8px 0;border-top:1px solid var(--line);font-size:12px}
+.points li:first-child{border-top:0}
+.statement-points{list-style:none;display:flex;flex-direction:column;gap:6px}
+.statement-points li{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.statement-points li:first-child{border-top:0}
+.statement-points .num{font-size:13px;font-weight:900;color:var(--accent)}
+.statement-points .txt{font-size:12px;line-height:1.5}
+.ntbl{width:100%;border-collapse:collapse;font-size:11px}
+.ntbl th,.ntbl td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.ntbl th{background:var(--accent-bg);color:var(--accent);font-weight:900;font-size:12px}
+.card{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card-title{padding:7px 9px;background:var(--accent-bg);color:var(--accent);font-size:13px;font-weight:900;border-bottom:1px solid var(--accent-line)}
+.card-body{padding:8px 9px;font-size:12px;color:#374151}
+.cols-row{display:flex;gap:12px;height:100%;align-items:stretch}
+.cols-row>.card{flex:1 1 0;display:flex;flex-direction:column;min-width:0}
+.cols-row .card-body{flex:1}
+.cols-stack{display:flex;flex-direction:column;gap:10px;height:100%}
+.cols-stack>.card{display:flex;flex-direction:column}
+.cols-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:100%}
+.cols-grid>.card{display:flex;flex-direction:column;min-width:0}
+.S[data-accent="ink"] .card-title{color:var(--ink);background:#F3F4F6;border-bottom-color:var(--line)}
+</style>
+</head>
+<body>
+<section class="S" data-page="1" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>BRIEF 指向同一个判断:PPTAgent 不是做 PPT 的工具,而是把品牌策划工作产品化</h1><div class="sub">BRIEF</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">项目背景</div><div class="card-body">0-1 启动 需要先校准新品类,再谈增长</div></div><div class="card"><div class="card-title">产品形态</div><div class="card-body">客户资料 + 表单输入 / 6 个品牌策略 Sub-Agent / 咨询级品牌全案 HTML 横向翻页 PPT / Seven 私有方法论资产库</div></div><div class="card"><div class="card-title">交付结果</div><div class="card-body">咨询级品牌全案 HTML 横向翻页 PPT</div></div></div></div>
+  <div class="PF PFR">1</div>
+</section>
+
+<section class="S" data-page="2" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>PPTAgent 应进入“品牌策划方案 Agent”赛道,而不是通用 AI PPT 赛道</h1><div class="sub">客户行业卡</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">行业边界</div><div class="card-body">AI Agent / 品牌策划工具 / AI 生成 PPT</div></div><div class="card"><div class="card-title">价值边界</div><div class="card-body">用户买的不是页面生成,而是品牌判断和方案结构</div></div></div></div>
+  <div class="PF PFR">2</div>
+</section>
+
+<section class="S" data-page="3" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>CONTENTS 必须按咨询提案路径推进,不是按模型库罗列</h1><div class="sub">CONTENTS</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">PART 1</div><div class="card-body">为什么现在必须重新定位</div></div><div class="card"><div class="card-title">PART 2</div><div class="card-body">行业、竞争、消费者和自身四线诊断</div></div><div class="card"><div class="card-title">PART 3</div><div class="card-body">定位语句、沟通落地和触点节奏</div></div><div class="card"><div class="card-title">PART 4</div><div class="card-body">回收到品牌屋与一句话结论</div></div></div></div>
+  <div class="PF PFR">3</div>
+</section>
+
+<section class="S" data-page="4" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>PPTAgent 的定位升级不是换一句口号,而是避免被误归类为 AI PPT 工具</h1><div class="sub">品牌定位的升级</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">表层问题</div><div class="card-body">用户容易拿它和 Gamma、AiPPT、WPS AI 比生成效率</div></div><div class="card"><div class="card-title">深层问题</div><div class="card-body">品牌策划方案需要判断链、案例结构和可追溯证据</div></div><div class="card"><div class="card-title">升级方向</div><div class="card-body">从“生成演示文稿”升到“生成品牌全案”</div></div></div></div>
+  <div class="PF PFR">4</div>
+</section>
+
+<section class="S" data-page="5" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>AI 工具拥挤反而给垂直品牌策划留下专业窗口</h1><div class="sub">行业复苏窗口</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">通用工具正在抢“更快做页”的心智</div></div><div class="card"><div class="card-title">02</div><div class="card-body">甲方市场部真正缺的是“从资料到策略判断”的中间层</div></div><div class="card"><div class="card-title">03</div><div class="card-body">垂直 Agent 可以把Seven 私有资产变成产品护城河</div></div></div></div>
+  <div class="PF PFR">5</div>
+</section>
+
+<section class="S" data-page="6" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>PPTAgent 不能和 Gamma / WPS AIslides / AiPPT / ChatPPT 正面比模板,必须换竞争维度</h1><div class="sub">并非唯一选手</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">通用 AI PPT</div><div class="card-body">强在生成速度和视觉模板</div></div><div class="card"><div class="card-title">办公套件 AI</div><div class="card-body">强在生态入口和文档协同</div></div><div class="card"><div class="card-title">传统 4A / 咨询</div><div class="card-body">强在判断经验,弱在成本和交付周期</div></div></div></div>
+  <div class="PF PFR">6</div>
+</section>
+
+<section class="S" data-page="7" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>有且只有一个目标:让市场部把 PPTAgent 记成“品牌全案 Agent”</h1><div class="sub">有且只有一个目标</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">不争“最快生成 PPT”这个泛办公心智</div></div><div class="card"><div class="card-title">02</div><div class="card-body">先占“品牌策划方案”这个高价值任务心智</div></div></div></div>
+  <div class="PF PFR">7</div>
+</section>
+
+<section class="S" data-page="8" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>基建层已经具备从方法论资产到 Agent 流程的产品化条件</h1><div class="sub">基建层盘点</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">资产层</div><div class="card-body">客户资料 + 表单输入 / 6 个品牌策略 Sub-Agent / 咨询级品牌全案 HTML 横向翻页 PPT / Seven 私有方法论资产库</div></div><div class="card"><div class="card-title">流程层</div><div class="card-body">Agent 工作流覆盖行业、竞品、消费者、定位、建设和规划</div></div><div class="card"><div class="card-title">交付层</div><div class="card-body">HTML 横向翻页 PPT 能被链接分享和持续迭代</div></div></div></div>
+  <div class="PF PFR">8</div>
+</section>
+
+<section class="S" data-page="9" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>业务层的上限不在页面生成,而在能否替代基础提案工作</h1><div class="sub">业务层盘点</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">低价值路径</div><div class="card-body">做成又一个 AI PPT 工具,进入模板和价格竞争</div></div><div class="card"><div class="card-title">高价值路径</div><div class="card-body">替代 4A 公司基础研究、策略框架和初版方案</div></div><div class="card"><div class="card-title">商业焦点</div><div class="card-body">卖“品牌方案能力”,而不是卖“幻灯片数量”</div></div></div></div>
+  <div class="PF PFR">9</div>
+</section>
+
+<section class="S" data-page="10" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>运营层冷启动要先证明一个样板方案,再放大获客</h1><div class="sub">运营层盘点</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">当前短板</div><div class="card-body">新品牌尚未形成可信心智和案例证明</div></div><div class="card"><div class="card-title">先做验证</div><div class="card-body">用 PPTAgent 自身 demo 跑出可被目标用户审阅的品牌定位案</div></div><div class="card"><div class="card-title">再做增长</div><div class="card-body">把样板案例转成官网、种草内容和销售演示</div></div></div></div>
+  <div class="PF PFR">10</div>
+</section>
+
+<section class="S" data-page="11" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>核心问题不是“PPTAgent 怎么介绍自己”,而是怎样摆脱 AI PPT 红海心智</h1><div class="sub">「核心问题」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">错误归类</div><div class="card-body">如果用户只看到 PPT,就会拿它和模板工具比</div></div><div class="card"><div class="card-title">正确归类</div><div class="card-body">如果用户看到判断链,才会把它视为品牌策划方案 Agent</div></div><div class="card"><div class="card-title">战略缺口</div><div class="card-body">新品类表达、证据链和可视化交付必须同场出现</div></div></div></div>
+  <div class="PF PFR">11</div>
+</section>
+
+<section class="S" data-page="12" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>解决思路是先改品类框架,再用证据链支撑定位</h1><div class="sub">「解决思路」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">品类</div><div class="card-body">从 AI PPT 工具改为品牌策划方案 Agent</div></div><div class="card"><div class="card-title">人群</div><div class="card-body">先服务 甲方品牌方 / 市场部人员,再外溢到策划顾问</div></div><div class="card"><div class="card-title">证据</div><div class="card-body">客户资料 + 表单输入 + 6 个品牌策略 Sub-Agent + 咨询级品牌全案 HTML 横向翻页 PPT + Seven 私有方法论资产库</div></div></div></div>
+  <div class="PF PFR">12</div>
+</section>
+
+<section class="S" data-page="13" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">项目背景</span></div>
+  <div class="TS"><h1>研究策略应持续回答同一个根问题:为什么它能替代基础品牌提案工作</h1><div class="sub">研究策略思路</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">行业线</div><div class="card-body">通用生成工具拥挤,垂直策划仍有空位</div></div><div class="card"><div class="card-title">竞争线</div><div class="card-body">传统服务贵且慢,通用工具浅且泛</div></div><div class="card"><div class="card-title">用户线</div><div class="card-body">市场部需要能汇报、能讨论、能修改的方案初稿</div></div></div></div>
+  <div class="PF PFR">13</div>
+</section>
+
+<section class="S" data-page="14" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>PART 2 的任务不是铺资料,而是证明新品类值得被占住</h1><div class="sub">PART 2 · 分析</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">先看市场窗口,判断垂直品牌策划是否成立</div></div><div class="card"><div class="card-title">02</div><div class="card-body">再看竞品边界,找到不可硬碰的维度和可抢空位</div></div><div class="card"><div class="card-title">03</div><div class="card-body">最后回到自身资产,证明定位不是空口号</div></div></div></div>
+  <div class="PF PFR">14</div>
+</section>
+
+<section class="S" data-page="15" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>市场扫描显示:通用 AI PPT 已成熟,垂直策略 Agent 才有差异化入口</h1><div class="sub">「市场扫描」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">通用工具供给充足,用户对“能生成页面”不再稀缺</div></div><div class="card"><div class="card-title">02</div><div class="card-body">品牌策划任务仍需要行业、竞品、消费者和定位推导</div></div><div class="card"><div class="card-title">03</div><div class="card-body">机会点在“专业判断自动化”,而不是“页面自动化”</div></div></div></div>
+  <div class="PF PFR">15</div>
+</section>
+
+<section class="S" data-page="16" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>市场结构已经从“谁能生成”转向“谁更懂具体业务场景”</h1><div class="sub">「市场扫描」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">效率层</div><div class="card-body">Gamma / WPS AI / ChatPPT 满足快速成稿</div></div><div class="card"><div class="card-title">专业层</div><div class="card-body">品牌策划仍依赖方法论、案例和顾问判断</div></div><div class="card"><div class="card-title">产品层</div><div class="card-body">PPTAgent 应成为效率工具和咨询服务之间的新层</div></div></div></div>
+  <div class="PF PFR">16</div>
+</section>
+
+<section class="S" data-page="17" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>高价值细分不是泛办公人群,而是频繁做品牌方案的市场部</h1><div class="sub">「市场扫描」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">任务高频</div><div class="card-body">定位、升级、年度规划、招商和内部汇报反复发生</div></div><div class="card"><div class="card-title">专业门槛</div><div class="card-body">他们懂业务,但不一定能搭出咨询级提案结构</div></div><div class="card"><div class="card-title">付费理由</div><div class="card-body">节省外包前期成本,提高内部方案质量</div></div></div></div>
+  <div class="PF PFR">17</div>
+</section>
+
+<section class="S" data-page="18" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>品类进化路径应从“AI 生成 PPT”走向“AI 生成品牌全案”</h1><div class="sub">「市场扫描」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">第一代</div><div class="card-body">模板和版式自动化</div></div><div class="card"><div class="card-title">第二代</div><div class="card-body">文档到演示的内容压缩</div></div><div class="card"><div class="card-title">第三代</div><div class="card-body">围绕垂直任务的方案推导与交付</div></div></div></div>
+  <div class="PF PFR">18</div>
+</section>
+
+<section class="S" data-page="19" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>竞争格局可分为效率工具、办公生态和专业服务三类玩家</h1><div class="sub">「竞争态势」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">效率工具</div><div class="card-body">解决快和好看</div></div><div class="card"><div class="card-title">办公生态</div><div class="card-body">解决入口和协同</div></div><div class="card"><div class="card-title">专业服务</div><div class="card-body">解决判断和可信度</div></div></div></div>
+  <div class="PF PFR">19</div>
+</section>
+
+<section class="S" data-page="20" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>头部 AI PPT 工具强在生成体验,弱在品牌策划判断链</h1><div class="sub">「竞争态势」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">Gamma / Beautiful.ai:更像演示生成和叙事编辑工具</div></div><div class="card"><div class="card-title">02</div><div class="card-body">WPS AI / Office Copilot:更像办公生产力入口</div></div><div class="card"><div class="card-title">03</div><div class="card-body">它们不会默认输出行业、竞品、消费者、定位到品牌屋的完整链路</div></div></div></div>
+  <div class="PF PFR">20</div>
+</section>
+
+<section class="S" data-page="21" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>传统 4A 和咨询公司仍是专业替代物,但基础提案环节可被产品化</h1><div class="sub">「竞争态势」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">不可替代</div><div class="card-body">资深顾问的关键判断、客户沟通和现场取舍</div></div><div class="card"><div class="card-title">可替代</div><div class="card-body">资料整理、框架初稿、案例参考和标准页生产</div></div><div class="card"><div class="card-title">03</div><div class="card-body">PPTAgent 的切口应是“基础提案工作台”</div></div></div></div>
+  <div class="PF PFR">21</div>
+</section>
+
+<section class="S" data-page="22" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>竞品矩阵说明:PPTAgent 应站在“策略深度 × 交付速度”的右上象限</h1><div class="sub">「竞争态势」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">横轴</div><div class="card-body">从页面效率到策略深度</div></div><div class="card"><div class="card-title">纵轴</div><div class="card-body">从一次性生成到可追溯工作流</div></div><div class="card"><div class="card-title">目标位置</div><div class="card-body">比通用工具更懂品牌,比传统外包更快启动</div></div></div></div>
+  <div class="PF PFR">22</div>
+</section>
+
+<section class="S" data-page="23" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>心智地图上的空位是“懂品牌策划的方案 Agent”</h1><div class="sub">「竞争态势」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">左侧</div><div class="card-body">模板型工具,速度快但策略浅</div></div><div class="card"><div class="card-title">右侧</div><div class="card-body">咨询服务,策略深但启动慢</div></div><div class="card"><div class="card-title">空位</div><div class="card-body">PPTAgent 用方法论资产把两者连接起来</div></div></div></div>
+  <div class="PF PFR">23</div>
+</section>
+
+<section class="S" data-page="24" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>竞争小结:PPTAgent 不应证明自己会做 PPT,而应证明自己会做品牌方案</h1><div class="sub">小结</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">避开正面战场</div><div class="card-body">模板、动效、办公入口</div></div><div class="card"><div class="card-title">抢占新战场</div><div class="card-body">品牌策划方法论、案例结构、可追溯判断</div></div><div class="card"><div class="card-title">03</div><div class="card-body">后续定位必须围绕“方案 Agent”展开</div></div></div></div>
+  <div class="PF PFR">24</div>
+</section>
+
+<section class="S" data-page="25" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>消费者画像要从“谁会用 AI”收窄到“谁必须交品牌方案”</h1><div class="sub">「消费者画像」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">主力人群</div><div class="card-body">甲方品牌方 / 市场部人员</div></div><div class="card"><div class="card-title">拓展人群</div><div class="card-body">独立品牌策划顾问 / 小型咨询团队</div></div><div class="card"><div class="card-title">暂缓人群</div><div class="card-body">只想快速美化 PPT 的泛办公用户</div></div></div></div>
+  <div class="PF PFR">25</div>
+</section>
+
+<section class="S" data-page="26" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>主力用户的任务不是写页,而是把模糊资料变成能汇报的品牌判断</h1><div class="sub">「消费者画像」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">Who</div><div class="card-body">品牌负责人、市场经理、老板助理型市场部</div></div><div class="card"><div class="card-title">Why</div><div class="card-body">需要快速形成定位、升级、年度规划等基础提案</div></div><div class="card"><div class="card-title">Pain</div><div class="card-body">缺方法论结构,外包太慢,内部方案不够像咨询案</div></div></div></div>
+  <div class="PF PFR">26</div>
+</section>
+
+<section class="S" data-page="27" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>拓展用户会把 PPTAgent 当作“初稿生产力”,而不是最终顾问</h1><div class="sub">「消费者画像」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">独立策划顾问</div><div class="card-body">用它压缩资料整理和基础页生产时间</div></div><div class="card"><div class="card-title">小型咨询团队</div><div class="card-body">用它统一提案结构和模型语言</div></div><div class="card"><div class="card-title">价值边界</div><div class="card-body">它提供初稿和结构,关键取舍仍由人判断</div></div></div></div>
+  <div class="PF PFR">27</div>
+</section>
+
+<section class="S" data-page="28" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>暂不优先服务泛办公用户,反而能让定位更锋利</h1><div class="sub">「消费者画像」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">泛办公用户看重模板、速度和低价</div></div><div class="card"><div class="card-title">02</div><div class="card-body">品牌策划用户看重逻辑、证据和可交付结构</div></div><div class="card"><div class="card-title">03</div><div class="card-body">拒绝泛化是建立新品类心智的必要取舍</div></div></div></div>
+  <div class="PF PFR">28</div>
+</section>
+
+<section class="S" data-page="29" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>购买触发来自三个时刻:新品牌启动、品牌升级、年度方案压力</h1><div class="sub">「消费心智」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">启动时刻</div><div class="card-body">需要从 0 到 1 建立定位和品牌屋</div></div><div class="card"><div class="card-title">升级时刻</div><div class="card-body">需要重新解释品类、人群和 RTB</div></div><div class="card"><div class="card-title">汇报时刻</div><div class="card-body">需要把资料变成横向翻页提案</div></div></div></div>
+  <div class="PF PFR">29</div>
+</section>
+
+<section class="S" data-page="30" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>用户心智抽屉里已有“AI PPT”,但缺“品牌方案 Agent”</h1><div class="sub">「消费心智」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">已有抽屉</div><div class="card-body">AI PPT = 快速生成页面</div></div><div class="card"><div class="card-title">待建抽屉</div><div class="card-body">品牌方案 Agent = 生成咨询级品牌全案</div></div><div class="card"><div class="card-title">沟通任务</div><div class="card-body">把“PPT”从结果形态降级,把“品牌策划”升为核心价值</div></div></div></div>
+  <div class="PF PFR">30</div>
+</section>
+
+<section class="S" data-page="31" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>消费者分析小结:最值得抢的是市场部的“基础提案外包替代”任务</h1><div class="sub">小结</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">人群够窄</div><div class="card-body">先抓品牌方 / 市场部</div></div><div class="card"><div class="card-title">任务够痛</div><div class="card-body">定位、升级、规划都需要结构化方案</div></div><div class="card"><div class="card-title">价值够高</div><div class="card-body">节省时间只是入口,提高方案质量才是付费理由</div></div></div></div>
+  <div class="PF PFR">31</div>
+</section>
+
+<section class="S" data-page="32" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>自身分析要检验一个问题:Seven 资产能否支撑“咨询级”承诺</h1><div class="sub">研究策略思路</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">资产线</div><div class="card-body">方法论、模型、知识全景图和案例库</div></div><div class="card"><div class="card-title">流程线</div><div class="card-body">Sub-Agent 分工与蓝图驱动组装</div></div><div class="card"><div class="card-title">输出线</div><div class="card-body">HTML PPT 能被浏览、分享、复盘和迭代</div></div></div></div>
+  <div class="PF PFR">32</div>
+</section>
+
+<section class="S" data-page="33" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>现有品牌资产的核心不是技术,而是Seven 私有资产</h1><div class="sub">「品牌资产」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">方法资产</div><div class="card-body">客户资料 + 表单输入 / 6 个品牌策略 Sub-Agent</div></div><div class="card"><div class="card-title">案例资产</div><div class="card-body">咨询级品牌全案 HTML 横向翻页 PPT / Seven 私有方法论资产库</div></div><div class="card"><div class="card-title">流程资产</div><div class="card-body">从输入表单到全案 deck 的可复现管线</div></div></div></div>
+  <div class="PF PFR">33</div>
+</section>
+
+<section class="S" data-page="34" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>当前沟通缺口在于容易讲成“生成 PPT”,没有讲清“生成品牌判断”</h1><div class="sub">「品牌沟通」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">旧表达风险</div><div class="card-body">输入资料,输出 PPT,听起来像通用工具</div></div><div class="card"><div class="card-title">新表达重点</div><div class="card-body">输入商业事实,输出品牌策略方案</div></div><div class="card"><div class="card-title">证明方式</div><div class="card-body">展示蓝图、案例和每页证据链</div></div></div></div>
+  <div class="PF PFR">34</div>
+</section>
+
+<section class="S" data-page="35" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>消费者心智抽屉有限,PPTAgent 只能先抢一个最准确的名词</h1><div class="sub">消费者心智抽屉有限</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">不能同时抢 AI PPT、咨询顾问、知识库、设计工具</div></div><div class="card"><div class="card-title">优先名词</div><div class="card-body">品牌全案 Agent</div></div><div class="card"><div class="card-title">辅助解释</div><div class="card-body">面向品牌策划场景的咨询级 PPT 生成框架</div></div></div></div>
+  <div class="PF PFR">35</div>
+</section>
+
+<section class="S" data-page="36" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>品牌优势来自“私有方法论 × 案例蓝图 × 自动化交付”的组合</h1><div class="sub">「品牌优势」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">私有方法论让内容不只是通用模型拼贴</div></div><div class="card"><div class="card-title">02</div><div class="card-body">案例蓝图让结构先像真实咨询案</div></div><div class="card"><div class="card-title">03</div><div class="card-body">自动化交付让基础提案成本和周期显著下降</div></div></div></div>
+  <div class="PF PFR">36</div>
+</section>
+
+<section class="S" data-page="37" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>护城河不是模型调用,而是越跑越厚的品牌策划资产库</h1><div class="sub">「品牌优势」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">模型可替换</div><div class="card-body">Claude、OpenAI、Qwen 都只是执行层</div></div><div class="card"><div class="card-title">资产可沉淀</div><div class="card-body">方法论、案例、蓝图、校验和复盘会持续变厚</div></div><div class="card"><div class="card-title">交付可复用</div><div class="card-body">每个客户案例都能反哺下一次生成</div></div></div></div>
+  <div class="PF PFR">37</div>
+</section>
+
+<section class="S" data-page="38" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>自身分析小结:PPTAgent 有资格占“品牌全案 Agent”,但必须用案例证明</h1><div class="sub">小结</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">可信点</div><div class="card-body">Seven 私有资产是专业来源</div></div><div class="card"><div class="card-title">风险点</div><div class="card-body">如果页面逻辑乱,会立刻跌回 AI PPT 工具</div></div><div class="card"><div class="card-title">解法</div><div class="card-body">用蓝图驱动每个方案类型的章节顺序和关键页</div></div></div></div>
+  <div class="PF PFR">38</div>
+</section>
+
+<section class="S" data-page="39" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">分析</span></div>
+  <div class="TS"><h1>分析结论已经收束为一个定位假设:品牌策划方案 Agent</h1><div class="sub">「分析结论」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">行业</div><div class="card-body">通用生成拥挤,垂直策划仍有空位</div></div><div class="card"><div class="card-title">竞争</div><div class="card-body">传统服务慢且贵,通用工具浅且泛</div></div><div class="card"><div class="card-title">自身</div><div class="card-body">PPTAgent 拥有方法论资产和可复现交付管线</div></div></div></div>
+  <div class="PF PFR">39</div>
+</section>
+
+<section class="S" data-page="40" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>PART 3 开始把分析结论压成可被市场记住的定位系统</h1><div class="sub">PART 3</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">先给一句话定位</div></div><div class="card"><div class="card-title">02</div><div class="card-body">再给心智第一联想和传播口号</div></div><div class="card"><div class="card-title">03</div><div class="card-body">最后落到视觉、内容事件和触点节奏</div></div></div></div>
+  <div class="PF PFR">40</div>
+</section>
+
+<section class="S" data-page="41" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>PPTAgent 是面向甲方品牌方 / 市场部人员的品牌策划方案 AI Agent</h1><div class="sub">定位语句</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">Target</div><div class="card-body">甲方品牌方 / 市场部人员</div></div><div class="card"><div class="card-title">Category Frame</div><div class="card-body">品牌策划方案 AI Agent</div></div><div class="card"><div class="card-title">Key Benefit</div><div class="card-body">把客户资料转成咨询级品牌全案 HTML 横向翻页 PPT</div></div><div class="card"><div class="card-title">RTB</div><div class="card-body">客户资料 + 表单输入 / 6 个品牌策略 Sub-Agent / 咨询级品牌全案 HTML 横向翻页 PPT / Seven 私有方法论资产库</div></div></div></div>
+  <div class="PF PFR">41</div>
+</section>
+
+<section class="S" data-page="42" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>PPTAgent 未来要被第一时间想起为“品牌全案 Agent”</h1><div class="sub">「心智第一联想」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">名词要短</div><div class="card-body">品牌全案 Agent</div></div><div class="card"><div class="card-title">解释要准</div><div class="card-body">不是替你美化页面,而是替你搭出品牌方案判断链</div></div><div class="card"><div class="card-title">证据要硬</div><div class="card-body">每页都能回到客户资料、方法论和案例蓝图</div></div></div></div>
+  <div class="PF PFR">42</div>
+</section>
+
+<section class="S" data-page="43" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>STP 应把市场部基础提案任务变成第一战场</h1><div class="sub">「定位表达」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">Segment</div><div class="card-body">需要频繁做品牌方案的企业市场与品牌团队</div></div><div class="card"><div class="card-title">Target</div><div class="card-body">0-1 新品牌、品牌升级和年度规划场景下的甲方团队</div></div><div class="card"><div class="card-title">Positioning</div><div class="card-body">PPTAgent 是面向甲方品牌方 / 市场部人员的品牌策划方案 AI Agent,用品牌方法论资产和 Agent 工作流把客户资料转成咨询级品牌方案 HTML 横向翻页 PPT</div></div></div></div>
+  <div class="PF PFR">43</div>
+</section>
+
+<section class="S" data-page="44" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>沟通落地要让“品牌策划”压过“PPT 生成”</h1><div class="sub">沟通落地</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">视觉上</div><div class="card-body">少讲模板,多讲方案蓝图</div></div><div class="card"><div class="card-title">语言上</div><div class="card-body">少讲自动生成,多讲咨询级判断链</div></div><div class="card"><div class="card-title">内容上</div><div class="card-body">用真实案例前后对比证明质量差异</div></div></div></div>
+  <div class="PF PFR">44</div>
+</section>
+
+<section class="S" data-page="45" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>360 度落地框架应围绕“输入资料到品牌全案”展开</h1><div class="sub">沟通落地</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">看见</div><div class="card-body">官网首屏直接出现品牌全案 Agent</div></div><div class="card"><div class="card-title">理解</div><div class="card-body">展示行业、竞品、消费者、定位、品牌屋的路径</div></div><div class="card"><div class="card-title">相信</div><div class="card-body">公开 demo、复盘报告和可追溯 data_refs</div></div></div></div>
+  <div class="PF PFR">45</div>
+</section>
+
+<section class="S" data-page="46" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>传播口号建议:把品牌判断做成可交付方案</h1><div class="sub">「传播口号」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">清晰</div><div class="card-body">直接讲“品牌判断”而不是抽象效率</div></div><div class="card"><div class="card-title">可信</div><div class="card-body">可被案例截图和实际 deck 支撑</div></div><div class="card"><div class="card-title">延展</div><div class="card-body">可用于官网、demo、销售话术和内容栏目</div></div></div></div>
+  <div class="PF PFR">46</div>
+</section>
+
+<section class="S" data-page="47" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>核心竞争力由四个 RTB 支撑,共同证明“咨询级”不是形容词</h1><div class="sub">「核心竞争力」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">方法论</div><div class="card-body">客户资料 + 表单输入</div></div><div class="card"><div class="card-title">体系</div><div class="card-body">6 个品牌策略 Sub-Agent</div></div><div class="card"><div class="card-title">案例</div><div class="card-body">Seven 私有方法论资产库</div></div><div class="card"><div class="card-title">流程</div><div class="card-body">蓝图调度 Sub-Agent,按真实案例结构组装</div></div></div></div>
+  <div class="PF PFR">47</div>
+</section>
+
+<section class="S" data-page="48" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>消费沟通逻辑应从痛点开始,再承诺更好的基础提案工作流</h1><div class="sub">「消费沟通逻辑」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">Pain</div><div class="card-body">资料很多、模型很多,但提案逻辑很难自己串起来</div></div><div class="card"><div class="card-title">Gain</div><div class="card-body">先得到一份像咨询案的结构化初稿</div></div><div class="card"><div class="card-title">Proof</div><div class="card-body">输出含蓝图页号、方法论、来源和 chunk_takeaway</div></div></div></div>
+  <div class="PF PFR">48</div>
+</section>
+
+<section class="S" data-page="49" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>视觉落地不需要假装完成设计,先定义能让设计师执行的识别 brief</h1><div class="sub">沟通落地</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">核心视觉</div><div class="card-body">蓝图、网格、横向翻页、证据链</div></div><div class="card"><div class="card-title">气质</div><div class="card-body">理性、专业、克制、咨询感</div></div><div class="card"><div class="card-title">禁区</div><div class="card-body">不要走花哨模板站和泛 AI 科技感</div></div></div></div>
+  <div class="PF PFR">49</div>
+</section>
+
+<section class="S" data-page="50" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>LOGO brief 应体现“方案架构”和“Agent 工作流”</h1><div class="sub">「VI」-「LOGO」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">图形方向</div><div class="card-body">可用网格、分层卡片、路径节点表达方案结构</div></div><div class="card"><div class="card-title">字体方向</div><div class="card-body">无衬线、偏工具产品,避免过度咨询公司化</div></div><div class="card"><div class="card-title">使用场景</div><div class="card-body">官网、deck 封面、浏览器分享页、Agent 控制台</div></div></div></div>
+  <div class="PF PFR">50</div>
+</section>
+
+<section class="S" data-page="51" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>ICON 系统应服务 6 个 Sub-Agent 和 4 个方案 Part 的快速识别</h1><div class="sub">「VI」-「ICON」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">Sub-Agent 图标</div><div class="card-body">行业、竞品、消费者、定位、建设、年度规划</div></div><div class="card"><div class="card-title">Part 图标</div><div class="card-body">背景、分析、定位落地、总结</div></div><div class="card"><div class="card-title">交互用途</div><div class="card-body">让用户知道方案正在走到哪一步</div></div></div></div>
+  <div class="PF PFR">51</div>
+</section>
+
+<section class="S" data-page="52" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>主视 KV 应展示“从散乱资料到品牌全案”的转换感</h1><div class="sub">「VI」-「主视」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">画面左侧</div><div class="card-body">客户资料、表单字段、案例页和方法论资产</div></div><div class="card"><div class="card-title">画面中部</div><div class="card-body">蓝图驱动的 Agent 流程</div></div><div class="card"><div class="card-title">画面右侧</div><div class="card-body">咨询级 HTML 横向翻页 PPT</div></div></div></div>
+  <div class="PF PFR">52</div>
+</section>
+
+<section class="S" data-page="53" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>营销落地的目标不是喊新品发布,而是让用户看见真实方案质量</h1><div class="sub">沟通落地</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">核心资产</div><div class="card-body">可打开的 demo deck</div></div><div class="card"><div class="card-title">核心内容</div><div class="card-body">每轮失败和修复复盘</div></div><div class="card"><div class="card-title">核心渠道</div><div class="card-body">官网、社媒长文、销售演示和社群试用</div></div></div></div>
+  <div class="PF PFR">53</div>
+</section>
+
+<section class="S" data-page="54" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>营销传播策略应采用“看点、燃点、焦点、触点”四层推进</h1><div class="sub">「营销传播策略」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">看点</div><div class="card-body">公开挑战通用 AI PPT 的品牌策划盲区</div></div><div class="card"><div class="card-title">燃点</div><div class="card-body">用真实案例改造前后对比制造讨论</div></div><div class="card"><div class="card-title">焦点</div><div class="card-body">按季度持续发布垂直方案类型</div></div><div class="card"><div class="card-title">触点</div><div class="card-body">官网 demo、内容平台、顾问社群和私域转化</div></div></div></div>
+  <div class="PF PFR">54</div>
+</section>
+
+<section class="S" data-page="55" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>看点来自一个尖锐判断:AI PPT 不等于品牌方案</h1><div class="sub">「看点」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">权威视角</div><div class="card-body">由 Seven 解释品牌方案的判断链</div></div><div class="card"><div class="card-title">内容形式</div><div class="card-body">拆解一份乱方案如何被蓝图重构</div></div><div class="card"><div class="card-title">传播价值</div><div class="card-body">让目标用户意识到“好看”不等于“能提案”</div></div></div></div>
+  <div class="PF PFR">55</div>
+</section>
+
+<section class="S" data-page="56" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>内容 IP 可以叫“把一份 AI PPT 改成咨询案”</h1><div class="sub">「看点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">每期一个真实或虚拟客户</div></div><div class="card"><div class="card-title">02</div><div class="card-body">固定展示改造前、蓝图结构、关键页和复盘</div></div><div class="card"><div class="card-title">03</div><div class="card-body">让产品能力以案例形式被理解</div></div></div></div>
+  <div class="PF PFR">56</div>
+</section>
+
+<section class="S" data-page="57" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>燃点不是借热点,而是抓住“AI 交付到底能不能专业化”的行业争论</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">议题</div><div class="card-body">AI 生成内容从通用效率走向垂直专家系统</div></div><div class="card"><div class="card-title">立场</div><div class="card-body">PPTAgent 用蓝图和案例约束 AI,不是放任模型自由发挥</div></div><div class="card"><div class="card-title">证据</div><div class="card-body">失败复盘、review 分数和可追溯输出</div></div></div></div>
+  <div class="PF PFR">57</div>
+</section>
+
+<section class="S" data-page="58" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>第一层燃点:市场部正在被更多方案任务和更少外包预算夹击</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">现实压力</div><div class="card-body">品牌升级、年度规划、汇报材料越来越多</div></div><div class="card"><div class="card-title">资源限制</div><div class="card-body">不是每个项目都能请 4A 或咨询团队</div></div><div class="card"><div class="card-title">产品切口</div><div class="card-body">PPTAgent 接住基础提案工作</div></div></div></div>
+  <div class="PF PFR">58</div>
+</section>
+
+<section class="S" data-page="59" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>第二层燃点:AI 工具越多,专业判断反而越稀缺</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">01</div><div class="card-body">用户不缺生成按钮,缺的是可信结构</div></div><div class="card"><div class="card-title">02</div><div class="card-body">泛工具降低了页面门槛,也放大了内容同质化</div></div><div class="card"><div class="card-title">03</div><div class="card-body">PPTAgent 要把“方法论约束”变成可感知优势</div></div></div></div>
+  <div class="PF PFR">59</div>
+</section>
+
+<section class="S" data-page="60" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>BIG IDEA:让每个市场部先拥有一版咨询级品牌全案</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">主张</div><div class="card-body">不是人人都变顾问,而是人人先拿到可讨论的专业初稿</div></div><div class="card"><div class="card-title">机制</div><div class="card-body">资料输入、蓝图调度、Agent 生成、人工审阅、HTML 分享</div></div><div class="card"><div class="card-title">结果</div><div class="card-body">把空白页压力变成结构化讨论</div></div></div></div>
+  <div class="PF PFR">60</div>
+</section>
+
+<section class="S" data-page="61" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>首场引爆动作应公开跑一次“PPTAgent 做 PPTAgent”</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">动作</div><div class="card-body">用自身品牌资料生成完整定位案</div></div><div class="card"><div class="card-title">看点</div><div class="card-body">展示旧版混乱输出和新版蓝图输出差异</div></div><div class="card"><div class="card-title">转化</div><div class="card-body">开放少量内测,收集真实品牌资料继续迭代</div></div></div></div>
+  <div class="PF PFR">61</div>
+</section>
+
+<section class="S" data-page="62" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>事件资产要持续化,每次 demo 都反哺蓝图和方法库</h1><div class="sub">「燃点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">输入沉淀</div><div class="card-body">客户资料结构化</div></div><div class="card"><div class="card-title">过程沉淀</div><div class="card-body">失败原因、review 结论和 prompt 修复</div></div><div class="card"><div class="card-title">输出沉淀</div><div class="card-body">案例库、黄金页和可复用销售素材</div></div></div></div>
+  <div class="PF PFR">62</div>
+</section>
+
+<section class="S" data-page="63" data-layout="grid" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>全年焦点应按“可信样板 → 垂直品类 → 付费转化 → 生态沉淀”推进</h1><div class="sub">「焦点」</div></div>
+  <div class="BA"><div class="cols-grid"><div class="card"><div class="card-title">Q1</div><div class="card-body">跑通样板和定位</div></div><div class="card"><div class="card-title">Q2</div><div class="card-body">发布品牌定位 / 品牌建设两类方案 demo</div></div><div class="card"><div class="card-title">Q3</div><div class="card-body">开放内测和顾问共创</div></div><div class="card"><div class="card-title">Q4</div><div class="card-body">沉淀案例库与付费套餐</div></div></div></div>
+  <div class="PF PFR">63</div>
+</section>
+
+<section class="S" data-page="64" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q1 主题:先把“品牌全案 Agent”讲清楚</h1><div class="sub">「焦点」-「Q1」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">任务</div><div class="card-body">完成官网首屏、定位页和 PPTAgent 自身 demo</div></div><div class="card"><div class="card-title">内容</div><div class="card-body">解释为什么不是通用 AI PPT</div></div><div class="card"><div class="card-title">指标</div><div class="card-body">目标用户能一句话复述新品类</div></div></div></div>
+  <div class="PF PFR">64</div>
+</section>
+
+<section class="S" data-page="65" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q1 关键动作:发布一篇完整复盘,把失败变成可信证据</h1><div class="sub">「焦点」-「Q1」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">材料</div><div class="card-body">旧版混乱 deck、新版蓝图 deck、Claude/Seven review</div></div><div class="card"><div class="card-title">重点</div><div class="card-body">展示架构如何解决提案逻辑问题</div></div><div class="card"><div class="card-title">CTA</div><div class="card-body">邀请 10 个真实品牌做内测</div></div></div></div>
+  <div class="PF PFR">65</div>
+</section>
+
+<section class="S" data-page="66" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q2 主题:用两类方案模板证明产品不是单点 demo</h1><div class="sub">「焦点」-「Q2」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">品牌定位案</div><div class="card-body">适合既有品牌重新定位</div></div><div class="card"><div class="card-title">品牌建设案</div><div class="card-body">适合 0-1 新品牌起步</div></div><div class="card"><div class="card-title">证明点</div><div class="card-body">不同方案结构不同,不是同一模板换文案</div></div></div></div>
+  <div class="PF PFR">66</div>
+</section>
+
+<section class="S" data-page="67" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q2 关键动作:开放可浏览样板库,让用户先看结果再填表</h1><div class="sub">「焦点」-「Q2」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">样板</div><div class="card-body">定位案、建设案、SmallRig MI 升级案</div></div><div class="card"><div class="card-title">展示</div><div class="card-body">关键页、品牌屋、策略链和渲染效果</div></div><div class="card"><div class="card-title">收集</div><div class="card-body">记录用户最想复用的页面类型</div></div></div></div>
+  <div class="PF PFR">67</div>
+</section>
+
+<section class="S" data-page="68" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q3 主题:从产品 demo 进入真实客户工作流</h1><div class="sub">「焦点」-「Q3」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">内测对象</div><div class="card-body">市场部、独立策划顾问、小型咨询团队</div></div><div class="card"><div class="card-title">重点观察</div><div class="card-body">他们在哪些页会改、哪些判断不信、哪些资料缺失</div></div><div class="card"><div class="card-title">产品迭代</div><div class="card-body">把高频修改变成表单字段和校验规则</div></div></div></div>
+  <div class="PF PFR">68</div>
+</section>
+
+<section class="S" data-page="69" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q3 关键动作:建立顾问共创机制,补足 AI 的判断边界</h1><div class="sub">「焦点」-「Q3」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">共创对象</div><div class="card-body">Seven 与外部品牌顾问</div></div><div class="card"><div class="card-title">共创内容</div><div class="card-body">方案蓝图、黄金案例页、review 标准</div></div><div class="card"><div class="card-title">产出</div><div class="card-body">从工具信任升级为方法论共同体信任</div></div></div></div>
+  <div class="PF PFR">69</div>
+</section>
+
+<section class="S" data-page="70" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>Q4 主题:把案例沉淀转成付费套餐和交付标准</h1><div class="sub">「焦点」-「Q4」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">套餐</div><div class="card-body">定位案、建设案、年度规划案</div></div><div class="card"><div class="card-title">标准</div><div class="card-body">输入要求、输出页数范围、人工 review 等级</div></div><div class="card"><div class="card-title">增长</div><div class="card-body">用案例库证明长期专业壁垒</div></div></div></div>
+  <div class="PF PFR">70</div>
+</section>
+
+<section class="S" data-page="71" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>下一年度起势动作应从“单案例可用”升级到“行业模板可复用”</h1><div class="sub">「焦点」-「Q1」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">行业模板</div><div class="card-body">消费品、AI 工具、B2B 服务、实体连锁</div></div><div class="card"><div class="card-title">复盘机制</div><div class="card-body">每次交付后更新蓝图和案例库</div></div><div class="card"><div class="card-title">长期目标</div><div class="card-body">形成品牌策划 Agent 的事实标准</div></div></div></div>
+  <div class="PF PFR">71</div>
+</section>
+
+<section class="S" data-page="72" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>触点策略应让目标用户在四个场景反复看见同一承诺</h1><div class="sub">「触点」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">官网</div><div class="card-body">直接试看样板 deck</div></div><div class="card"><div class="card-title">内容平台</div><div class="card-body">看复盘和方法论拆解</div></div><div class="card"><div class="card-title">顾问社群</div><div class="card-body">看共创案例和专业讨论</div></div><div class="card"><div class="card-title">私域</div><div class="card-body">拿自己的资料试跑一次</div></div></div></div>
+  <div class="PF PFR">72</div>
+</section>
+
+<section class="S" data-page="73" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>线下和私域触点适合做“方案诊断会”,而不是产品发布会</h1><div class="sub">「触点」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">场景</div><div class="card-body">小型闭门会、品牌顾问工作坊、市场部内训</div></div><div class="card"><div class="card-title">动作</div><div class="card-body">现场拆一份真实品牌资料</div></div><div class="card"><div class="card-title">结果</div><div class="card-body">输出一版蓝图结构和关键页示例</div></div></div></div>
+  <div class="PF PFR">73</div>
+</section>
+
+<section class="S" data-page="74" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>线上触点应围绕可打开的 HTML deck 建立信任</h1><div class="sub">「触点」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">官网</div><div class="card-body">放完整 demo,不要只放功能介绍</div></div><div class="card"><div class="card-title">内容</div><div class="card-body">每篇文章嵌入关键页截图和生成逻辑</div></div><div class="card"><div class="card-title">私域</div><div class="card-body">让用户提交资料前先理解输出结构</div></div></div></div>
+  <div class="PF PFR">74</div>
+</section>
+
+<section class="S" data-page="75" data-layout="stack" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">定位 + 沟通落地</span></div>
+  <div class="TS"><h1>媒体和跨界触点可以借“AI 生成专业服务”的讨论切入</h1><div class="sub">「触点」</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">媒体角度</div><div class="card-body">AI 从内容生成走向专业工作流</div></div><div class="card"><div class="card-title">跨界对象</div><div class="card-body">品牌顾问、设计公司、创业服务机构</div></div><div class="card"><div class="card-title">出圈方式</div><div class="card-body">公开评测通用 AI PPT 与 PPTAgent 的策略深度差异</div></div></div></div>
+  <div class="PF PFR">75</div>
+</section>
+
+<section class="S" data-page="76" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">总结回顾</span></div>
+  <div class="TS"><h1>PART 4 要把整案收束成一个品牌屋,方便内部对齐和外部传播</h1><div class="sub">PART 4</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">01</div><div class="card-body">回收分析结论</div></div><div class="card"><div class="card-title">02</div><div class="card-body">重申心智第一联想</div></div><div class="card"><div class="card-title">03</div><div class="card-body">输出 9 层品牌屋和最终 takeaway</div></div></div></div>
+  <div class="PF PFR">76</div>
+</section>
+
+<section class="S" data-page="77" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">总结回顾</span></div>
+  <div class="TS"><h1>最终分析结论:PPTAgent 的最大机会是定义“品牌策划方案 Agent”新品类</h1><div class="sub">「分析结论」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">行业给窗口</div><div class="card-body">通用 AI PPT 红海成熟</div></div><div class="card"><div class="card-title">用户给任务</div><div class="card-body">市场部需要基础提案替代方案</div></div><div class="card"><div class="card-title">自身给证据</div><div class="card-body">客户资料 + 表单输入 + 6 个品牌策略 Sub-Agent + 咨询级品牌全案 HTML 横向翻页 PPT + Seven 私有方法论资产库可支撑咨询级输出</div></div></div></div>
+  <div class="PF PFR">77</div>
+</section>
+
+<section class="S" data-page="78" data-layout="columns" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">总结回顾</span></div>
+  <div class="TS"><h1>心智第一联想必须保持单一:PPTAgent = 品牌全案 Agent</h1><div class="sub">「心智第一联想」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">主名词</div><div class="card-body">品牌全案 Agent</div></div><div class="card"><div class="card-title">辅助解释</div><div class="card-body">输入客户资料,输出咨询级品牌方案 HTML PPT</div></div><div class="card"><div class="card-title">排除误解</div><div class="card-body">不是模板站,不是纯设计工具,不是通用办公 AI</div></div></div></div>
+  <div class="PF PFR">78</div>
+</section>
+
+<section class="S" data-page="79" data-layout="columns" data-accent="accent">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">总结回顾</span></div>
+  <div class="TS"><h1>品牌屋把 PPTAgent 的 9 层结构压成一张可复用战略图</h1><div class="sub">「品牌屋」</div></div>
+  <div class="BA"><div class="cols-row"><div class="card"><div class="card-title">顶层</div><div class="card-body">愿景=让甲方品牌方 / 市场部人员拥有咨询级品牌方案能力 / 使命=把方法论资产产品化 / 价值观=专业判断先于页面生成</div></div><div class="card"><div class="card-title">中层</div><div class="card-body">定位=品牌策划方案 AI Agent / 口号=把品牌判断做成可交付方案 / 心智第一联想=品牌全案 Agent</div></div><div class="card"><div class="card-title">底层</div><div class="card-body">RTB=客户资料 + 表单输入+6 个品牌策略 Sub-Agent+咨询级品牌全案 HTML 横向翻页 PPT+Seven 私有方法论资产库 / 产品承诺=客户资料到 HTML PPT / 护城河=策略资产持续迭代</div></div></div></div>
+  <div class="PF PFR">79</div>
+</section>
+
+<section class="S" data-page="80" data-layout="stack" data-accent="ink">
+  <div class="TB"><span class="logo">PPTAgent</span><span class="meta">总结回顾</span></div>
+  <div class="TS"><h1>PPTAgent 最终要卖的不是 PPT,而是品牌策划方案能力的可规模化交付</h1><div class="sub">品牌</div></div>
+  <div class="BA"><div class="cols-stack"><div class="card"><div class="card-title">短期</div><div class="card-body">用样板 deck 证明结构和内容质量</div></div><div class="card"><div class="card-title">中期</div><div class="card-body">用真实客户案例沉淀蓝图和评审标准</div></div><div class="card"><div class="card-title">长期</div><div class="card-body">成为市场部和品牌顾问的基础提案工作台</div></div></div></div>
+  <div class="PF PFR">80</div>
+</section>
+</body>
+</html>

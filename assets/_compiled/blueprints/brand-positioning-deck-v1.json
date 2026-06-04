@@ -1,0 +1,2141 @@
+{
+  "blueprint_id": "brand-positioning-deck-v1",
+  "scheme_type": "brand_positioning_case",
+  "scheme_label_zh": "品牌定位案",
+  "target_pages": 80,
+  "version": "1.1",
+  "source_reference": {
+    "case_library": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md",
+    "framework_diagram": "2. 品牌定位案-框架导图.png"
+  },
+  "parts": [
+    {
+      "part_no": 1,
+      "part_title": "项目背景",
+      "part_label_en": "PART 1",
+      "narrative_intent": "回答客户是谁、当前在哪、为什么现在必须重做品牌定位。",
+      "cover_layout": "S12",
+      "chunks": [
+        {
+          "chunk_id": "p1-c1-brief-and-status",
+          "chunk_title": "客户 BRIEF + 三层盘点 + 核心问题",
+          "driving_sub_agent": "brand_positioning",
+          "page_range": [
+            1,
+            13
+          ],
+          "chunk_intent": "建立项目背景：客户 BRIEF / 品牌简介 / 增长窗口 / 基建-业务-运营三层盘点 / 抛出核心问题 / 给出解决思路 / 研究策略。",
+          "required_inputs": [
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "5-Why-Essence",
+            "SWOT",
+            "MECE",
+            "Action-Title",
+            "Industry-Lifecycle"
+          ],
+          "upstream_chunks": [],
+          "chunk_insight_question": "客户这次定位升级的真实战略缺口在哪一层：行业窗口、竞争压力、业务结构还是品牌心智？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p2-c1-market-scan",
+            "p2-c5-self-analysis",
+            "p3-c1-positioning-statement"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先读 strategic-question.md 的根问题，再用基建/业务/运营三层盘点判断客户为什么现在需要定位升级。",
+          "page_count_target": 13,
+          "page_count_min": 6,
+          "page_count_max": 18,
+          "self_check": {
+            "must_appear_keywords": [
+              "BRIEF",
+              "核心问题",
+              "解决思路"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "这段是否清楚说明了为什么现在必须做定位，而不是泛泛介绍客户？",
+              "核心问题是否能被后续行业、竞争、消费者、自身分析验证？",
+              "三层盘点是否导向一个明确的战略缺口？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 1,
+              "page_intent": "客户 BRIEF：项目背景一句话 + 品牌简介 3 点",
+              "page_subtitle": "BRIEF",
+              "recommended_layout": "S22",
+              "data_source_hint": "summary.md 的「品牌简介」+「项目背景」段",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 1,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 2,
+              "page_intent": "客户所在行业一句话定位，建立本案讨论边界",
+              "page_subtitle": "客户行业卡",
+              "recommended_layout": "S12",
+              "data_source_hint": "summary.md 的「行业/赛道」字段",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 2,
+              "is_optional": false,
+              "drop_priority": 1
+            },
+            {
+              "page_no": 3,
+              "page_intent": "CONTENTS 目录页：4 个 Part 的提案路径",
+              "page_subtitle": "CONTENTS",
+              "recommended_layout": "S05",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 3,
+              "is_optional": true,
+              "drop_priority": 8
+            },
+            {
+              "page_no": 4,
+              "page_intent": "品牌定位升级的整体叙事：为什么这不是换句口号，而是一次品牌生态重塑",
+              "page_subtitle": "品牌定位的升级",
+              "recommended_layout": "S12",
+              "data_source_hint": "summary.md 的「为何升级」或 form.json 的「主要业务问题」",
+              "concept_for_this_page": "5-Why-Essence",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 4,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 5,
+              "page_intent": "客户所处行业是否存在复苏、升级或二次曲线窗口",
+              "page_subtitle": "行业复苏窗口",
+              "recommended_layout": "S03",
+              "data_source_hint": "summary.md 的「行业现状」+ web search 行业趋势",
+              "concept_for_this_page": "Industry-Lifecycle",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 5,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 6,
+              "page_intent": "复苏窗口中客户并非唯一选手，先建立竞争压迫感",
+              "page_subtitle": "并非唯一选手",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md 的「主要竞品」+ web search 竞品列表",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 6,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 7,
+              "page_intent": "把这次项目的唯一目标压成一句清晰战略目标",
+              "page_subtitle": "有且只有一个目标",
+              "recommended_layout": "S12",
+              "data_source_hint": "form.json 的「项目目标」",
+              "concept_for_this_page": "Action-Title",
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 7,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 8,
+              "page_intent": "基建层盘点：供应链、产能、数据、线下基建是否支撑升级",
+              "page_subtitle": "基建层盘点",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md 的「基建/供应链/资源」",
+              "concept_for_this_page": "SWOT",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 8,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 9,
+              "page_intent": "业务层盘点：产品矩阵、收入结构、渠道结构是否存在上限",
+              "page_subtitle": "业务层盘点",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md 的「业务现状/产品服务」",
+              "concept_for_this_page": "SWOT",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 9,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 10,
+              "page_intent": "运营层盘点：品牌、营销、渠道、服务的增长惯性与短板",
+              "page_subtitle": "运营层盘点",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md 的「运营现状/营销渠道」",
+              "concept_for_this_page": "SWOT",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 10,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 11,
+              "page_intent": "由三层盘点抽离出的核心问题陈述",
+              "page_subtitle": "「核心问题」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前 3 页盘点的综合结论",
+              "concept_for_this_page": "5-Why-Essence",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 11,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 12,
+              "page_intent": "由核心问题展开解决思路：从品类、品牌、消费者心智切入",
+              "page_subtitle": "「解决思路」",
+              "recommended_layout": "S03",
+              "data_source_hint": "page 11 的核心问题展开",
+              "concept_for_this_page": "MECE",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 12,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 13,
+              "page_intent": "本案研究策略框架：后续分析将如何证明定位结论",
+              "page_subtitle": "研究策略思路",
+              "recommended_layout": "S13",
+              "data_source_hint": "本案研究路径",
+              "concept_for_this_page": "MECE",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 13,
+              "is_optional": true,
+              "drop_priority": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "part_no": 2,
+      "part_title": "分析",
+      "part_label_en": "PART 2",
+      "narrative_intent": "回答市场怎么样、竞争怎么打、消费者是谁、心智缺口在哪、我们自己有什么。",
+      "cover_layout": "S12",
+      "chunks": [
+        {
+          "chunk_id": "p2-c1-market-scan",
+          "chunk_title": "PART 2 封面 + 市场扫描 4 页",
+          "driving_sub_agent": "industry_analysis",
+          "page_range": [
+            14,
+            18
+          ],
+          "chunk_intent": "行业宏观扫描：市场规模、增长率、结构变化、政策与趋势，最后给出定位机会。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p1-c1-brief-and-status"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "PESTEL",
+            "Industry-Lifecycle",
+            "Porter-5-Forces",
+            "MECE"
+          ],
+          "upstream_chunks": [
+            "p1-c1-brief-and-status"
+          ],
+          "chunk_insight_question": "行业窗口到底支持客户往哪个方向升级：高端化、专业化、场景化还是效率化？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p2-c2-competition-status",
+            "p3-c1-positioning-statement"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先承接 p1-c1 的战略缺口，再判断行业变化中哪一类机会可被客户占住。",
+          "page_count_target": 5,
+          "page_count_min": 3,
+          "page_count_max": 7,
+          "self_check": {
+            "must_appear_keywords": [
+              "市场扫描"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "市场数据是否服务于定位机会，而不是堆砌趋势？",
+              "是否指出哪个细分机会最值得客户抢占？",
+              "结论是否能喂给竞争分析与定位表达？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 14,
+              "page_intent": "PART 2 章节封面：定位分析",
+              "page_subtitle": "PART 2 · 分析",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 14,
+              "is_optional": true,
+              "drop_priority": 8
+            },
+            {
+              "page_no": 15,
+              "page_intent": "市场扫描：行业整体规模、增速与需求基盘变化",
+              "page_subtitle": "「市场扫描」",
+              "recommended_layout": "S13",
+              "data_source_hint": "web search: 行业市场规模/增速",
+              "concept_for_this_page": "Industry-Lifecycle",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 15,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 16,
+              "page_intent": "市场扫描：市场集中度、结构升级和品牌超车窗口",
+              "page_subtitle": "「市场扫描」",
+              "recommended_layout": "S05",
+              "data_source_hint": "web search: 行业集中度/细分结构",
+              "concept_for_this_page": "Industry-Lifecycle",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 16,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 17,
+              "page_intent": "市场扫描：高价值细分赛道或消费升级方向",
+              "page_subtitle": "「市场扫描」",
+              "recommended_layout": "S13",
+              "data_source_hint": "web search: 高端化/专业化/场景化趋势",
+              "concept_for_this_page": "PESTEL",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 17,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 18,
+              "page_intent": "市场扫描：品类进化路径与本品牌可切入的机会点",
+              "page_subtitle": "「市场扫描」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前三页行业扫描综合",
+              "concept_for_this_page": "MECE",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 18,
+              "is_optional": false,
+              "drop_priority": 3
+            }
+          ]
+        },
+        {
+          "chunk_id": "p2-c2-competition-status",
+          "chunk_title": "竞争态势 5 页 + 小结",
+          "driving_sub_agent": "competitor_analysis",
+          "page_range": [
+            19,
+            24
+          ],
+          "chunk_intent": "竞争格局、主要竞争者流派、特性比较矩阵、关键差距点与竞争小结。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c1-market-scan"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Competitor-Matrix",
+            "Perceptual-Map",
+            "Porter-5-Forces",
+            "SWOT"
+          ],
+          "upstream_chunks": [
+            "p2-c1-market-scan"
+          ],
+          "chunk_insight_question": "竞争心智里还有哪个可占的空位，且这个空位不是竞品已经牢牢占住的？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p2-c5-self-analysis",
+            "p3-c1-positioning-statement"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先从市场机会回看主要竞品流派，找出客户不能正面硬碰、但可以重新定义的竞争维度。",
+          "page_count_target": 6,
+          "page_count_min": 3,
+          "page_count_max": 9,
+          "self_check": {
+            "must_appear_keywords": [
+              "竞争态势",
+              "小结"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "竞品分层是否能帮助发现空位，而不是罗列品牌？",
+              "是否明确客户应该避开什么同质化战场？",
+              "竞争小结是否能直接支撑定位机会？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 19,
+              "page_intent": "竞争态势：整体格局和玩家流派分层",
+              "page_subtitle": "「竞争态势」",
+              "recommended_layout": "S13",
+              "data_source_hint": "web search: 竞争对手/玩家类型",
+              "concept_for_this_page": "Porter-5-Forces",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 19,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 20,
+              "page_intent": "竞争态势：头部品牌流派与主张",
+              "page_subtitle": "「竞争态势」",
+              "recommended_layout": "S05",
+              "data_source_hint": "web search: 头部竞品官网/公开资料",
+              "concept_for_this_page": "Competitor-Matrix",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 20,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 21,
+              "page_intent": "竞争态势：挑战者或新锐品牌流派与主张",
+              "page_subtitle": "「竞争态势」",
+              "recommended_layout": "S05",
+              "data_source_hint": "web search: 挑战者竞品公开资料",
+              "concept_for_this_page": "Competitor-Matrix",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 21,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 22,
+              "page_intent": "竞争态势：按关键价值维度形成竞品对比矩阵",
+              "page_subtitle": "「竞争态势」",
+              "recommended_layout": "S17",
+              "data_source_hint": "前 3 页竞品资料综合",
+              "concept_for_this_page": "Competitor-Matrix",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 22,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 23,
+              "page_intent": "竞争态势：感知地图或心智坐标，指出可抢占空位",
+              "page_subtitle": "「竞争态势」",
+              "recommended_layout": "S17",
+              "data_source_hint": "竞品矩阵 + 行业机会综合",
+              "concept_for_this_page": "Perceptual-Map",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 23,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 24,
+              "page_intent": "竞争小结：客户应从哪个竞争方向切入",
+              "page_subtitle": "小结",
+              "recommended_layout": "S12",
+              "data_source_hint": "竞争 chunk 综合结论",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 24,
+              "is_optional": false,
+              "drop_priority": 1
+            }
+          ]
+        },
+        {
+          "chunk_id": "p2-c3-consumer-portraits",
+          "chunk_title": "消费者画像 4 页",
+          "driving_sub_agent": "consumer_insight",
+          "page_range": [
+            25,
+            28
+          ],
+          "chunk_intent": "目标人群分层：主力、拓展、拒绝/低优先人群，并用 5W2H 画像说明选择理由。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c2-competition-status"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Persona-5W2H",
+            "Consumer-Lifecycle",
+            "JTBD",
+            "Pain-Gain-Map"
+          ],
+          "upstream_chunks": [
+            "p2-c2-competition-status"
+          ],
+          "chunk_insight_question": "谁是真正应该被优先服务的人群，为什么他们比泛人群更能支撑定位？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p2-c4-consumer-mindset",
+            "p3-c1-positioning-statement"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先用竞争空位反推应该优先抢谁，再用客户已有用户与公开人群资料验证。",
+          "page_count_target": 4,
+          "page_count_min": 2,
+          "page_count_max": 6,
+          "self_check": {
+            "must_appear_keywords": [
+              "消费者画像"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "画像是否有明确取舍，而不是所有人都要？",
+              "主力人群和拓展人群的差异是否会影响定位表达？",
+              "拒绝人群是否帮助收窄品牌边界？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 25,
+              "page_intent": "消费者画像：整体框架和人群分层逻辑",
+              "page_subtitle": "「消费者画像」",
+              "recommended_layout": "S13",
+              "data_source_hint": "form.json 的「目标用户」+ summary.md 用户描述",
+              "concept_for_this_page": "Persona-5W2H",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 25,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 26,
+              "page_intent": "消费者画像：主力人群 5W2H 与购买动机",
+              "page_subtitle": "「消费者画像」",
+              "recommended_layout": "S05",
+              "data_source_hint": "form.json + web search: 目标人群画像",
+              "concept_for_this_page": "Persona-5W2H",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 26,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 27,
+              "page_intent": "消费者画像：拓展人群 5W2H 与增长潜力",
+              "page_subtitle": "「消费者画像」",
+              "recommended_layout": "S05",
+              "data_source_hint": "form.json + web search: 拓展人群画像",
+              "concept_for_this_page": "Persona-5W2H",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 27,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 28,
+              "page_intent": "消费者画像：拒绝或低优先人群，用于反向定义品牌边界",
+              "page_subtitle": "「消费者画像」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前两页画像反推",
+              "concept_for_this_page": "JTBD",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 28,
+              "is_optional": true,
+              "drop_priority": 6
+            }
+          ]
+        },
+        {
+          "chunk_id": "p2-c4-consumer-mindset",
+          "chunk_title": "消费心智 2 页 + 小结",
+          "driving_sub_agent": "consumer_insight",
+          "page_range": [
+            29,
+            31
+          ],
+          "chunk_intent": "消费者购买决策路径、心智抽屉与消费心智小结。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c3-consumer-portraits"
+            },
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c2-competition-status"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "JTBD",
+            "Pain-Gain-Map",
+            "User-Journey",
+            "Marketing-Funnel"
+          ],
+          "upstream_chunks": [
+            "p2-c2-competition-status",
+            "p2-c3-consumer-portraits"
+          ],
+          "chunk_insight_question": "目标人群真正购买时在心智里先想什么、比较什么、担心什么？",
+          "expected_insights_count": 2,
+          "feeds_into": [
+            "p2-c5-self-analysis",
+            "p3-c1-positioning-statement"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先读消费者画像，再把购买任务和竞品占位放进同一个心智抽屉里判断。",
+          "page_count_target": 3,
+          "page_count_min": 2,
+          "page_count_max": 5,
+          "self_check": {
+            "must_appear_keywords": [
+              "消费心智",
+              "小结"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "是否解释了消费者的首要判断标准？",
+              "是否说明现有心智抽屉还容得下什么新表达？",
+              "小结是否能直接变成定位假设？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 29,
+              "page_intent": "消费心智：购买决策路径与关键 trigger",
+              "page_subtitle": "「消费心智」",
+              "recommended_layout": "S13",
+              "data_source_hint": "web search: 行业消费决策/用户任务",
+              "concept_for_this_page": "JTBD",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 29,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 30,
+              "page_intent": "消费心智：心智抽屉和现有品牌占位",
+              "page_subtitle": "「消费心智」",
+              "recommended_layout": "S05",
+              "data_source_hint": "消费者画像 + 竞品 chunk 综合",
+              "concept_for_this_page": "Pain-Gain-Map",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 30,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 31,
+              "page_intent": "消费者分析小结：最值得抢的心智方向",
+              "page_subtitle": "小结",
+              "recommended_layout": "S12",
+              "data_source_hint": "消费心智综合",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 31,
+              "is_optional": false,
+              "drop_priority": 1
+            }
+          ]
+        },
+        {
+          "chunk_id": "p2-c5-self-analysis",
+          "chunk_title": "自身分析：品牌资产 / 品牌沟通 / 品牌优势 / 分析结论",
+          "driving_sub_agent": "brand_positioning",
+          "page_range": [
+            32,
+            39
+          ],
+          "chunk_intent": "自身分析：研究策略、品牌资产、品牌沟通、心智抽屉、品牌优势、小结与分析结论。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p1-c1-brief-and-status"
+            },
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c4-consumer-mindset"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "SWOT",
+            "Brand-Asset",
+            "Value-Prop-Canvas",
+            "MECE",
+            "5-Why-Essence",
+            "Pyramid-Principle"
+          ],
+          "upstream_chunks": [
+            "p1-c1-brief-and-status",
+            "p2-c4-consumer-mindset"
+          ],
+          "chunk_insight_question": "客户现有品牌资产里，哪一个能力足以从行业机会和消费心智之间搭桥？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p3-c1-positioning-statement",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "把前面行业/竞争/消费者的机会，逐一映射到客户已有资产，判断能否支撑定位承诺。",
+          "page_count_target": 8,
+          "page_count_min": 4,
+          "page_count_max": 11,
+          "self_check": {
+            "must_appear_keywords": [
+              "品牌资产",
+              "品牌优势",
+              "分析结论"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "是否找到客户真实可持续的支撑能力？",
+              "品牌沟通短板是否解释了为什么需要新定位？",
+              "分析结论是否同时收束行业、自身、消费者三条线？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 32,
+              "page_intent": "自身分析：研究策略框架，引出品牌自身分析维度",
+              "page_subtitle": "研究策略思路",
+              "recommended_layout": "S13",
+              "data_source_hint": "本案研究路径",
+              "concept_for_this_page": "MECE",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 32,
+              "is_optional": true,
+              "drop_priority": 7
+            },
+            {
+              "page_no": 33,
+              "page_intent": "品牌资产：现有品牌资产和可复用阵地盘点",
+              "page_subtitle": "「品牌资产」",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md 的「品牌资产/历史/渠道」",
+              "concept_for_this_page": "Brand-Asset",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 33,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 34,
+              "page_intent": "品牌沟通：现有沟通方式、内容资产和表达缺口审计",
+              "page_subtitle": "「品牌沟通」",
+              "recommended_layout": "S13",
+              "data_source_hint": "summary.md 的「品牌沟通/营销内容」",
+              "concept_for_this_page": "Brand-Asset",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 34,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 35,
+              "page_intent": "消费者心智抽屉有限：品牌需要用更精确描述占位",
+              "page_subtitle": "消费者心智抽屉有限",
+              "recommended_layout": "S03",
+              "data_source_hint": "p2-c2 + p2-c4 综合",
+              "concept_for_this_page": "5-Why-Essence",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 35,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 36,
+              "page_intent": "品牌优势：客户相对竞品的差异化能力与核心 RTB",
+              "page_subtitle": "「品牌优势」",
+              "recommended_layout": "S05",
+              "data_source_hint": "summary.md + 竞品 chunk 反推",
+              "concept_for_this_page": "Value-Prop-Canvas",
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 36,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 37,
+              "page_intent": "品牌优势：优势的可持续性、护城河或能力链路",
+              "page_subtitle": "「品牌优势」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前页延伸 + 客户证据",
+              "concept_for_this_page": "Value-Prop-Canvas",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 37,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 38,
+              "page_intent": "自身分析小结：客户最有资格占住的方向",
+              "page_subtitle": "小结",
+              "recommended_layout": "S12",
+              "data_source_hint": "自身分析综合",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 38,
+              "is_optional": false,
+              "drop_priority": 1
+            },
+            {
+              "page_no": 39,
+              "page_intent": "分析结论：行业、自身、消费者三条线收束成定位假设",
+              "page_subtitle": "「分析结论」",
+              "recommended_layout": "S03",
+              "data_source_hint": "PART 2 全部 chunks 综合",
+              "concept_for_this_page": "Pyramid-Principle",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 39,
+              "is_optional": false,
+              "drop_priority": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "part_no": 3,
+      "part_title": "定位 + 沟通落地",
+      "part_label_en": "PART 3",
+      "narrative_intent": "回答定位是什么、抢什么心智、如何表达、如何视觉化、如何传播落地。",
+      "cover_layout": "S12",
+      "chunks": [
+        {
+          "chunk_id": "p3-c1-positioning-statement",
+          "chunk_title": "定位语句 + 心智第一联想 + 定位表达",
+          "driving_sub_agent": "brand_positioning",
+          "page_range": [
+            40,
+            43
+          ],
+          "chunk_intent": "提出定位三角、一句话定位、心智第一联想与完整定位表达。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c5-self-analysis"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "STP",
+            "Brand-Positioning-Triangle",
+            "Aaker-Brand-Personality",
+            "Slogan-7-Principles"
+          ],
+          "upstream_chunks": [
+            "p2-c5-self-analysis"
+          ],
+          "chunk_insight_question": "如果只能让目标用户记住一个第一联想，客户应该抢哪个词，凭什么？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p3-c2-communication-landing",
+            "p3-c3-visual-identity",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "用 PART 2 的分析结论生成 2-3 个定位假设，再用目标用户心智和客户 RTB 反向筛选。",
+          "page_count_target": 4,
+          "page_count_min": 2,
+          "page_count_max": 6,
+          "self_check": {
+            "must_appear_keywords": [
+              "定位",
+              "心智第一联想"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "定位是否足够窄，能形成第一联想？",
+              "定位表达是否有目标人群、品类框架、利益和 RTB？",
+              "是否避免只写一个漂亮口号？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 40,
+              "page_intent": "PART 3 章节封面：定位与配称",
+              "page_subtitle": "PART 3",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 40,
+              "is_optional": true,
+              "drop_priority": 8
+            },
+            {
+              "page_no": 41,
+              "page_intent": "一句话定位：把分析结论压成可被记住的定位语句",
+              "page_subtitle": "定位语句",
+              "recommended_layout": "S22",
+              "data_source_hint": "PART 2 综合 + 客户判断",
+              "concept_for_this_page": "Brand-Positioning-Triangle",
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 41,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 42,
+              "page_intent": "心智第一联想：一个名词 + 为什么这是消费者会记住的",
+              "page_subtitle": "「心智第一联想」",
+              "recommended_layout": "S03",
+              "data_source_hint": "PART 2 心智抽屉分析",
+              "concept_for_this_page": "Brand-Positioning-Triangle",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 42,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 43,
+              "page_intent": "定位表达：完整三段论，解释为什么该定位成立",
+              "page_subtitle": "「定位表达」",
+              "recommended_layout": "S05",
+              "data_source_hint": "前 2 页综合 + STP 框架",
+              "concept_for_this_page": "STP",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 43,
+              "is_optional": false,
+              "drop_priority": 0
+            }
+          ]
+        },
+        {
+          "chunk_id": "p3-c2-communication-landing",
+          "chunk_title": "沟通落地：传播口号 / 核心竞争力 / 消费沟通逻辑",
+          "driving_sub_agent": "brand_positioning",
+          "page_range": [
+            44,
+            48
+          ],
+          "chunk_intent": "把定位转化为传播口号、核心竞争力支撑和消费者沟通逻辑。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c1-positioning-statement"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Slogan-7-Principles",
+            "RTB",
+            "Visual-Hammer-Verbal-Nail",
+            "Value-Prop-Canvas"
+          ],
+          "upstream_chunks": [
+            "p3-c1-positioning-statement"
+          ],
+          "chunk_insight_question": "定位如何被消费者听懂、信任并愿意复述？",
+          "expected_insights_count": 2,
+          "feeds_into": [
+            "p3-c3-visual-identity",
+            "p3-c4-marketing-strategy",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先拆定位语句中的承诺和证据，再把它翻译成口号、RTB 和消费沟通逻辑。",
+          "page_count_target": 5,
+          "page_count_min": 3,
+          "page_count_max": 7,
+          "self_check": {
+            "must_appear_keywords": [
+              "传播口号",
+              "核心竞争力",
+              "消费沟通逻辑"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "口号是否传递定位，而不是另起炉灶？",
+              "RTB 是否来自客户真实能力？",
+              "沟通逻辑是否回答了消费者为什么信？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 44,
+              "page_intent": "沟通落地章节封面：定位如何落到视觉与营销",
+              "page_subtitle": "沟通落地",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 44,
+              "is_optional": true,
+              "drop_priority": 9
+            },
+            {
+              "page_no": 45,
+              "page_intent": "沟通落地过渡页：360 度定位落地框架",
+              "page_subtitle": "沟通落地",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 45,
+              "is_optional": true,
+              "drop_priority": 9
+            },
+            {
+              "page_no": 46,
+              "page_intent": "传播口号：一句口号 + 7 原则验证",
+              "page_subtitle": "「传播口号」",
+              "recommended_layout": "S03",
+              "data_source_hint": "p3-c1 综合",
+              "concept_for_this_page": "Slogan-7-Principles",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 46,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 47,
+              "page_intent": "定位下品牌核心竞争力塑造：RTB 4 维支撑",
+              "page_subtitle": "「核心竞争力」",
+              "recommended_layout": "S05",
+              "data_source_hint": "PART 2 自身分析 + 定位",
+              "concept_for_this_page": "RTB",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 47,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 48,
+              "page_intent": "消费沟通逻辑：痛点、解决方案、收益与证据链",
+              "page_subtitle": "「消费沟通逻辑」",
+              "recommended_layout": "S13",
+              "data_source_hint": "p2-c4 + 定位综合",
+              "concept_for_this_page": "Value-Prop-Canvas",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 48,
+              "is_optional": false,
+              "drop_priority": 3
+            }
+          ]
+        },
+        {
+          "chunk_id": "p3-c3-visual-identity",
+          "chunk_title": "VI 视觉识别：LOGO / ICON / 主视",
+          "driving_sub_agent": "brand_building",
+          "page_range": [
+            49,
+            52
+          ],
+          "chunk_intent": "把定位翻译为 VI 设计 Brief：LOGO、ICON、主视觉风格。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c2-communication-landing"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Visual-Hammer-Verbal-Nail",
+            "Brand-Asset",
+            "VMV"
+          ],
+          "upstream_chunks": [
+            "p3-c2-communication-landing"
+          ],
+          "chunk_insight_question": "定位最应该被视觉锤固定成什么可识别符号？",
+          "expected_insights_count": 2,
+          "feeds_into": [
+            "p3-c4-marketing-strategy",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "把口号和 RTB 翻译成可被设计师执行的视觉资产，不生成虚假设计图。",
+          "page_count_target": 4,
+          "page_count_min": 2,
+          "page_count_max": 6,
+          "self_check": {
+            "must_appear_keywords": [
+              "LOGO",
+              "VI"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "视觉建议是否直接来自定位与口号？",
+              "是否给出可执行的设计 brief，而不是空泛审美词？",
+              "是否避免假装已经完成真实设计？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 49,
+              "page_intent": "沟通落地章节封面：视觉落地",
+              "page_subtitle": "沟通落地",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 49,
+              "is_optional": true,
+              "drop_priority": 9
+            },
+            {
+              "page_no": 50,
+              "page_intent": "VI - LOGO：LOGO 设计 Brief 与定位语使用方式",
+              "page_subtitle": "「VI」-「LOGO」",
+              "recommended_layout": "S22",
+              "data_source_hint": "定位 + 心智第一联想",
+              "concept_for_this_page": "Visual-Hammer-Verbal-Nail",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 50,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 51,
+              "page_intent": "VI - ICON：辅助图形、功能图标或识别符号 brief",
+              "page_subtitle": "「VI」-「ICON」",
+              "recommended_layout": "S22",
+              "data_source_hint": "LOGO 与定位衍生",
+              "concept_for_this_page": "Visual-Hammer-Verbal-Nail",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 51,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 52,
+              "page_intent": "VI - 主视：KV 主视觉风格与画面元素 brief",
+              "page_subtitle": "「VI」-「主视」",
+              "recommended_layout": "S22",
+              "data_source_hint": "VI 整体延伸",
+              "concept_for_this_page": "Visual-Hammer-Verbal-Nail",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 52,
+              "is_optional": false,
+              "drop_priority": 3
+            }
+          ]
+        },
+        {
+          "chunk_id": "p3-c4-marketing-strategy",
+          "chunk_title": "营销传播策略 + 看点 + 燃点引入",
+          "driving_sub_agent": "brand_building",
+          "page_range": [
+            53,
+            57
+          ],
+          "chunk_intent": "营销传播整体策略，包含看点、燃点、焦点、触点框架，并展开看点与燃点引入。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c2-communication-landing"
+            },
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c3-visual-identity"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Marketing-Funnel",
+            "AIDA",
+            "Slogan-7-Principles",
+            "4P-Rhythm"
+          ],
+          "upstream_chunks": [
+            "p3-c2-communication-landing",
+            "p3-c3-visual-identity"
+          ],
+          "chunk_insight_question": "定位落地需要先制造什么看点和燃点，才能让目标用户愿意讨论？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p3-c5-burning-point-execution",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "把定位承诺拆成传播议题、社会/行业燃点和全年触点，不要写成常规推广清单。",
+          "page_count_target": 5,
+          "page_count_min": 3,
+          "page_count_max": 7,
+          "self_check": {
+            "must_appear_keywords": [
+              "营销传播",
+              "看点",
+              "燃点"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "营销策略是否围绕定位，而不是泛活动堆砌？",
+              "看点和燃点是否有可传播性？",
+              "是否为后续 Q1-Q4 和触点执行建立清晰逻辑？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 53,
+              "page_intent": "沟通落地章节封面：营销落地",
+              "page_subtitle": "沟通落地",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 53,
+              "is_optional": true,
+              "drop_priority": 9
+            },
+            {
+              "page_no": 54,
+              "page_intent": "营销传播策略：看点、燃点、焦点、触点的总框架",
+              "page_subtitle": "「营销传播策略」",
+              "recommended_layout": "S13",
+              "data_source_hint": "p3-c2 综合",
+              "concept_for_this_page": "4P-Rhythm",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 54,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 55,
+              "page_intent": "看点：定位话题如何被权威、名人或内容资产引爆",
+              "page_subtitle": "「看点」",
+              "recommended_layout": "S05",
+              "data_source_hint": "定位 + 行业热点",
+              "concept_for_this_page": "AIDA",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 55,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 56,
+              "page_intent": "看点：一个可执行的话题或内容 IP 示例",
+              "page_subtitle": "「看点」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前页延伸",
+              "concept_for_this_page": "AIDA",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 56,
+              "is_optional": true,
+              "drop_priority": 6
+            },
+            {
+              "page_no": 57,
+              "page_intent": "燃点引入：品牌如何借势行业/社会大议题形成持续事件资产",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S12",
+              "data_source_hint": "web search: 行业相关社会议题",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 57,
+              "is_optional": false,
+              "drop_priority": 3
+            }
+          ]
+        },
+        {
+          "chunk_id": "p3-c5-burning-point-execution",
+          "chunk_title": "燃点深化：事件 IP 与借势动作",
+          "driving_sub_agent": "brand_building",
+          "page_range": [
+            58,
+            62
+          ],
+          "chunk_intent": "燃点深化 5 页：外部议题、BIG IDEA、标杆事件与事件资产持续化机制。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c4-marketing-strategy"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Marketing-Calendar",
+            "AARRR-Funnel",
+            "4P-Rhythm",
+            "Marketing-Funnel"
+          ],
+          "upstream_chunks": [
+            "p3-c4-marketing-strategy"
+          ],
+          "chunk_insight_question": "品牌应该借哪个外部议题或事件 IP，把定位从话术变成可被讨论的公共叙事？",
+          "expected_insights_count": 3,
+          "feeds_into": [
+            "p3-c6-focus-touchpoints",
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "承接 p3-c4 的看点/燃点框架，只展开真正能制造讨论的事件资产，不写泛活动清单。",
+          "page_count_target": 5,
+          "page_count_min": 3,
+          "page_count_max": 7,
+          "self_check": {
+            "must_appear_keywords": [
+              "燃点",
+              "BIG IDEA",
+              "事件"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "燃点是否来自目标人群真实关心的外部议题？",
+              "BIG IDEA 是否能持续复用，而不是一次性活动？",
+              "事件资产是否仍然服务于定位承诺？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 58,
+              "page_intent": "燃点：社会或行业大背景与品牌借势入口",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S22",
+              "data_source_hint": "web search: 行业社会议题",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 58,
+              "is_optional": true,
+              "drop_priority": 6
+            },
+            {
+              "page_no": 59,
+              "page_intent": "燃点：第二个外部议题或文化情绪，放大品牌叙事",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S22",
+              "data_source_hint": "web search: 文化/行业事件",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 59,
+              "is_optional": true,
+              "drop_priority": 7
+            },
+            {
+              "page_no": 60,
+              "page_intent": "燃点：BIG IDEA 或事件 IP 的总体逻辑",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前 2 页综合",
+              "concept_for_this_page": "Marketing-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 60,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 61,
+              "page_intent": "燃点：标杆借势事件案例或首场引爆动作",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S22",
+              "data_source_hint": "web search: 可参考事件案例",
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title",
+                "core_points",
+                "data_refs"
+              ],
+              "case_reference_slide": 61,
+              "is_optional": true,
+              "drop_priority": 7
+            },
+            {
+              "page_no": 62,
+              "page_intent": "燃点：事件资产的持续化机制和下一批场景",
+              "page_subtitle": "「燃点」",
+              "recommended_layout": "S03",
+              "data_source_hint": "前页延伸",
+              "concept_for_this_page": "Marketing-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 62,
+              "is_optional": false,
+              "drop_priority": 3
+            }
+          ]
+        },
+        {
+          "chunk_id": "p3-c6-focus-touchpoints",
+          "chunk_title": "焦点 Q1-Q4 + 触点执行",
+          "driving_sub_agent": "brand_building",
+          "page_range": [
+            63,
+            75
+          ],
+          "chunk_intent": "焦点 Q1-Q4 8 页 + 触点 4 页：形成年度营销传播节奏与触点组合。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c5-burning-point-execution"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Marketing-Calendar",
+            "AARRR-Funnel",
+            "4P-Rhythm",
+            "Marketing-Funnel"
+          ],
+          "upstream_chunks": [
+            "p3-c5-burning-point-execution"
+          ],
+          "chunk_insight_question": "如何把定位变成年度持续出现的季度焦点和触点组合？",
+          "expected_insights_count": 4,
+          "feeds_into": [
+            "p4-c1-brand-house-summary"
+          ],
+          "must_yield_takeaway": true,
+          "thinking_seed": "先读取 p3-c5 的事件资产结论，再规划 Q1-Q4 的传播任务和线上线下触点，不重复造活动名。",
+          "page_count_target": 13,
+          "page_count_min": 6,
+          "page_count_max": 18,
+          "self_check": {
+            "must_appear_keywords": [
+              "焦点",
+              "Q1",
+              "Q4",
+              "触点"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "季度节奏是否体现不同阶段任务？",
+              "触点是否匹配目标用户真实接触路径？",
+              "每个动作是否能回扣定位和口号？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 63,
+              "page_intent": "焦点：全年季度活动框架概览",
+              "page_subtitle": "「焦点」",
+              "recommended_layout": "S09",
+              "data_source_hint": "年度传播节奏",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 63,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 64,
+              "page_intent": "焦点 Q1：主题、洞察和营销任务",
+              "page_subtitle": "「焦点」-「Q1」",
+              "recommended_layout": "S05",
+              "data_source_hint": "全年节奏拆解",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 64,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 65,
+              "page_intent": "焦点 Q1：关键节点活动或内容资产",
+              "page_subtitle": "「焦点」-「Q1」",
+              "recommended_layout": "S05",
+              "data_source_hint": "前页延伸",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 65,
+              "is_optional": true,
+              "drop_priority": 6
+            },
+            {
+              "page_no": 66,
+              "page_intent": "焦点 Q2：主题、洞察和营销任务",
+              "page_subtitle": "「焦点」-「Q2」",
+              "recommended_layout": "S05",
+              "data_source_hint": "全年节奏拆解",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 66,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 67,
+              "page_intent": "焦点 Q2：关键节点活动或内容资产",
+              "page_subtitle": "「焦点」-「Q2」",
+              "recommended_layout": "S05",
+              "data_source_hint": "前页延伸",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 67,
+              "is_optional": true,
+              "drop_priority": 6
+            },
+            {
+              "page_no": 68,
+              "page_intent": "焦点 Q3：主题、洞察和营销任务",
+              "page_subtitle": "「焦点」-「Q3」",
+              "recommended_layout": "S05",
+              "data_source_hint": "全年节奏拆解",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 68,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 69,
+              "page_intent": "焦点 Q3：关键节点活动或内容资产",
+              "page_subtitle": "「焦点」-「Q3」",
+              "recommended_layout": "S05",
+              "data_source_hint": "前页延伸",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 69,
+              "is_optional": true,
+              "drop_priority": 6
+            },
+            {
+              "page_no": 70,
+              "page_intent": "焦点 Q4：主题、洞察和营销任务",
+              "page_subtitle": "「焦点」-「Q4」",
+              "recommended_layout": "S05",
+              "data_source_hint": "全年节奏拆解",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 70,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 71,
+              "page_intent": "焦点闭环：下一年度起势或复盘传播动作",
+              "page_subtitle": "「焦点」-「Q1」",
+              "recommended_layout": "S05",
+              "data_source_hint": "全年闭环",
+              "concept_for_this_page": "Marketing-Calendar",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 71,
+              "is_optional": true,
+              "drop_priority": 7
+            },
+            {
+              "page_no": 72,
+              "page_intent": "触点：线上、线下、私域、媒体的触点策略概览",
+              "page_subtitle": "「触点」",
+              "recommended_layout": "S13",
+              "data_source_hint": "form.json + 行业触点最佳实践",
+              "concept_for_this_page": "AARRR-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 72,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 73,
+              "page_intent": "触点：线下零售、体验店或关键场景触点",
+              "page_subtitle": "「触点」",
+              "recommended_layout": "S05",
+              "data_source_hint": "form.json 的「渠道」",
+              "concept_for_this_page": "AARRR-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 73,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 74,
+              "page_intent": "触点：线上电商、内容平台或私域触点",
+              "page_subtitle": "「触点」",
+              "recommended_layout": "S05",
+              "data_source_hint": "form.json 的「渠道/触点」",
+              "concept_for_this_page": "AARRR-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 74,
+              "is_optional": false,
+              "drop_priority": 3
+            },
+            {
+              "page_no": 75,
+              "page_intent": "触点：媒体、KOL、跨界场景或出其不意的心智触点",
+              "page_subtitle": "「触点」",
+              "recommended_layout": "S05",
+              "data_source_hint": "form.json + 行业触点",
+              "concept_for_this_page": "AARRR-Funnel",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 75,
+              "is_optional": true,
+              "drop_priority": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "part_no": 4,
+      "part_title": "总结回顾",
+      "part_label_en": "PART 4",
+      "narrative_intent": "回收所有结论：分析结论、心智第一联想、品牌屋与整案 takeaway。",
+      "cover_layout": "S12",
+      "chunks": [
+        {
+          "chunk_id": "p4-c1-brand-house-summary",
+          "chunk_title": "分析结论 + 心智第一联想 + 品牌屋 + 总结",
+          "driving_sub_agent": "brand_positioning",
+          "page_range": [
+            76,
+            80
+          ],
+          "chunk_intent": "整案总结：分析结论回收、心智第一联想复述、品牌屋 9 层和最后一句话。",
+          "required_inputs": [
+            {
+              "type": "upstream_chunk",
+              "ref": "p2-c5-self-analysis"
+            },
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c1-positioning-statement"
+            },
+            {
+              "type": "upstream_chunk",
+              "ref": "p3-c6-focus-touchpoints"
+            },
+            {
+              "type": "client_summary",
+              "ref": "inputs/<slug>/summary.md"
+            },
+            {
+              "type": "client_form",
+              "ref": "inputs/<slug>/form.json"
+            },
+            {
+              "type": "case_library",
+              "ref": "assets/_raw/cases/品牌定位/案例库/SUMMARY.md"
+            }
+          ],
+          "allowed_concepts": [
+            "Brand-House",
+            "Pyramid-Principle",
+            "Action-Title",
+            "Brand-Positioning-Triangle"
+          ],
+          "upstream_chunks": [
+            "p2-c5-self-analysis",
+            "p3-c1-positioning-statement",
+            "p3-c6-focus-touchpoints"
+          ],
+          "chunk_insight_question": "整案最后必须让客户带走哪一个定位结论和哪一套执行支撑？",
+          "expected_insights_count": 2,
+          "feeds_into": [],
+          "must_yield_takeaway": true,
+          "thinking_seed": "回看所有 chunk_takeaway，删掉重复小结，把最终品牌屋写成整案的结构化答案。",
+          "page_count_target": 5,
+          "page_count_min": 3,
+          "page_count_max": 7,
+          "self_check": {
+            "must_appear_keywords": [
+              "品牌屋",
+              "心智第一联想",
+              "分析结论"
+            ],
+            "forbidden_patterns": [
+              "黄金概念全套",
+              "AI 自我介绍",
+              "作为一个 AI"
+            ],
+            "insight_quality_questions": [
+              "总结是否真的回收了前文所有关键结论？",
+              "品牌屋是否保留完整层级，而不是简化成三点？",
+              "最后一句话是否能代表整案 ONE TAKEAWAY？"
+            ]
+          },
+          "pages": [
+            {
+              "page_no": 76,
+              "page_intent": "PART 4 章节封面：方案回顾",
+              "page_subtitle": "PART 4",
+              "recommended_layout": "S12",
+              "data_source_hint": null,
+              "concept_for_this_page": null,
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 76,
+              "is_optional": true,
+              "drop_priority": 8
+            },
+            {
+              "page_no": 77,
+              "page_intent": "分析结论回收：行业、自身、消费者三线结论再压缩",
+              "page_subtitle": "「分析结论」",
+              "recommended_layout": "S03",
+              "data_source_hint": "PART 2 + PART 3 综合",
+              "concept_for_this_page": "Pyramid-Principle",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 77,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 78,
+              "page_intent": "心智第一联想再次强调：客户未来要被记住什么",
+              "page_subtitle": "「心智第一联想」",
+              "recommended_layout": "S03",
+              "data_source_hint": "p3-c1",
+              "concept_for_this_page": "Brand-Positioning-Triangle",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 78,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 79,
+              "page_intent": "品牌屋：品牌定位、口号、支撑点、护城河、USP、传播等完整结构",
+              "page_subtitle": "「品牌屋」",
+              "recommended_layout": "S17",
+              "data_source_hint": "整案综合",
+              "concept_for_this_page": "Brand-House",
+              "required_fields": [
+                "action_title",
+                "core_points"
+              ],
+              "case_reference_slide": 79,
+              "is_optional": false,
+              "drop_priority": 0
+            },
+            {
+              "page_no": 80,
+              "page_intent": "品牌：一句话整案 takeaway 和最终收束",
+              "page_subtitle": "品牌",
+              "recommended_layout": "S12",
+              "data_source_hint": "整案总结",
+              "concept_for_this_page": "Action-Title",
+              "required_fields": [
+                "action_title"
+              ],
+              "case_reference_slide": 80,
+              "is_optional": false,
+              "drop_priority": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

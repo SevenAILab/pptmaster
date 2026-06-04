@@ -1,0 +1,1 @@
+../../skills/guizang-ppt-skill-latest/scripts/validate-swiss-deck.mjs

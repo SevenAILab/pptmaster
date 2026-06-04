@@ -1,0 +1,78 @@
+{
+  "consumer_insight": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-positioning-case-pattern.md",
+      "role": "学习定位案中的消费者画像、心智抽屉和洞察推导结构"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "提供 SmallRig 用户洞察真实页和 P0-2 真实性边界"
+    }
+  ],
+  "industry_analysis": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-positioning-case-pattern.md",
+      "role": "学习市场扫描如何服务定位结论"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "提供 SmallRig 行业历史案例页,并提醒最新数据必须 web_search"
+    }
+  ],
+  "competitor_analysis": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-positioning-case-pattern.md",
+      "role": "学习竞争态势、心智空位和定位机会识别"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/brand-building-case-pattern.md",
+      "role": "学习 SWOT 到 SO/ST/WO/WT 策略转译"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "提供 SmallRig 竞品定位对标页"
+    }
+  ],
+  "brand_positioning": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-positioning-case-pattern.md",
+      "role": "主结构样板: brief -> 诊断 -> 研究 -> 定位表达 -> RTB -> 落地"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "真实标杆: SmallRig 定位和品牌屋字段"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/brand-management-sop-pattern.md",
+      "role": "SOP 约束: 战略 / 表达 / 沟通三段闭环"
+    }
+  ],
+  "brand_building": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-building-case-pattern.md",
+      "role": "主结构样板: 品牌体系 -> 四大配称 -> 资产化落地"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "真实标杆: 品牌屋、口号、产品系列和 RTB"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/brand-management-sop-pattern.md",
+      "role": "SOP 约束: 品牌表达和品牌沟通管理"
+    }
+  ],
+  "annual_planning": [
+    {
+      "file": "assets/_compiled/case-patterns/brand-building-case-pattern.md",
+      "role": "学习五年规划和年度动作如何承接定位"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/smallrig-mi-upgrade-case-pattern.md",
+      "role": "提供 SmallRig 年度推演可用真实页与 assumption 边界"
+    },
+    {
+      "file": "assets/_compiled/case-patterns/brand-management-sop-pattern.md",
+      "role": "SOP 约束: campaign、流程、审计和 PDCA 闭环"
+    }
+  ]
+}

@@ -10,6 +10,7 @@
 # User uploads & generated outputs
 inputs/
 outputs/
+content-drafts/
 
 # Raw external article scrapes (per spec §3.3 v1.1)
 assets/_raw/methodologies/raw/

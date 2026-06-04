@@ -1,0 +1,23 @@
+# Cline Rules for PPTAgent (pptmaster)
+
+When the user asks to run PPTAgent Sub-Agent ④ brand_positioning:
+
+1. Read `prompts/brand_positioning/system.md`.
+2. Read `prompts/brand_positioning/examples.md`.
+3. Read `assets/_compiled/concept-application-matrix.json`.
+4. Load every concept listed in `matrix.brand_positioning.must_load`.
+5. Read `inputs/{client_slug}/form.json` and `inputs/{client_slug}/summary.md`.
+6. Generate strict JSON only, with no Markdown fence.
+7. Save to `outputs/{client_slug}-positioning/raw-output.json`.
+8. Validate:
+   - `node validators/brand_positioning/content-check.mjs outputs/{client_slug}-positioning/raw-output.json`
+   - `node validators/brand_positioning/methodology-check.mjs outputs/{client_slug}-positioning/raw-output.json`
+9. Render:
+   - `node scripts/render-deck.mjs outputs/{client_slug}-positioning/raw-output.json outputs/{client_slug}-positioning/index.html --style=swiss`
+
+P0 red lines:
+
+- SmallRig claims must trace to `_raw/cases/标杆案例/smallrig/page-NNN.md`.
+- Strategy assumptions must be marked as assumptions.
+- Never invent source URLs or OCR facts.
+- Never commit `.env`, user uploads, raw secret-bearing logs, or unreviewed customer files.
