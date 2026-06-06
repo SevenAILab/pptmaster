@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pptagent.app/schemas/run-state.schema.json",
+  "title": "PPTAgent Run State",
+  "type": "object",
+  "required": [
+    "run_id",
+    "client_slug",
+    "scheme_type",
+    "status",
+    "created_at",
+    "updated_at",
+    "total_chunks",
+    "completed_chunks",
+    "failed_chunks",
+    "skipped_chunks",
+    "chunks"
+  ],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "client_slug": { "type": "string", "minLength": 1 },
+    "scheme_type": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["running", "completed", "failed"]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "completed_at": { "type": "string", "format": "date-time" },
+    "total_chunks": { "type": "integer", "minimum": 0 },
+    "completed_chunks": { "type": "integer", "minimum": 0 },
+    "failed_chunks": { "type": "integer", "minimum": 0 },
+    "skipped_chunks": { "type": "integer", "minimum": 0 },
+    "chunks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["chunk_id", "status", "updated_at"],
+        "properties": {
+          "chunk_id": { "type": "string", "minLength": 1 },
+          "worker_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["started", "completed", "skipped", "failed"]
+          },
+          "previous_status": { "type": "string" },
+          "started_at": { "type": "string", "format": "date-time" },
+          "completed_at": { "type": "string", "format": "date-time" },
+          "skipped_at": { "type": "string", "format": "date-time" },
+          "failed_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "output_path": { "type": "string" },
+          "reason": { "type": "string" },
+          "error_message": { "type": "string" },
+          "termination_reason": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

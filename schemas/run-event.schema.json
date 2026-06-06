@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pptagent.app/schemas/run-event.schema.json",
+  "title": "PPTAgent Run Event",
+  "type": "object",
+  "required": ["event_id", "run_id", "event_type", "timestamp"],
+  "properties": {
+    "event_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "run_started",
+        "run_completed",
+        "run_failed",
+        "chunk_started",
+        "chunk_completed",
+        "chunk_skipped",
+        "chunk_failed",
+        "chunk_retry"
+      ]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "chunk_id": { "type": "string" },
+    "worker_id": { "type": "string" },
+    "status": { "type": "string" },
+    "reason": { "type": "string" },
+    "output_path": { "type": "string" },
+    "error_message": { "type": "string" },
+    "termination_reason": { "type": "string" },
+    "retry_of_event_id": { "type": "string" },
+    "metadata": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "event_type": { "const": "chunk_failed" } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "required": ["chunk_id", "error_message", "termination_reason"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "event_type": { "const": "run_failed" } },
+        "required": ["event_type"]
+      },
+      "then": {
+        "required": ["error_message", "termination_reason"]
+      }
+    }
+  ],
+  "additionalProperties": true
+}
