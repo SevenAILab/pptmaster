@@ -25,6 +25,27 @@ for (const agentId of [
   assert.ok(framework.includes('## 核心方法') || framework.includes('核心方法'), `${agentId} missing core method`)
 }
 
+const evidenceDisciplineKeywords = [
+  /Facts Over Opinions|Facts-over-opinions|事实优先/i,
+  /Structured & Comparable|Structured-comparable|结构化.*可比/i,
+  /Current Data|Current-data|当前数据/i,
+  /Honest Assessment|Honest-assessment|诚实评估/i,
+]
+
+for (const agentId of [
+  'industry_analysis',
+  'competitor_analysis',
+  'consumer_insight',
+  'brand_positioning',
+  'brand_building',
+  'annual_planning',
+]) {
+  const injectedWriteSystem = await appendMethodologyToSystem('writeSystem baseline', agentId)
+  for (const keyword of evidenceDisciplineKeywords) {
+    assert.match(injectedWriteSystem, keyword, `${agentId} writeSystem missing shared evidence discipline ${keyword}`)
+  }
+}
+
 await assert.rejects(
   () => loadMethodologyFramework('unknown_agent'),
   /Unknown methodology agent/i,

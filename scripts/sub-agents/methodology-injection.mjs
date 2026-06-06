@@ -4,6 +4,13 @@ import { fileURLToPath } from 'node:url'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const MAX_FRAMEWORK_CHARS = 1200
+const SHARED_EVIDENCE_DISCIPLINE = [
+  '## 共享证据戒律(所有专家必须遵守)',
+  '- Facts Over Opinions / 事实优先: 每条主张必须可追溯；推断必须显式标为 hypothesis，并写 hypothesis_basis 与 validation_method。',
+  '- Structured & Comparable / 结构化可比: 同类对象必须使用一致维度，便于横向比较；不得为了套模板补不存在的数据。',
+  '- Current Data / 当前数据: 标注检索或生成日期；发现过期、口径不清或互相冲突的数据必须 flag，不得硬拼成结论。',
+  '- Honest Assessment / 诚实评估: 不夸大机会或竞品弱点，不淡化竞品强项；证据不足只能进入待验证假设。',
+].join('\n')
 
 const AGENT_METHODOLOGY_FILES = {
   industry_analysis: ['02-industry-analysis.md'],
@@ -148,6 +155,8 @@ export async function appendMethodologyToSystem(systemPrompt, agentId) {
   const framework = await loadMethodologyFramework(agentId)
   return [
     String(systemPrompt || '').trim(),
+    '',
+    SHARED_EVIDENCE_DISCIPLINE,
     '',
     '## 调研方法论框架(必须据此设计子问题和成稿结构)',
     framework,
