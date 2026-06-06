@@ -1,4 +1,9 @@
 import { TRACEABLE_DATA_REF_INSTRUCTION, compactWritePayload, runFiveStepDeepResearch } from './deepresearch-common.mjs'
+import {
+  appendMethodologyToSystem,
+  buildBlueprintContextSnippet,
+  injectBlueprintSnippetIntoContext,
+} from './methodology-injection.mjs'
 
 const PLAN_SYSTEM = '你是品牌策略的消费者洞察分析师。你必须先把消费者问题拆成可被真实 Web Search 验证的研究子问题。'
 const READ_SYSTEM = '你是消费者研究员。你只从搜索结果中筛选有价值的人群事实、真实用户信号和可追溯来源。'
@@ -71,12 +76,15 @@ function writeUser({ context, facts, synthesize, chunkInsights }) {
   ].join('\n\n')
 }
 
-export async function runConsumerDeepResearch(args = {}) {
-  return runFiveStepDeepResearch(args, {
+export async function buildConsumerDeepResearchConfig({ slug } = {}) {
+  return {
     agentId: 'consumer_insight',
     purposePrefix: 'consumer',
-    planSystem: PLAN_SYSTEM,
-    planUser,
+    planSystem: await appendMethodologyToSystem(PLAN_SYSTEM, 'consumer_insight'),
+    planUser: async context => planUser(injectBlueprintSnippetIntoContext(
+      context,
+      await buildBlueprintContextSnippet(slug || context.slug, 'consumer_insight'),
+    )),
     fallbackQuestions,
     readSystem: READ_SYSTEM,
     readUser,
@@ -107,5 +115,11 @@ export async function runConsumerDeepResearch(args = {}) {
     minSearches: 5,
     maxQuestions: 8,
     minFacts: 3,
-  })
+    writeSystem: await appendMethodologyToSystem(WRITE_SYSTEM, 'consumer_insight'),
+    writeUser,
+  }
+}
+
+export async function runConsumerDeepResearch(args = {}) {
+  return runFiveStepDeepResearch(args, await buildConsumerDeepResearchConfig({ slug: args.slug }))
 }

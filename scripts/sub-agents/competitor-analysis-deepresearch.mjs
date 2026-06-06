@@ -1,4 +1,9 @@
 import { TRACEABLE_DATA_REF_INSTRUCTION, compactWritePayload, runFiveStepDeepResearch } from './deepresearch-common.mjs'
+import {
+  appendMethodologyToSystem,
+  buildBlueprintContextSnippet,
+  injectBlueprintSnippetIntoContext,
+} from './methodology-injection.mjs'
 
 const PLAN_SYSTEM = '你是品牌策略的竞品分析专家。你必须先把竞争问题拆成可被真实 Web Search 验证的研究子问题。'
 const READ_SYSTEM = '你是严谨竞品研究员。你只从搜索结果中筛选竞品产品、定价、渠道、主张、口碑和动态事实。'
@@ -131,20 +136,21 @@ function writeUser({ context, facts, synthesize, chunkInsights, sourcePool = [] 
   ].join('\n\n')
 }
 
-export async function runCompetitorDeepResearch(args = {}) {
-  return runFiveStepDeepResearch(args, {
+export async function buildCompetitorDeepResearchConfig({ slug } = {}) {
+  return {
     agentId: 'competitor_analysis',
     purposePrefix: 'competitor',
-    planSystem: PLAN_SYSTEM,
-    planUser,
+    planSystem: await appendMethodologyToSystem(PLAN_SYSTEM, 'competitor_analysis'),
+    planUser: async context => planUser(injectBlueprintSnippetIntoContext(
+      context,
+      await buildBlueprintContextSnippet(slug || context.slug, 'competitor_analysis'),
+    )),
     fallbackQuestions,
     readSystem: READ_SYSTEM,
     readUser,
     readFocus: '竞品产品矩阵、渠道、主张、近期动态和差异化空缺',
     synthesizeSystem: SYNTHESIZE_SYSTEM,
     synthesizeUser,
-    writeSystem: WRITE_SYSTEM,
-    writeUser,
     llmSteps: [
       'callClaude:competitor.plan',
       'callClaude:competitor.read',
@@ -168,5 +174,11 @@ export async function runCompetitorDeepResearch(args = {}) {
     maxQuestions: 8,
     minFacts: 3,
     writeMaxTokens: 3600,
-  })
+    writeSystem: await appendMethodologyToSystem(WRITE_SYSTEM, 'competitor_analysis'),
+    writeUser,
+  }
+}
+
+export async function runCompetitorDeepResearch(args = {}) {
+  return runFiveStepDeepResearch(args, await buildCompetitorDeepResearchConfig({ slug: args.slug }))
 }

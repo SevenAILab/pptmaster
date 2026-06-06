@@ -152,6 +152,7 @@ export async function buildBlueprintContextSnippet(slug, agentId) {
 }
 
 export async function appendMethodologyToSystem(systemPrompt, agentId) {
+  if (String(systemPrompt || '').includes('## 调研方法论框架')) return String(systemPrompt || '').trim()
   const framework = await loadMethodologyFramework(agentId)
   return [
     String(systemPrompt || '').trim(),

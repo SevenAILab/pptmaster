@@ -7,6 +7,11 @@ import {
   buildMethodologyPromptContext,
   loadMethodologyFramework,
 } from './sub-agents/methodology-injection.mjs'
+import { buildCompetitorDeepResearchConfig } from './sub-agents/competitor-analysis-deepresearch.mjs'
+import { buildConsumerDeepResearchConfig } from './sub-agents/consumer-insight-deepresearch.mjs'
+import { buildPositioningDeepResearchConfig } from './sub-agents/brand-positioning-deepresearch.mjs'
+import { buildBuildingDeepResearchConfig } from './sub-agents/brand-building-deepresearch.mjs'
+import { buildAnnualDeepResearchConfig } from './sub-agents/annual-planning-deepresearch.mjs'
 
 const industryFramework = await loadMethodologyFramework('industry_analysis')
 assert.ok(industryFramework.includes('怎么赚钱') || industryFramework.includes('钱从哪来'), industryFramework)
@@ -75,6 +80,32 @@ assert.ok(competitorSnippet.includes('品类研究蓝图'))
 assert.ok(competitorSnippet.includes('AI 品牌策划方案 Agent'))
 assert.ok(competitorSnippet.includes('Gamma'))
 assert.ok(!competitorSnippet.includes('甲方品牌负责人') || competitorSnippet.includes('谁付钱'))
+
+async function assertConfigLevelInjection(agentId, buildConfig) {
+  const config = await buildConfig({ slug })
+  assert.match(config.planSystem, /## 调研方法论框架/, `${agentId} planSystem missing methodology injection`)
+  assert.match(config.writeSystem, /## 调研方法论框架/, `${agentId} writeSystem missing methodology injection`)
+  const planPrompt = await config.planUser({
+    client_name: 'PPTAgent',
+    client_industry: 'AI 品牌策划工具',
+    core_products: '咨询级品牌全案 HTML 横向翻页 PPT',
+    competitors: 'Gamma, WPS AIslides',
+    target_audience: '甲方品牌负责人',
+    chunk: {
+      chunk_id: 'p2-c2-competition-status',
+      chunk_insight_question: '竞争格局里还有什么可验证空位？',
+      pages: [],
+    },
+  })
+  assert.match(planPrompt, /品类研究蓝图/, `${agentId} planUser missing blueprint snippet`)
+  assert.match(planPrompt, /agent_research_slice/, `${agentId} planUser missing agent blueprint slice`)
+}
+
+await assertConfigLevelInjection('competitor_analysis', buildCompetitorDeepResearchConfig)
+await assertConfigLevelInjection('consumer_insight', buildConsumerDeepResearchConfig)
+await assertConfigLevelInjection('brand_positioning', buildPositioningDeepResearchConfig)
+await assertConfigLevelInjection('brand_building', buildBuildingDeepResearchConfig)
+await assertConfigLevelInjection('annual_planning', buildAnnualDeepResearchConfig)
 
 const consumerSnippet = await buildBlueprintContextSnippet(slug, 'consumer_insight')
 assert.ok(consumerSnippet.includes('甲方品牌负责人'))

@@ -1,4 +1,9 @@
 import { TRACEABLE_DATA_REF_INSTRUCTION, compactWritePayload, runThreeStepDeepResearch } from './deepresearch-common.mjs'
+import {
+  appendMethodologyToSystem,
+  buildBlueprintContextSnippet,
+  injectBlueprintSnippetIntoContext,
+} from './methodology-injection.mjs'
 
 const PLAN_SYSTEM = '你是资深年度营销规划策略师。你必须先基于上游真实 chunk 判断年度规划要回答的问题，以及是否需要补充外部搜索。'
 const READ_SYSTEM = '你是年度营销研究员。你只从搜索结果中筛选年度节点、渠道触点、内容平台和行业事件相关事实。'
@@ -76,14 +81,17 @@ function writeUser({ context, planningQuestions, facts, synthesize, chunkInsight
   ].join('\n\n')
 }
 
-export async function runAnnualDeepResearch(args = {}) {
-  return runThreeStepDeepResearch(args, {
+export async function buildAnnualDeepResearchConfig({ slug } = {}) {
+  return {
     agentId: 'annual_planning',
     purposePrefix: 'annual',
     planQuestionsKey: 'planning_questions',
     allowOptionalSearch: true,
-    planSystem: PLAN_SYSTEM,
-    planUser,
+    planSystem: await appendMethodologyToSystem(PLAN_SYSTEM, 'annual_planning'),
+    planUser: async context => planUser(injectBlueprintSnippetIntoContext(
+      context,
+      await buildBlueprintContextSnippet(slug || context.slug, 'annual_planning'),
+    )),
     fallbackQuestions,
     readSystem: READ_SYSTEM,
     readUser,
@@ -109,5 +117,11 @@ export async function runAnnualDeepResearch(args = {}) {
     maxResultsPerQuery: 4,
     writeBatchSize: 4,
     writeBatchMaxTokens: 3200,
-  })
+    writeSystem: await appendMethodologyToSystem(WRITE_SYSTEM, 'annual_planning'),
+    writeUser,
+  }
+}
+
+export async function runAnnualDeepResearch(args = {}) {
+  return runThreeStepDeepResearch(args, await buildAnnualDeepResearchConfig({ slug: args.slug }))
 }

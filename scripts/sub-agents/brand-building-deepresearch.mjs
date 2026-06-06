@@ -1,4 +1,9 @@
 import { TRACEABLE_DATA_REF_INSTRUCTION, compactWritePayload, runThreeStepDeepResearch } from './deepresearch-common.mjs'
+import {
+  appendMethodologyToSystem,
+  buildBlueprintContextSnippet,
+  injectBlueprintSnippetIntoContext,
+} from './methodology-injection.mjs'
 
 const PLAN_SYSTEM = '你是资深品牌建设与营销传播策略师。你必须先基于定位和上游真实 chunk 拆出传播策略问题。'
 const SYNTHESIZE_SYSTEM = '你是咨询级品牌建设策略师。你必须把定位承诺综合成看点、燃点、焦点和触点框架。'
@@ -58,18 +63,21 @@ function writeUser({ context, planningQuestions, synthesize, chunkInsights, sour
   ].join('\n\n')
 }
 
-export async function runBuildingDeepResearch(args = {}) {
-  return runThreeStepDeepResearch(args, {
+export async function buildBuildingDeepResearchConfig({ slug } = {}) {
+  return {
     agentId: 'brand_building',
     purposePrefix: 'building',
     planQuestionsKey: 'building_questions',
-    planSystem: PLAN_SYSTEM,
-    planUser,
+    planSystem: await appendMethodologyToSystem(PLAN_SYSTEM, 'brand_building'),
+    planUser: async context => planUser(injectBlueprintSnippetIntoContext(
+      context,
+      await buildBlueprintContextSnippet(slug || context.slug, 'brand_building'),
+    )),
     fallbackQuestions,
     synthesizeSystem: SYNTHESIZE_SYSTEM,
     synthesizeUser,
     synthesizeTemperature: 0.5,
-    writeSystem: WRITE_SYSTEM,
+    writeSystem: await appendMethodologyToSystem(WRITE_SYSTEM, 'brand_building'),
     writeUser,
     llmSteps: [
       'callClaude:building.plan',
@@ -79,5 +87,9 @@ export async function runBuildingDeepResearch(args = {}) {
     searchSteps: [],
     writeTemperature: 0.4,
     minInsights: 3,
-  })
+  }
+}
+
+export async function runBuildingDeepResearch(args = {}) {
+  return runThreeStepDeepResearch(args, await buildBuildingDeepResearchConfig({ slug: args.slug }))
 }

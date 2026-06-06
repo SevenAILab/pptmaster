@@ -1,4 +1,9 @@
 import { TRACEABLE_DATA_REF_INSTRUCTION, compactWritePayload, runThreeStepDeepResearch } from './deepresearch-common.mjs'
+import {
+  appendMethodologyToSystem,
+  buildBlueprintContextSnippet,
+  injectBlueprintSnippetIntoContext,
+} from './methodology-injection.mjs'
 
 const PLAN_SYSTEM = '你是资深品牌定位策略师。你必须先基于上游真实 chunk 拆出定位需要回答的核心策略问题。'
 const SYNTHESIZE_SYSTEM = '你是咨询级品牌定位策略师。你必须把上游真实洞察综合成定位三角、心智第一联想和 RTB 体系。'
@@ -58,17 +63,20 @@ function writeUser({ context, planningQuestions, synthesize, chunkInsights, sour
   ].join('\n\n')
 }
 
-export async function runPositioningDeepResearch(args = {}) {
-  return runThreeStepDeepResearch(args, {
+export async function buildPositioningDeepResearchConfig({ slug } = {}) {
+  return {
     agentId: 'brand_positioning',
     purposePrefix: 'positioning',
     planQuestionsKey: 'positioning_questions',
-    planSystem: PLAN_SYSTEM,
-    planUser,
+    planSystem: await appendMethodologyToSystem(PLAN_SYSTEM, 'brand_positioning'),
+    planUser: async context => planUser(injectBlueprintSnippetIntoContext(
+      context,
+      await buildBlueprintContextSnippet(slug || context.slug, 'brand_positioning'),
+    )),
     fallbackQuestions,
     synthesizeSystem: SYNTHESIZE_SYSTEM,
     synthesizeUser,
-    writeSystem: WRITE_SYSTEM,
+    writeSystem: await appendMethodologyToSystem(WRITE_SYSTEM, 'brand_positioning'),
     writeUser,
     llmSteps: [
       'callClaude:positioning.plan',
@@ -77,5 +85,9 @@ export async function runPositioningDeepResearch(args = {}) {
     ],
     searchSteps: [],
     minInsights: 3,
-  })
+  }
+}
+
+export async function runPositioningDeepResearch(args = {}) {
+  return runThreeStepDeepResearch(args, await buildPositioningDeepResearchConfig({ slug: args.slug }))
 }

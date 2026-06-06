@@ -1420,12 +1420,13 @@ export async function runFiveStepDeepResearch(args, config) {
   const planSystem = await appendMethodologyToSystem(config.planSystem, config.agentId)
   const writeSystem = await appendMethodologyToSystem(config.writeSystem, config.agentId)
 
+  const planUserPrompt = await config.planUser(context)
   const plan = await runJsonStep({
     callStep,
     args,
     model,
     system: planSystem,
-    user: config.planUser(context),
+    user: planUserPrompt,
     purpose: `${config.purposePrefix}.plan`,
     expectedKeys: ['sub_questions'],
     maxTokens: 2200,
@@ -1575,12 +1576,13 @@ export async function runThreeStepDeepResearch(args, config) {
   const planSystem = await appendMethodologyToSystem(config.planSystem, config.agentId)
   const writeSystem = await appendMethodologyToSystem(config.writeSystem, config.agentId)
 
+  const planUserPrompt = await config.planUser(context)
   const plan = await runJsonStep({
     callStep,
     args,
     model,
     system: planSystem,
-    user: config.planUser(context),
+    user: planUserPrompt,
     purpose: `${config.purposePrefix}.plan`,
     expectedKeys: [config.planQuestionsKey || 'positioning_questions'],
     maxTokens: 2200,
