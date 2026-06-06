@@ -51,6 +51,11 @@
           "updated_at": { "type": "string", "format": "date-time" },
           "output_path": { "type": "string" },
           "reason": { "type": "string" },
+          "retry_count": { "type": "integer", "minimum": 0 },
+          "last_retried_at": { "type": "string", "format": "date-time" },
+          "last_retry_reason": { "type": "string" },
+          "last_skipped_at": { "type": "string", "format": "date-time" },
+          "last_skip_reason": { "type": "string" },
           "error_message": { "type": "string" },
           "termination_reason": { "type": "string" }
         },

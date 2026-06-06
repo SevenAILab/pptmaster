@@ -3,6 +3,19 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { runConsultingReview } from './consulting-review.mjs'
+import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
+import {
+  ensureRunState,
+  markChunkCompleted,
+  markChunkFailed,
+  markChunkRetry,
+  markChunkSkipped,
+  markChunkStarted,
+  markRunCompleted,
+  markRunFailed,
+  readRunState,
+  shouldSkipCompletedChunk,
+} from '../core/runtime/run-state.mjs'
 import { prepareSubAgentBundle, runRealLLMSubAgent } from './run-sub-agent.mjs'
 import { ensureStrategicQuestion } from './strategic-question.mjs'
 import { applyLayoutDecisions, runLayoutDesigner } from './sub-agents/layout-designer.mjs'
@@ -70,6 +83,14 @@ async function writeChunkOutput(clientSlug, chunkId, output) {
 
 function suiteRunId(options = {}) {
   return options.runId || `suite-${new Date().toISOString()}`
+}
+
+function suiteRunDir(clientSlug, runId) {
+  return repoPath('outputs', clientSlug, '_runs', runId)
+}
+
+function eventWorkerId(chunk) {
+  return agentIdForChunk(chunk)
 }
 
 function stampChunkOutput(output, chunk, options = {}) {
@@ -225,6 +246,26 @@ async function runRetryForReviewIfNeeded(clientSlug, chunk, reviewResult, option
   }
 
   console.warn(`RETRY ${chunk.chunk_id}: ${reviewResult.key_weakness}`)
+  if (options.runDir) {
+    await markChunkRetry({
+      runDir: options.runDir,
+      chunkId: chunk.chunk_id,
+      workerId: eventWorkerId(chunk),
+      reason: reviewResult.key_weakness || 'consulting_review_retry',
+    })
+    await appendRunEvent({
+      runDir: options.runDir,
+      runId: suiteRunId(options),
+      eventType: 'chunk_retry',
+      chunkId: chunk.chunk_id,
+      workerId: eventWorkerId(chunk),
+      reason: reviewResult.key_weakness || 'consulting_review_retry',
+      metadata: {
+        verdict: reviewResult.verdict,
+        must_fix_pages: reviewResult.must_fix_pages || [],
+      },
+    })
+  }
   const retryResult = await runRealLLMChunk(clientSlug, chunk, {
     ...options,
     retryHint: reviewResult,
@@ -282,14 +323,60 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
   let failed = 0
   let layoutDesigned = 0
   let reviewed = 0
+  const runDir = suiteRunDir(clientSlug, runId)
+  await ensureRunState({
+    runDir,
+    runId,
+    clientSlug,
+    schemeType,
+    totalChunks: targetChunks.length,
+  })
+  await appendRunEvent({
+    runDir,
+    runId,
+    eventType: 'run_started',
+    metadata: { total_chunks: targetChunks.length, only_chunk: onlyChunk || null },
+  })
 
   for (const chunk of targetChunks) {
+    const currentRunState = await readRunState(runDir)
+    if (skipExisting && shouldSkipCompletedChunk(currentRunState, chunk.chunk_id)) {
+      await markChunkSkipped({
+        runDir,
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        reason: 'completed_in_run_state',
+      })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'chunk_skipped',
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        reason: 'completed_in_run_state',
+      })
+      skipped += 1
+      results.push({ chunk_id: chunk.chunk_id, status: 'skipped_completed_in_run_state' })
+      console.log(`SKIP ${chunk.chunk_id}: completed in run state`)
+      continue
+    }
+
     const outputExists = await chunkOutputExists(clientSlug, chunk.chunk_id)
     if (skipExisting && outputExists) {
       if (withLayoutDesigner || withConsultingReview) {
         try {
+          await markChunkStarted({ runDir, chunkId: chunk.chunk_id, workerId: eventWorkerId(chunk) })
+          await appendRunEvent({
+            runDir,
+            runId,
+            eventType: 'chunk_started',
+            chunkId: chunk.chunk_id,
+            workerId: eventWorkerId(chunk),
+            reason: 'postprocess_existing_output',
+          })
           const postResult = await runPostProcessorsForChunk(clientSlug, chunk, {
             ...runOptions,
+            runDir,
             withLayoutDesigner,
             withConsultingReview,
           })
@@ -299,20 +386,65 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
           const reviewResult = postResult.results.find(item => item.status === 'consulting_reviewed')
           const retryPostResult = await runRetryForReviewIfNeeded(clientSlug, chunk, reviewResult, {
             ...runOptions,
+            runDir,
             realLLM,
             withLayoutDesigner,
           })
           generated += retryPostResult.generated
           layoutDesigned += retryPostResult.layoutDesigned
           results.push(...retryPostResult.results)
+          await markChunkCompleted({
+            runDir,
+            chunkId: chunk.chunk_id,
+            workerId: eventWorkerId(chunk),
+            outputPath: repoPath('outputs', clientSlug, '_chunks', `${chunk.chunk_id}.json`),
+          })
+          await appendRunEvent({
+            runDir,
+            runId,
+            eventType: 'chunk_completed',
+            chunkId: chunk.chunk_id,
+            workerId: eventWorkerId(chunk),
+            outputPath: path.relative(REPO_ROOT, repoPath('outputs', clientSlug, '_chunks', `${chunk.chunk_id}.json`)),
+          })
         } catch (error) {
           failed += 1
           results.push({ chunk_id: chunk.chunk_id, status: 'postprocess_failed', error: error.message })
           console.error(`POSTPROCESS FAILED ${chunk.chunk_id}: ${error.message}`)
+          await markChunkFailed({
+            runDir,
+            chunkId: chunk.chunk_id,
+            workerId: eventWorkerId(chunk),
+            errorMessage: error.message,
+            terminationReason: 'chunk_failed',
+          })
+          await appendRunEvent({
+            runDir,
+            runId,
+            eventType: 'chunk_failed',
+            chunkId: chunk.chunk_id,
+            workerId: eventWorkerId(chunk),
+            errorMessage: error.message,
+            terminationReason: 'chunk_failed',
+          })
           if (failFast) throw error
         }
         continue
       }
+      await markChunkSkipped({
+        runDir,
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        reason: 'existing_output',
+      })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'chunk_skipped',
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        reason: 'existing_output',
+      })
       skipped += 1
       results.push({ chunk_id: chunk.chunk_id, status: 'skipped_existing' })
       console.log(`SKIP ${chunk.chunk_id}: existing output`)
@@ -320,10 +452,20 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
     }
 
     try {
+      await markChunkStarted({ runDir, chunkId: chunk.chunk_id, workerId: eventWorkerId(chunk) })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'chunk_started',
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+      })
+      let chunkOutputPath = ''
       if (realLLM) {
         const generatedResult = await runRealLLMChunk(clientSlug, chunk, runOptions)
         generated += 1
         results.push(generatedResult)
+        chunkOutputPath = generatedResult.output_path
         console.log(`REAL_LLM ${chunk.chunk_id} -> ${generatedResult.output_path}`)
       } else {
         const bundle = await prepareChunk(clientSlug, chunk)
@@ -335,6 +477,7 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
           bundle_path: path.relative(REPO_ROOT, bundle.bundlePath),
           output_path: path.relative(REPO_ROOT, bundle.rawPath),
         })
+        chunkOutputPath = path.relative(REPO_ROOT, bundle.rawPath)
         console.log(`PREPARED ${chunk.chunk_id} -> ${path.relative(REPO_ROOT, bundle.bundlePath)}`)
       }
 
@@ -344,6 +487,7 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
         }
         const postResult = await runPostProcessorsForChunk(clientSlug, chunk, {
           ...runOptions,
+          runDir,
           withLayoutDesigner,
           withConsultingReview,
         })
@@ -354,19 +498,72 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
         const reviewResult = postResult.results.find(item => item.status === 'consulting_reviewed')
         const retryPostResult = await runRetryForReviewIfNeeded(clientSlug, chunk, reviewResult, {
           ...runOptions,
+          runDir,
           realLLM,
           withLayoutDesigner,
         })
         generated += retryPostResult.generated
         layoutDesigned += retryPostResult.layoutDesigned
         results.push(...retryPostResult.results)
+        if (retryPostResult.results.at(-1)?.output_path) {
+          chunkOutputPath = retryPostResult.results.at(-1).output_path
+        }
       }
+      await markChunkCompleted({
+        runDir,
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        outputPath: chunkOutputPath,
+      })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'chunk_completed',
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        outputPath: chunkOutputPath,
+      })
     } catch (error) {
       failed += 1
       results.push({ chunk_id: chunk.chunk_id, status: 'failed', error: error.message })
       console.error(`FAILED ${chunk.chunk_id}: ${error.message}`)
+      await markChunkFailed({
+        runDir,
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        errorMessage: error.message,
+        terminationReason: 'chunk_failed',
+      })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'chunk_failed',
+        chunkId: chunk.chunk_id,
+        workerId: eventWorkerId(chunk),
+        errorMessage: error.message,
+        terminationReason: 'chunk_failed',
+      })
       if (failFast) throw error
     }
+  }
+
+  if (failed > 0) {
+    await markRunFailed({ runDir, errorMessage: `${failed} chunk(s) failed`, terminationReason: 'suite_failed' })
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'run_failed',
+      errorMessage: `${failed} chunk(s) failed`,
+      terminationReason: 'suite_failed',
+    })
+  } else {
+    await markRunCompleted(runDir)
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'run_completed',
+      metadata: { generated, skipped, prepared, reviewed, layout_designed: layoutDesigned },
+    })
   }
 
   return {

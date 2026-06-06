@@ -10,6 +10,15 @@ import {
 
 const clientSlug = 'test-blueprint-suite-client'
 
+async function readJson(filePath) {
+  return JSON.parse(await fs.readFile(filePath, 'utf8'))
+}
+
+async function readEvents(runId) {
+  const raw = await fs.readFile(`outputs/${clientSlug}/_runs/${runId}/events.jsonl`, 'utf8')
+  return raw.trim().split('\n').filter(Boolean).map(line => JSON.parse(line))
+}
+
 await fs.rm(`inputs/${clientSlug}`, { recursive: true, force: true })
 await fs.rm(`outputs/${clientSlug}`, { recursive: true, force: true })
 await fs.mkdir(`inputs/${clientSlug}`, { recursive: true })
@@ -160,6 +169,27 @@ assert.equal(reviewedChunk.metadata.run_id, 'test-run-watermark')
 assert.match(reviewedChunk.metadata.generated_at, /^\d{4}-\d{2}-\d{2}T/)
 assert.equal(reviewedChunk.metadata.consulting_review.verdict, 'PASS')
 assert.equal(reviewedChunk.metadata.consulting_review.data_credibility_score, 8)
+const watermarkState = await readJson(`outputs/${clientSlug}/_runs/test-run-watermark/state.json`)
+const watermarkEvents = await readEvents('test-run-watermark')
+assert.equal(watermarkState.chunks[firstChunk.chunk_id].status, 'completed')
+assert.ok(watermarkEvents.some(event => event.event_type === 'chunk_started' && event.chunk_id === firstChunk.chunk_id))
+assert.ok(watermarkEvents.some(event => event.event_type === 'chunk_completed' && event.chunk_id === firstChunk.chunk_id))
+
+let resumeRunCount = 0
+const resumeResult = await runBlueprintSuite(clientSlug, 'brand_positioning_case', {
+  onlyChunk: firstChunk.chunk_id,
+  skipExisting: true,
+  realLLM: true,
+  runId: 'test-run-watermark',
+  realLLMRunner: async () => {
+    resumeRunCount += 1
+    throw new Error('resume should skip completed chunk before LLM')
+  },
+})
+assert.equal(resumeRunCount, 0)
+assert.equal(resumeResult.skipped, 1)
+const resumeEvents = await readEvents('test-run-watermark')
+assert.ok(resumeEvents.some(event => event.event_type === 'chunk_skipped' && event.reason === 'completed_in_run_state'))
 
 let retryRealRunCount = 0
 const retryResult = await runBlueprintSuite(clientSlug, 'brand_positioning_case', {
@@ -213,6 +243,8 @@ assert.equal(retryRealRunCount, 2)
 const retryChunk = JSON.parse(await fs.readFile(`outputs/${clientSlug}/_chunks/${firstChunk.chunk_id}.json`, 'utf8'))
 assert.equal(retryChunk.metadata.consulting_review.verdict, 'RETRY')
 assert.equal(retryChunk.metadata.consulting_review.key_weakness, '需要更锐的 takeaway')
+const retryEvents = await readEvents(retryResult.runId)
+assert.ok(retryEvents.some(event => event.event_type === 'chunk_retry' && event.chunk_id === firstChunk.chunk_id))
 
 await fs.mkdir(`outputs/${clientSlug}/_chunks`, { recursive: true })
 await fs.writeFile(`outputs/${clientSlug}/_chunks/${firstChunk.chunk_id}.json`, JSON.stringify({
@@ -403,6 +435,13 @@ const blockedChunk = JSON.parse(await fs.readFile(`outputs/${clientSlug}/_chunks
 assert.equal(blockedChunk.metadata.run_id, 'test-block-run')
 assert.equal(blockedChunk.metadata.consulting_review.verdict, 'BLOCK')
 assert.equal(blockedChunk.metadata.consulting_review.key_weakness, '证据链错配, 必须阻断。')
+const blockState = await readJson(`outputs/${clientSlug}/_runs/test-block-run/state.json`)
+const blockEvents = await readEvents('test-block-run')
+const failedEvent = blockEvents.find(event => event.event_type === 'chunk_failed' && event.chunk_id === blockChunk.chunk_id)
+assert.equal(blockState.chunks[blockChunk.chunk_id].status, 'failed')
+assert.ok(failedEvent)
+assert.match(failedEvent.error_message, /BLOCKED|证据链错配/)
+assert.equal(failedEvent.termination_reason, 'chunk_failed')
 
 await fs.rm(`inputs/${clientSlug}`, { recursive: true, force: true })
 await fs.rm(`outputs/${clientSlug}`, { recursive: true, force: true })

@@ -16,13 +16,19 @@ function countByStatus(chunks, status) {
   return Object.values(chunks || {}).filter(chunk => chunk.status === status).length
 }
 
+function countSkippedChunks(chunks) {
+  return Object.values(chunks || {}).filter(chunk => (
+    chunk.status === 'skipped' || Boolean(chunk.last_skip_reason)
+  )).length
+}
+
 function withCounts(state) {
   const chunks = state.chunks || {}
   return {
     ...state,
     completed_chunks: countByStatus(chunks, 'completed'),
     failed_chunks: countByStatus(chunks, 'failed'),
-    skipped_chunks: countByStatus(chunks, 'skipped'),
+    skipped_chunks: countSkippedChunks(chunks),
   }
 }
 
@@ -130,12 +136,34 @@ export async function markChunkCompleted({ runDir, chunkId, workerId, outputPath
 export async function markChunkSkipped({ runDir, chunkId, workerId, reason } = {}) {
   return updateRunState(runDir, state => {
     const previousStatus = state.chunks?.[chunkId]?.status || ''
+    if (previousStatus === 'completed' && reason === 'completed_in_run_state') {
+      return mergeChunk(state, chunkId, {
+        worker_id: workerId || state.chunks?.[chunkId]?.worker_id || '',
+        status: 'completed',
+        previous_status: previousStatus,
+        last_skipped_at: nowIso(),
+        last_skip_reason: reason,
+      })
+    }
     return mergeChunk(state, chunkId, {
       worker_id: workerId || state.chunks?.[chunkId]?.worker_id || '',
       status: 'skipped',
       previous_status: previousStatus,
       skipped_at: nowIso(),
       reason: reason || '',
+    })
+  })
+}
+
+export async function markChunkRetry({ runDir, chunkId, workerId, reason } = {}) {
+  return updateRunState(runDir, state => {
+    const previous = state.chunks?.[chunkId] || {}
+    return mergeChunk(state, chunkId, {
+      worker_id: workerId || previous.worker_id || '',
+      status: previous.status || 'started',
+      retry_count: (previous.retry_count || 0) + 1,
+      last_retried_at: nowIso(),
+      last_retry_reason: reason || '',
     })
   })
 }

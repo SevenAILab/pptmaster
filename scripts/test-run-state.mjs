@@ -7,6 +7,7 @@ import {
   createRunState,
   markChunkCompleted,
   markChunkFailed,
+  markChunkRetry,
   markChunkSkipped,
   markChunkStarted,
   readRunState,
@@ -57,8 +58,22 @@ try {
   })
   state = await readRunState(runDir)
   assert.equal(state.skipped_chunks, 1)
-  assert.equal(state.chunks['p2-c1'].status, 'skipped')
+  assert.equal(state.chunks['p2-c1'].status, 'completed')
   assert.equal(state.chunks['p2-c1'].previous_status, 'completed')
+  assert.equal(state.chunks['p2-c1'].last_skip_reason, 'completed_in_run_state')
+  assert.equal(shouldSkipCompletedChunk(state, 'p2-c1'), true)
+
+  await markChunkRetry({
+    runDir,
+    chunkId: 'p2-c1',
+    workerId: 'industry_analysis',
+    reason: 'needs stronger takeaway',
+  })
+  state = await readRunState(runDir)
+  assert.equal(state.chunks['p2-c1'].status, 'completed')
+  assert.equal(state.chunks['p2-c1'].retry_count, 1)
+  assert.equal(state.chunks['p2-c1'].last_retry_reason, 'needs stronger takeaway')
+  assert.ok(state.chunks['p2-c1'].last_retried_at)
 
   await markChunkFailed({
     runDir,
