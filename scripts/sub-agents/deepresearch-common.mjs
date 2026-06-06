@@ -948,7 +948,7 @@ export function downgradePositioningSlides(slides = [], options = {}) {
 
     const keptRefs = refs.filter(ref => !refLooksLikeRepoPopularity(ref))
     const dataRefs = synthesisPositioningPage
-      ? appendUniqueRef(keptRefs.length > 0 ? keptRefs : refs, availableIndependentDemand[0])
+      ? appendUniqueRef(refs, availableIndependentDemand[0])
       : keptRefs.length > 0 ? keptRefs : refs
 
     const alreadyDowngraded = /待验证假设/.test(slide.action_title || '')
@@ -1437,7 +1437,7 @@ async function runWriteStep({
       return parsed
     } catch (error) {
       lastError = error
-      lastRetryKind = /competitor positioning evidence|named competitor lacks page-level evidence/i.test(error.message) ? 'evidence' : 'json'
+      lastRetryKind = /NO-FALLBACK violation|competitor positioning evidence|named competitor lacks page-level evidence/i.test(error.message) ? 'evidence' : 'json'
       const label = lastRetryKind === 'evidence' ? 'hard-guard' : 'JSON parse'
       console.warn(`Write ${label} attempt ${attempt}/${maxWriteParseAttempts} failed for ${purposePrefix}: ${error.message}`)
       if (attempt === maxWriteParseAttempts) throw error

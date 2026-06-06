@@ -89,6 +89,31 @@ function makeChunk(chunkId, agentId, allowedConcepts, pages) {
   }
 }
 
+function makeCompetitionMapSummaryChunk(pages = [23, 24]) {
+  const chunk = makeChunk('p2-c2-competition-status', 'competitor_analysis', ['Competitor-Matrix', 'Perceptual-Map', 'SWOT'], pages)
+  return {
+    ...chunk,
+    pages: chunk.pages.map(page => {
+      if (page.page_no === 23) {
+        return {
+          ...page,
+          page_intent: '竞争态势：感知地图或心智坐标，指出可验证的差异化方向',
+          concept_for_this_page: 'Perceptual-Map',
+        }
+      }
+      if (page.page_no === 24) {
+        return {
+          ...page,
+          page_intent: '竞争小结：已证明、未证明与下一步验证动作',
+          page_subtitle: '小结',
+          concept_for_this_page: 'SWOT',
+        }
+      }
+      return page
+    }),
+  }
+}
+
 function makeFakeCallStep() {
   const calls = []
   const writeAttempts = new Map()
@@ -631,7 +656,7 @@ await runFiveStepCase(
   try {
     const { fakeCallStep } = makeFakeCallStep()
     const { fakeSearch } = makeFakeSearch()
-    const chunk = makeChunk('p2-c2-competition-status', 'competitor_analysis', ['Competitor-Matrix', 'Perceptual-Map', 'SWOT'], [23, 24])
+    const chunk = makeCompetitionMapSummaryChunk([23, 24])
     await runCompetitorDeepResearch({
       chunk,
       form: pptAgentForm,
@@ -773,12 +798,11 @@ await runFiveStepCase(
                 {
                   page_no: 1,
                   layout: 'S05',
-                  action_title: 'PPTAgent 的品牌策划方案 AI Agent 空位必须用需求证据验证',
-                  core_points: ['Gamma 占通用生成', '业务成果计费证明企业需求', '结论标记为待验证假设'],
+                  action_title: '竞品矩阵：Gamma 与 WPS 在生成、兼容、价格维度存在差异',
+                  core_points: ['Gamma 偏通用演示生成', 'WPS 偏 Office 兼容', '矩阵页只呈现竞品事实'],
                   data_refs: [
                     { value: 'AI Presentation Maker', source: 'https://gamma.app/products/presentations', type: 'product_matrix' },
                     { value: '100% Office-compatible', source: 'https://ai.wps.com/en-GB/', type: 'product_matrix' },
-                    { value: '66%的中国企业偏好按业务成果计费', source: 'https://mfe-prod.idc.com/getdoc.jsp?containerId=prCHC53669525', type: 'procurement_signal' },
                   ],
                   models_used: ['Competitor-Matrix'],
                 },
@@ -807,16 +831,11 @@ await runFiveStepCase(
     await fs.rm(`outputs/${slug}`, { recursive: true, force: true })
   }
 
-  // Phase 2e: 首轮 write 的定位页缺独立需求证据时，downgrade Pass 会从上游 sourcePool
-  // 自动补上真实的独立需求证据（IDC 采购信号），因此不再退化到旧的 evidence-retry 机械重试。
-  // 这是更优结果：用真证据而非强迫模型重写，且绝不伪造。
-  void evidenceRetryPrompt
-  // Phase 2e 不变量：定位页要么被补上「非竞品自有」的独立需求证据（evidenced），
-  // 要么被诚实降级为带 basis+method 的待验证假设。绝不再把无支撑的定位结论原样放行，
-  // 也不再退化到旧的机械 evidence-retry。
+  // Phase 6: Competitor-Matrix 页如果漂移成心智空位页，不能靠补证通过，必须触发 hard-guard 重写。
+  assert.ok(evidenceRetryPrompt.includes('page 22 must stay a competitor matrix') || evidenceRetryPrompt.includes('上一次 write 输出违反硬护栏'))
   assert.ok(
-    !calls.some(purpose => purpose.endsWith('.write.evidence-retry1')),
-    'Phase 2e 应在首轮 write 解决证据缺口，不应触发 evidence retry',
+    calls.some(purpose => purpose.endsWith('.write.evidence-retry1')),
+    'Competitor-Matrix 结构漂移必须触发 evidence retry 重写',
   )
   const isCompetitorOwned = src => /gamma\.app|wps\.com|canva\.com|aippt|chatppt|beautiful\.ai/i.test(String(src))
   for (const slide of output.slides) {
@@ -864,7 +883,7 @@ await runFiveStepCase(
   const { fakeSearch } = makeFakeSearch()
   let evidenceRetryPrompt = ''
   let firstWrite = true
-  const chunk = makeChunk('p2-c2-competition-status', 'competitor_analysis', ['Competitor-Matrix', 'Perceptual-Map', 'SWOT'], [23, 24])
+  const chunk = makeCompetitionMapSummaryChunk([23, 24])
   try {
     await runCompetitorDeepResearch({
       chunk,
@@ -1062,10 +1081,11 @@ await runFiveStepCase(
 {
   const { fakeCallStep } = makeFakeCallStep()
   const { fakeSearch } = makeFakeSearch()
+  const calls = []
   let evidenceRetryPrompt = ''
   let firstWrite = true
-  const chunk = makeChunk('p2-c2-competition-status', 'competitor_analysis', ['Competitor-Matrix', 'Perceptual-Map', 'SWOT'], [23, 24])
-  await runCompetitorDeepResearch({
+  const chunk = makeCompetitionMapSummaryChunk([23, 24])
+  const output = await runCompetitorDeepResearch({
     chunk,
     form: pptAgentForm,
     clientSummary: 'PPTAgent 正在把品牌策划工作流产品化。',
@@ -1073,6 +1093,7 @@ await runFiveStepCase(
     upstreamChunksSummary,
     slug: 'phase-a-test-competitor-hypothesis-action-retry',
     callStep: async (args, options) => {
+      calls.push(options.purpose)
       if (options.purpose.includes('.write')) {
         if (firstWrite) {
           firstWrite = false
@@ -1144,10 +1165,16 @@ await runFiveStepCase(
     webSearchRequirement: 'required',
   })
 
-  assert.match(evidenceRetryPrompt, /待验证.*不得同时写行动定论/)
-  assert.match(evidenceRetryPrompt, /删掉“应以|应该|切入|抢占|占据|定位为|成为|主打|发力”/)
-  assert.match(evidenceRetryPrompt, /上一次违规页面片段/)
-  assert.match(evidenceRetryPrompt, /感知地图：专业工作流空位仍待验证，但 PPTAgent 应以此切入/)
+  void evidenceRetryPrompt
+  assert.ok(
+    !calls.some(purpose => purpose.endsWith('.write.evidence-retry1')),
+    '待验证假设中的行动定论应由 downgrade Pass 首轮剥离，不应触发机械 retry',
+  )
+  const page23 = output.slides.find(slide => slide.page_no === 23)
+  assert.equal(page23.evidence_status, 'hypothesis')
+  assert.ok(page23.hypothesis_basis)
+  assert.ok(page23.validation_method)
+  assert.doesNotMatch([page23.action_title, ...page23.core_points].join(' '), /应以|应该|切入|抢占|占据|定位为|成为|主打|发力/)
 }
 
 await runFiveStepCase(
