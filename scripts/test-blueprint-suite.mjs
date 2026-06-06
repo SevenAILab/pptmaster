@@ -443,6 +443,61 @@ assert.ok(failedEvent)
 assert.match(failedEvent.error_message, /BLOCKED|证据链错配/)
 assert.equal(failedEvent.termination_reason, 'chunk_failed')
 
+let failedResumeRunCount = 0
+const failedResumeChunk = chunks[3]
+await fs.mkdir(`outputs/${clientSlug}/_chunks`, { recursive: true })
+await fs.writeFile(`outputs/${clientSlug}/_chunks/${failedResumeChunk.chunk_id}.json`, JSON.stringify({
+  agent_id: failedResumeChunk.driving_sub_agent,
+  blueprint_chunk_id: failedResumeChunk.chunk_id,
+  metadata: { run_id: 'failed-resume-run' },
+  slides: [],
+}, null, 2))
+await runBlueprintSuite(clientSlug, 'brand_positioning_case', {
+  onlyChunk: failedResumeChunk.chunk_id,
+  skipExisting: false,
+  realLLM: true,
+  runId: 'failed-resume-run',
+  realLLMRunner: async () => {
+    throw new Error('seed failed state')
+  },
+})
+const failedResumeResult = await runBlueprintSuite(clientSlug, 'brand_positioning_case', {
+  onlyChunk: failedResumeChunk.chunk_id,
+  skipExisting: true,
+  realLLM: true,
+  runId: 'failed-resume-run',
+  realLLMRunner: async (agentId) => {
+    failedResumeRunCount += 1
+    return {
+      rawPath: `outputs/${clientSlug}/_chunks/${failedResumeChunk.chunk_id}.json`,
+      output: {
+        agent_id: agentId,
+        blueprint_chunk_id: failedResumeChunk.chunk_id,
+        chunk_takeaway: 'failed run-state must rerun even when stale chunk output exists.',
+        chunk_insights: [{ insight: 'resume failed chunk', source_url: 'https://example.com/failed-resume' }],
+        thinking_log: [
+          { step: 'plan', content: '规划。' },
+          { step: 'synthesize', content: '综合。' },
+          { step: 'write', content: '写作。' },
+        ],
+        slides: failedResumeChunk.pages.map(page => ({
+          page_no: page.page_no,
+          layout: page.recommended_layout,
+          action_title: `${page.page_subtitle} failed resume`,
+          core_points: ['失败续跑', '必须重生'],
+          data_refs: [{ value: 'source', source: 'https://example.com/failed-resume', type: 'quote' }],
+          models_used: [page.concept_for_this_page || failedResumeChunk.allowed_concepts[0]],
+        })),
+      },
+    }
+  },
+})
+assert.equal(failedResumeRunCount, 1)
+assert.equal(failedResumeResult.generated, 1)
+assert.equal(failedResumeResult.skipped, 0)
+const failedResumeState = await readJson(`outputs/${clientSlug}/_runs/failed-resume-run/state.json`)
+assert.equal(failedResumeState.chunks[failedResumeChunk.chunk_id].status, 'completed')
+
 await fs.rm(`inputs/${clientSlug}`, { recursive: true, force: true })
 await fs.rm(`outputs/${clientSlug}`, { recursive: true, force: true })
 

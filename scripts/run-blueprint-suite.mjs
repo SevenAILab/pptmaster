@@ -340,6 +340,7 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
 
   for (const chunk of targetChunks) {
     const currentRunState = await readRunState(runDir)
+    const currentChunkState = currentRunState.chunks?.[chunk.chunk_id] || null
     if (skipExisting && shouldSkipCompletedChunk(currentRunState, chunk.chunk_id)) {
       await markChunkSkipped({
         runDir,
@@ -362,7 +363,7 @@ export async function runBlueprintSuite(clientSlug, schemeType, options = {}) {
     }
 
     const outputExists = await chunkOutputExists(clientSlug, chunk.chunk_id)
-    if (skipExisting && outputExists) {
+    if (skipExisting && outputExists && !currentChunkState) {
       if (withLayoutDesigner || withConsultingReview) {
         try {
           await markChunkStarted({ runDir, chunkId: chunk.chunk_id, workerId: eventWorkerId(chunk) })
