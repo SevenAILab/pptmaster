@@ -12,6 +12,35 @@ const SHARED_EVIDENCE_DISCIPLINE = [
   '- Honest Assessment / 诚实评估: 不夸大机会或竞品弱点，不淡化竞品强项；证据不足只能进入待验证假设。',
 ].join('\n')
 
+const BORROWED_OUTPUT_STRUCTURES = {
+  industry_analysis: [
+    '## 外部框架借鉴输出结构(只提供结构，不提供事实)',
+    '- 竞争格局判断必须区分“真威胁 vs 长得像但不抢”：真威胁需同时影响同一付费方/JTBD/预算池/替代路径；长得像但不抢只能作为相邻参照或待验证假设。',
+  ].join('\n'),
+  competitor_analysis: [
+    '## 外部框架借鉴输出结构(只提供结构，不提供事实)',
+    '- 竞品横向对比表候选维度: competitor、tagline、目标人群、定位角度、定价、免费档、关键强项、关键弱项；缺来源的字段必须留空或标 hypothesis，不得补模板占位。',
+    '- Positioning Map / 定位双轴图: 可作为 chunk 页结构候选；双轴定义必须来自真实竞品证据和用户/采购证据，不能只凭产品功能想象。',
+    '- 威胁分级必须区分“真威胁 vs 长得像但不抢”：真威胁需共享目标人群、预算池、JTBD 或替代路径；长得像但不抢只能作相邻参照或待验证假设。',
+  ].join('\n'),
+  consumer_insight: [
+    '## 外部框架借鉴输出结构(只提供结构，不提供事实)',
+    '- VOC 用户原话: 只有搜索结果、UGC 或一手资料中出现的真实原话才能引用，必须带来源；没有原话时写“可追溯用户信号”，不得编造引号。',
+    '- JTBD 输出需写清目标人群在什么情境下要完成什么任务、当前阻力、理想进展。',
+    '- 至少沉淀 3 痛点 / 3 wish 结构；每条都必须关联来源或进入 hypothesis + hypothesis_basis + validation_method。',
+  ].join('\n'),
+  brand_positioning: [
+    '## 外部框架借鉴输出结构(只提供结构，不提供事实)',
+    '- 一页 messaging framework 候选骨架: 对谁说 / 说什么 / 不说什么 / 价值主张 / 差异点 / proof points / messaging pillars。',
+    '- 每条价值主张、差异点、proof 或 pillars 必须回指上游证据；证据不足一律写成 hypothesis，并给 hypothesis_basis 与 validation_method。',
+  ].join('\n'),
+  brand_building: [
+    '## 外部框架借鉴输出结构(只提供结构，不提供事实)',
+    '- 品牌叙事弧候选骨架: 主角=客户 / 冲突 / 转折 / 品牌角色；品牌不是英雄，品牌只作为帮助客户完成转变的角色。',
+    '- 叙事中的冲突、转折和品牌角色必须来自定位承诺、上游证据或客户一手资料；没有证据的口号/IP/情绪只能标 hypothesis。',
+  ].join('\n'),
+}
+
 const AGENT_METHODOLOGY_FILES = {
   industry_analysis: ['02-industry-analysis.md'],
   competitor_analysis: ['03-competitor-analysis.md'],
@@ -154,11 +183,14 @@ export async function buildBlueprintContextSnippet(slug, agentId) {
 export async function appendMethodologyToSystem(systemPrompt, agentId) {
   if (String(systemPrompt || '').includes('## 调研方法论框架')) return String(systemPrompt || '').trim()
   const framework = await loadMethodologyFramework(agentId)
+  const borrowedStructure = BORROWED_OUTPUT_STRUCTURES[agentId] || ''
   return [
     String(systemPrompt || '').trim(),
     '',
     SHARED_EVIDENCE_DISCIPLINE,
     '',
+    borrowedStructure,
+    borrowedStructure ? '' : '',
     '## 调研方法论框架(必须据此设计子问题和成稿结构)',
     framework,
     '',

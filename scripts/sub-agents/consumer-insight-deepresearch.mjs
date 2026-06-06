@@ -16,6 +16,7 @@ function planUser(context) {
     '要求:',
     '- 子问题必须围绕“客户的真实人群是谁 + 他们的真实痛点 vs 期望”。',
     '- 至少包含: 人群规模/分层、决策路径、触点偏好、真实痛点、价值期望。',
+    '- 必须主动覆盖 VOC/用户原话、JTBD、3 痛点、3 wish；VOC 只能来自真实搜索/UGC/一手资料，后续引用须带来源。',
     '- 输出严格 JSON: {"sub_questions":["..."],"needs_ugc_search":true|false}。',
     JSON.stringify(context, null, 2),
   ].join('\n\n')
@@ -91,8 +92,6 @@ export async function buildConsumerDeepResearchConfig({ slug } = {}) {
     readFocus: '人群画像、真实痛点、决策路径和触点偏好',
     synthesizeSystem: SYNTHESIZE_SYSTEM,
     synthesizeUser,
-    writeSystem: WRITE_SYSTEM,
-    writeUser,
     llmSteps: [
       'callClaude:consumer.plan',
       'callClaude:consumer.read',

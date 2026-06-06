@@ -107,6 +107,38 @@ await assertConfigLevelInjection('brand_positioning', buildPositioningDeepResear
 await assertConfigLevelInjection('brand_building', buildBuildingDeepResearchConfig)
 await assertConfigLevelInjection('annual_planning', buildAnnualDeepResearchConfig)
 
+const industryWriteSystem = await appendMethodologyToSystem('writeSystem baseline', 'industry_analysis')
+assert.match(industryWriteSystem, /真威胁.*长得像但不抢|长得像但不抢.*真威胁/, 'industry_analysis missing threat classification structure')
+
+const competitorConfig = await buildCompetitorDeepResearchConfig({ slug })
+assert.match(competitorConfig.writeSystem, /tagline|目标人群/, 'competitor writeSystem missing comparison table fields')
+assert.match(competitorConfig.writeSystem, /定价|免费档/, 'competitor writeSystem missing pricing/free-tier fields')
+assert.match(competitorConfig.writeSystem, /定位双轴图|Positioning Map/i, 'competitor writeSystem missing positioning map structure')
+assert.match(competitorConfig.writeSystem, /真威胁.*长得像但不抢|长得像但不抢.*真威胁/, 'competitor writeSystem missing threat classification structure')
+
+const consumerConfig = await buildConsumerDeepResearchConfig({ slug })
+const consumerPlanPrompt = await consumerConfig.planUser({
+  client_name: 'PPTAgent',
+  client_industry: 'AI 品牌策划工具',
+  core_products: '咨询级品牌全案 HTML 横向翻页 PPT',
+  target_audience: '甲方品牌负责人',
+  chunk: { chunk_id: 'p2-c3-consumer-portraits', chunk_insight_question: '谁是真用户？', pages: [] },
+})
+assert.match(consumerPlanPrompt, /VOC|用户原话/, 'consumer planUser missing VOC structure')
+assert.match(consumerPlanPrompt, /JTBD/, 'consumer planUser missing JTBD structure')
+assert.match(consumerPlanPrompt, /3\s*痛点|三个痛点/, 'consumer planUser missing 3 pain points structure')
+assert.match(consumerPlanPrompt, /3\s*wish|三个\s*wish|3\s*个\s*wish/i, 'consumer planUser missing 3 wish structure')
+assert.match(consumerConfig.writeSystem, /VOC|用户原话/, 'consumer writeSystem missing VOC structure')
+assert.match(consumerConfig.writeSystem, /须带来源|来源/, 'consumer writeSystem missing quote source requirement')
+
+const positioningConfig = await buildPositioningDeepResearchConfig({ slug })
+assert.match(positioningConfig.writeSystem, /对谁说|说什么|不说什么/, 'positioning writeSystem missing messaging skeleton')
+assert.match(positioningConfig.writeSystem, /价值主张|差异点|proof|pillars/i, 'positioning writeSystem missing value/proof/pillars structure')
+
+const buildingConfig = await buildBuildingDeepResearchConfig({ slug })
+assert.match(buildingConfig.writeSystem, /主角.*客户|客户.*主角/, 'building writeSystem missing customer-as-hero structure')
+assert.match(buildingConfig.writeSystem, /冲突|转折|品牌角色/, 'building writeSystem missing narrative arc structure')
+
 const consumerSnippet = await buildBlueprintContextSnippet(slug, 'consumer_insight')
 assert.ok(consumerSnippet.includes('甲方品牌负责人'))
 assert.ok(consumerSnippet.includes('JTBD') || consumerSnippet.includes('人群'))
