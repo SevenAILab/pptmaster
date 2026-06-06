@@ -209,6 +209,49 @@ assert.throws(
   () => assertCompetitorPositioningEvidence({
     slides: [
       {
+        page_no: 22,
+        action_title: '竞品矩阵：PPTAgent 的专业 Agent 心智空位仍为待验证假设',
+        core_points: ['Gamma 覆盖通用生成', '策略工作流空位只能进入验证清单'],
+        data_refs: [
+          { value: 'AI Presentation Maker', source: 'https://gamma.app/products/presentations', type: 'product_matrix' },
+          { value: '66%的中国企业偏好按业务成果计费', source: 'https://mfe-prod.idc.com/getdoc.jsp?containerId=prCHC53669525', type: 'procurement_signal' },
+        ],
+        evidence_status: 'hypothesis',
+        hypothesis_basis: '基于竞品能力证据的类比推理，不能直接证明本品的真实付费需求',
+        validation_method: '需向目标用户/采购方访谈并索取真实需求与付费数据才能验证',
+      },
+    ],
+  }, {
+    pageConcepts: { 22: 'Competitor-Matrix' },
+  }),
+  /page 22 must stay a competitor matrix/i,
+)
+
+assert.doesNotThrow(
+  () => assertCompetitorPositioningEvidence({
+    slides: [
+      {
+        page_no: 22,
+        action_title: '感知地图：PPTAgent 的专业 Agent 心智空位仍为待验证假设',
+        core_points: ['Gamma 覆盖通用生成', '策略工作流空位只能进入验证清单'],
+        data_refs: [
+          { value: 'AI Presentation Maker', source: 'https://gamma.app/products/presentations', type: 'product_matrix' },
+          { value: '66%的中国企业偏好按业务成果计费', source: 'https://mfe-prod.idc.com/getdoc.jsp?containerId=prCHC53669525', type: 'procurement_signal' },
+        ],
+        evidence_status: 'hypothesis',
+        hypothesis_basis: '基于竞品能力证据的类比推理，不能直接证明本品的真实付费需求',
+        validation_method: '需向目标用户/采购方访谈并索取真实需求与付费数据才能验证',
+      },
+    ],
+  }, {
+    pageConcepts: { 22: 'Perceptual-Map' },
+  }),
+)
+
+assert.throws(
+  () => assertCompetitorPositioningEvidence({
+    slides: [
+      {
         page_no: 24,
         action_title: '竞争小结：PPTAgent 应以专业工作流切入，但付费案例仍待验证',
         core_points: ['S：多 Agent 串联策略产出', 'W：品牌信任仍需案例', 'O：从工具转向工作流'],

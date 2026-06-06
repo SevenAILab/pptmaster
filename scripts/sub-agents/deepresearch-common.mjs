@@ -734,6 +734,46 @@ function textFromSlide(slide = {}) {
   ].join(' ')
 }
 
+function pageConceptsFromPages(pages = []) {
+  const concepts = {}
+  let hasPages = false
+  for (const page of pages || []) {
+    if (page?.page_no === undefined || page?.page_no === null) continue
+    hasPages = true
+    concepts[String(page.page_no)] = page.concept_for_this_page || ''
+  }
+  return hasPages ? concepts : null
+}
+
+function pageConceptsFromOptions(options = {}) {
+  if (options.pageConcepts && typeof options.pageConcepts === 'object') return options.pageConcepts
+  if (Array.isArray(options.chunkPages)) return pageConceptsFromPages(options.chunkPages)
+  if (Array.isArray(options.pages)) return pageConceptsFromPages(options.pages)
+  if (Array.isArray(options.chunk?.pages)) return pageConceptsFromPages(options.chunk.pages)
+  return null
+}
+
+function conceptForSlide(slide = {}, options = {}) {
+  const pageConcepts = pageConceptsFromOptions(options)
+  const pageKey = String(slide.page_no ?? '')
+  if (pageConcepts && Object.prototype.hasOwnProperty.call(pageConcepts, pageKey)) {
+    return {
+      concept: String(pageConcepts[pageKey] || '').trim(),
+      hasConceptMetadata: true,
+    }
+  }
+  if (slide.concept_for_this_page !== undefined && slide.concept_for_this_page !== null) {
+    return {
+      concept: String(slide.concept_for_this_page || '').trim(),
+      hasConceptMetadata: true,
+    }
+  }
+  return {
+    concept: '',
+    hasConceptMetadata: false,
+  }
+}
+
 function refLooksLikeDemandEvidence(ref = {}) {
   const text = [
     ref.value,
@@ -914,7 +954,10 @@ export function assertCompetitorPositioningEvidence(result = {}, options = {}) {
     if (makesPositioningLeap && refs.some(refLooksLikeRepoPopularity)) {
       throw competitorPositioningError(`NO-FALLBACK violation: competitor positioning evidence gap on page ${slide.page_no || '?'}; GitHub/repo popularity cannot prove user demand or market positioning`, slide)
     }
-    if (slide.page_no === 22 && /空位|心智|占位|抢占|专业\s*Agent|策略工作流/i.test(text)) {
+    const { concept, hasConceptMetadata } = conceptForSlide(slide, options)
+    const isMatrixConceptPage = concept === 'Competitor-Matrix'
+    const shouldUseLegacyPage22Guard = !hasConceptMetadata && slide.page_no === 22
+    if ((isMatrixConceptPage || shouldUseLegacyPage22Guard) && /空位|心智|占位|抢占|专业\s*Agent|策略工作流/i.test(text)) {
       throw competitorPositioningError('NO-FALLBACK violation: page 22 must stay a competitor matrix, not repeat the positioning/perceptual-map conclusion', slide)
     }
     if (turnsHypothesisIntoRecommendation) {
@@ -1343,9 +1386,10 @@ async function runWriteStep({
       const parsed = extractJsonOrThrow(writeResponse, ['slides'])
       if (config.agentId === 'competitor_analysis') {
         const sourcePool = writeInput.sourcePool || writeInput.baseWriteInput?.sourcePool || []
+        const chunkPages = writeInput.context?.chunk?.pages || args.chunk?.pages || []
         // Phase 2e: 先降级（补真证据或标成诚实假设），再让 tripwire 兜底。
-        parsed.slides = downgradePositioningSlides(parsed.slides, { sourcePool })
-        assertCompetitorPositioningEvidence(parsed, { sourcePool })
+        parsed.slides = downgradePositioningSlides(parsed.slides, { sourcePool, chunkPages })
+        assertCompetitorPositioningEvidence(parsed, { sourcePool, chunkPages })
       }
       return parsed
     } catch (error) {
@@ -1562,6 +1606,7 @@ export async function runFiveStepDeepResearch(args, config) {
     minInsights: config.minInsights || 3,
     slug: args.slug,
     agentId: config.agentId,
+    chunkPages: args.chunk.pages || [],
   })
   assertWebSearchEvidence(result, { webSearchRequirement: args.webSearchRequirement, agentId: config.agentId })
   if (!args.skipCostGuard) await enforceCostGuard(args.slug, startingAuditCount)
@@ -1743,6 +1788,7 @@ export async function runThreeStepDeepResearch(args, config) {
     minInsights: config.minInsights || 3,
     slug: args.slug,
     agentId: config.agentId,
+    chunkPages: args.chunk.pages || [],
   })
   assertWebSearchEvidence(result, { webSearchRequirement: args.webSearchRequirement, agentId: config.agentId })
   if (!args.skipCostGuard) await enforceCostGuard(args.slug, startingAuditCount)
