@@ -107,6 +107,34 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
   assert.ok(/Gamma/.test(text), '有来源的 Gamma 应保留')
 }
 
+// G) building 竞争小结页只能走诚实假设，不得把 summary.md 当 data_ref
+{
+  const [slide] = downgradePositioningSlides([
+    {
+      page_no: 22,
+      action_title: '竞争小结：PPTAgent 应选择专业 Agent 心智空位作为差异化突破',
+      core_points: ['Gamma/WPS 偏通用生成', 'PPTAgent 应抢占策略工作流空位'],
+      data_refs: [
+        { value: '竞争 chunk 综合', source: 'inputs/pptagent/summary.md', type: 'client_input' },
+      ],
+    },
+  ], {
+    chunkPages: [
+      {
+        page_no: 22,
+        page_intent: '竞争小结：新品牌应选择差异化领导/跟随/细分突破',
+        data_source_hint: '竞争 chunk 综合',
+        concept_for_this_page: 'Perceptual-Map',
+      },
+    ],
+  })
+  assert.equal(slide.evidence_status, 'hypothesis')
+  assert.ok(slide.hypothesis_basis)
+  assert.ok(slide.validation_method)
+  assert.ok(slide.data_refs.every(ref => !String(ref.source || '').includes('summary.md')))
+  assert.ok(!/应选择|抢占/.test([slide.action_title, ...slide.core_points].join(' ')))
+}
+
 // G) runWriteStep 必须在 assertCompetitorPositioningEvidence 之前调用降级 Pass
 {
   const src = fs.readFileSync(path.join(REPO_ROOT, 'scripts/sub-agents/deepresearch-common.mjs'), 'utf8')

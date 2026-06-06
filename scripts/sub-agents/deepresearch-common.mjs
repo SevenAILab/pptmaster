@@ -753,6 +753,17 @@ function pageConceptsFromOptions(options = {}) {
   return null
 }
 
+function pageSpecForSlide(slide = {}, options = {}) {
+  const pages = Array.isArray(options.chunkPages)
+    ? options.chunkPages
+    : Array.isArray(options.pages)
+      ? options.pages
+      : Array.isArray(options.chunk?.pages)
+        ? options.chunk.pages
+        : []
+  return pages.find(page => String(page?.page_no ?? '') === String(slide.page_no ?? '')) || null
+}
+
 function conceptForSlide(slide = {}, options = {}) {
   const pageConcepts = pageConceptsFromOptions(options)
   const pageKey = String(slide.page_no ?? '')
@@ -825,6 +836,12 @@ function refLooksLikeRepoPopularity(ref = {}) {
   return /github\.com|stars?|forks?|repository|\brepo\b|开源|仓库/i.test(text)
 }
 
+function refLooksLikeForbiddenFinalSource(ref = {}) {
+  const source = normalizeSourcePath(refSource(ref))
+  if (!source) return true
+  return /(^|\/)summary\.md$/i.test(source) || source.startsWith('assets/_raw/cases/')
+}
+
 function refLooksLikeIndependentDemandEvidence(ref = {}) {
   return refLooksLikeDemandEvidence(ref) && !refLooksLikeCompetitorEvidence(ref) && !refLooksLikeCompetitorOwnedSource(ref) && !refLooksLikeRepoPopularity(ref)
 }
@@ -858,7 +875,7 @@ function competitorPositioningError(message, slide) {
 }
 
 const POSITIONING_LEAP_RE = /咨询级|品牌策划|策略工作流|专业工作流|策略生成|方案\s*AI\s*Agent|品牌策略\s*Agent|专业\s*Agent|空位|心智|占位|抢占/i
-const ACTION_VERB_RE = /应以|应当|应该|应成为|应\s|切入|抢占|占据|定位为|成为|主打|发力/g
+const ACTION_VERB_RE = /应以|应当|应该|应成为|应选择|应\s|切入|抢占|占据|定位为|成为|主打|发力/g
 const HYP_BASIS_TEXT = '基于竞品能力证据的类比推理，不能直接证明本品的真实付费需求'
 const HYP_METHOD_TEXT = '需向目标用户/采购方访谈并索取真实需求与付费数据才能验证'
 
@@ -886,6 +903,26 @@ function stripUnsupportedCompetitorNames(slide) {
   return { ...slide, action_title: actionTitle, core_points: corePoints }
 }
 
+function appendUniqueRef(refs = [], ref) {
+  if (!ref) return refs
+  const source = refSource(ref)
+  if (source && refs.some(item => refSource(item) === source)) return refs
+  return [...refs, ref]
+}
+
+function isSynthesisPositioningPage(slide = {}, options = {}, text = '') {
+  const pageSpec = pageSpecForSlide(slide, options) || {}
+  const { concept } = conceptForSlide(slide, options)
+  const sourceHint = String(pageSpec.data_source_hint || '')
+  const pageText = [
+    sourceHint,
+    pageSpec.page_intent || '',
+    pageSpec.page_subtitle || '',
+  ].join(' ')
+  return /综合|小结|summary|synthesis/i.test(sourceHint || pageText) ||
+    (concept === 'Perceptual-Map' && POSITIONING_LEAP_RE.test(text))
+}
+
 export function downgradePositioningSlides(slides = [], options = {}) {
   const sourcePool = options.sourcePool || []
   const availableIndependentDemand = sourcePool.filter(refLooksLikeIndependentDemandEvidence)
@@ -897,16 +934,22 @@ export function downgradePositioningSlides(slides = [], options = {}) {
     const makesPositioningLeap = POSITIONING_LEAP_RE.test(text)
     if (!makesPositioningLeap) return slide
 
-    const refs = slide.data_refs || []
+    const synthesisPositioningPage = isSynthesisPositioningPage(slide, options, text)
+    const rawRefs = slide.data_refs || []
+    const refs = synthesisPositioningPage
+      ? rawRefs.filter(ref => !refLooksLikeForbiddenFinalSource(ref))
+      : rawRefs
     const hasIndependentDemand = refs.some(refLooksLikeIndependentDemandEvidence)
-    if (hasIndependentDemand) return slide
+    if (hasIndependentDemand && !synthesisPositioningPage) return { ...slide, data_refs: refs }
 
-    if (availableIndependentDemand.length > 0) {
+    if (availableIndependentDemand.length > 0 && !synthesisPositioningPage) {
       return { ...slide, data_refs: [...refs, availableIndependentDemand[0]] }
     }
 
     const keptRefs = refs.filter(ref => !refLooksLikeRepoPopularity(ref))
-    const dataRefs = keptRefs.length > 0 ? keptRefs : refs
+    const dataRefs = synthesisPositioningPage
+      ? appendUniqueRef(keptRefs.length > 0 ? keptRefs : refs, availableIndependentDemand[0])
+      : keptRefs.length > 0 ? keptRefs : refs
 
     const alreadyDowngraded = /待验证假设/.test(slide.action_title || '')
     const actionTitle = alreadyDowngraded

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { assertCompetitorPositioningEvidence, assertWebSearchEvidence, buildSearchQueryVariants, normalizeSlides } from './sub-agents/deepresearch-common.mjs'
+import { assertCompetitorPositioningEvidence, assertWebSearchEvidence, buildSearchQueryVariants, downgradePositioningSlides, normalizeSlides } from './sub-agents/deepresearch-common.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -120,6 +120,36 @@ assert.doesNotThrow(
     ],
   }),
 )
+
+{
+  const [slide] = downgradePositioningSlides([
+    {
+      page_no: 22,
+      action_title: '竞争小结：PPTAgent 应选择专业 Agent 心智空位作为差异化突破',
+      core_points: ['Gamma/WPS 偏通用生成', 'PPTAgent 应抢占策略工作流空位'],
+      data_refs: [
+        { value: '竞争 chunk 综合', source: 'inputs/pptagent/summary.md', type: 'client_input' },
+      ],
+    },
+  ], {
+    chunkPages: [
+      {
+        page_no: 22,
+        page_intent: '竞争小结：新品牌应选择差异化领导/跟随/细分突破',
+        data_source_hint: '竞争 chunk 综合',
+        concept_for_this_page: 'Perceptual-Map',
+      },
+    ],
+  })
+
+  assert.equal(slide.evidence_status, 'hypothesis')
+  assert.ok(slide.hypothesis_basis)
+  assert.ok(slide.validation_method)
+  assert.deepEqual(slide.data_refs, [])
+  assert.doesNotThrow(() => assertCompetitorPositioningEvidence({ slides: [slide] }, {
+    pageConcepts: { 22: 'Perceptual-Map' },
+  }))
+}
 
 assert.throws(
   () => assertCompetitorPositioningEvidence({
