@@ -41,9 +41,34 @@ try {
   assert.match(system, /data_refs/)
   assert.match(system, /evidence_kind/)
   assert.match(system, /validation_method/)
+  assert.match(system, /可执行动作|具体动作/)
+  assert.match(system, /数字|比例|量化/)
+  assert.match(system, /时间窗口|时限|周期/)
+  assert.match(system, /外部 T1\/T2|真实来源/)
   assert.match(user, /strategic-question\.md/)
   assert.match(user, /PPTAgent 如何被清晰识别/)
   assert.match(user, /每页都必须回扣根问题/)
+
+  const researchBrief = {
+    findings: [
+      {
+        claim: 'B2B 内容营销团队 2025 年计划增加 AI 工具预算 32%',
+        evidence: '32% plan to increase AI tooling budget',
+        source_id: 1,
+        source_url: 'https://www.gartner.com/en/marketing/research/report.pdf',
+        source_tier: 'T2',
+        confidence: 'high',
+      },
+    ],
+    sources: [
+      { id: 1, url: 'https://www.gartner.com/en/marketing/research/report.pdf', source_tier: 'T2', type: 'industry_report' },
+    ],
+  }
+  const withResearch = buildGenerationPrompt(brief, { researchBrief })
+  assert.match(withResearch.user, /已核实的外部研究发现/)
+  assert.match(withResearch.user, /AI 工具预算 32%/)
+  assert.match(withResearch.user, /gartner\.com/)
+  assert.match(withResearch.system, /data_refs.*真实来源|真实来源.*data_refs/)
 
   const response = '```json\n{"slides":[{"page_no":1,"intent":"回答根问题","action_title":"PPTAgent 应先占据品牌策划方案 Agent 心智","layout":"split-statement","core_points":["不是更快做页面，而是替代基础品牌策划提案","先服务高频提案人群"],"data_refs":[{"source":"inputs/same-source/summary.md","type":"client_input","source_tier":"T1"}],"evidence_kind":"deductive","validation_method":"访谈 5 位目标用户验证说法是否清晰","blocks":[{"type":"bullet_list","items":["a"]}]}]}\n```'
   const parsed = parseGeneratedDeck(response)
@@ -72,6 +97,22 @@ try {
   assert.equal(normalized.slides[0].page_intent, normalized.slides[0].intent)
   assert.deepEqual(normalized.slides[0].content_blocks, normalized.slides[0].blocks)
 
+  const httpTierNormalized = normalizeGeneratedDeck({
+    slides: [{
+      page_no: 1,
+      intent: '验证来源分级',
+      action_title: '模型自报 T1 的普通网页应被本地分类覆盖',
+      layout: 'split-statement',
+      core_points: ['引用普通网页'],
+      data_refs: [{ source: 'https://gamma.app/products/presentations', source_tier: 'T1', type: 'official_case' }],
+      evidence_kind: 'empirical',
+      validation_method: '',
+      blocks: [{ type: 'callout', text: 'x' }],
+    }],
+  }, { brief })
+  assert.equal(httpTierNormalized.slides[0].data_refs[0].source_tier, 'T3')
+  assert.equal(httpTierNormalized.slides[0].data_refs[0].model_source_tier, 'T1')
+
   const stubDeck = {
     slides: Array.from({ length: 5 }, (_, index) => ({
       page_no: index + 1,
@@ -89,9 +130,10 @@ try {
     assert.match(stubSystem, /只输出 JSON/)
     assert.match(stubUser, /strategic-question\.md/)
     return JSON.stringify(stubDeck)
-  } })
+  }, options: { researchBrief } })
   assert.equal(generated.deck.slides.length, 5)
   assert.equal(generated.locks.ok, true)
+  assert.match(generated.prompt.user, /已核实的外部研究发现/)
 
   const cli = spawnSync('node', [
     path.join(REPO_ROOT, 'scripts/gen-deck-cli.mjs'),

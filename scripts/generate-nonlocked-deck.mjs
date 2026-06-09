@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ALLOWED_BLOCK_TYPES, validateProcessLocks } from './process-locks.mjs'
+import { classifySource, isHttpSource } from './source-tiers.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -55,6 +56,9 @@ export function buildGenerationPrompt(brief, options = {}) {
     ? `生成 ${exactPages} 页（P2 过程锁允许 ${minPages}-${maxPages} 页，本次真实验固定取下限以减少重复）。`
     : `生成 ${minPages}-${maxPages} 页。`
   const allowed = ALLOWED_BLOCK_TYPES.join(', ')
+  const researchBrief = options.researchBrief
+  const researchSection = formatResearchBrief(researchBrief)
+  const hasResearch = Boolean(researchSection)
   const system = [
     '你是 PPTAgent 的资深品牌策略主笔，目标是生成一份少而精的非锁页小闭环 deck。',
     `只输出 JSON，不要 Markdown，不要解释。${pageRequirement}`,
@@ -64,6 +68,10 @@ export function buildGenerationPrompt(brief, options = {}) {
     `blocks[].type 只能使用：${allowed}。`,
     '证据规则：每页必须有可追溯 data_refs；若资料不足，必须 evidence_kind:"hypothesis" 并给出 validation_method。不能只因为有 core_points 就当作证据成熟。',
     'evidence_kind 只能是 empirical、deductive、hypothesis。',
+    '可执行动作：每页至少一个 core_points 或 blocks 项必须包含具体动作；5 页里至少 4 页要包含数字/比例/量化锚点和时间窗口（如 3 个月内、Q1、第 1 周）。避免只停留在战略话术。',
+    hasResearch
+      ? '外部证据：至少 2 页引用研究简报中的外部 T1/T2 真实来源，在页面文本中写出对应精确数字，并在 data_refs 写入真实来源 URL、source_tier、type。'
+      : '外部证据：若使用公开来源，data_refs 必须写真实来源 URL、source_tier、type；无来源的判断显式标为假设。',
     '每页 core_points 最多 3 条，blocks 最多 2 个；不要输出 thinking_log、分析过程或额外字段。',
     'layout 使用现有 smart layout 名称，例如 split-statement、framework-grid、timeline、pyramid、matrix-2x2、hero-statement。',
     'action_title 必须是完整判断句，不要只写页面主题。',
@@ -79,15 +87,42 @@ export function buildGenerationPrompt(brief, options = {}) {
     '',
     '## strategic-question.md',
     brief.strategicQuestion,
+    researchSection,
     '',
     '## 生成要求',
     `- ${pageRequirement}`,
     '- 每页都必须回扣根问题，说明它如何证明 PPTAgent 不是“做得更快的 PPT 工具”，而是“品牌策划方案 Agent”。',
     '- 优先使用同源输入中的事实：客户资料、Seven 方法论资产、6 个品牌策略 Sub-Agent、HTML 横向翻页 PPT、竞品资料来源。',
     '- data_refs.source 可以引用 inputs/<slug>/summary.md、inputs/<slug>/form.json、inputs/<slug>/strategic-question.md 或摘要中列出的公开 URL。',
+    hasResearch
+      ? '- 有外部研究发现支撑的页必须优先引用研究简报的真实 URL；引用研究发现时不要只写 source_id，data_refs.source 必须是完整 URL。'
+      : '- 若引用公开来源，data_refs.source 必须是完整 URL。',
     '- 若是建议性判断但缺真实证据，明确标 hypothesis，并写后续验证方法。',
   ].join('\n')
   return { system, user }
+}
+
+function formatResearchBrief(researchBrief) {
+  const findings = Array.isArray(researchBrief?.findings) ? researchBrief.findings : []
+  if (findings.length === 0) return ''
+  const sources = Array.isArray(researchBrief?.sources) ? researchBrief.sources : []
+  const findingLines = findings.map(finding => [
+    `- ${finding.claim}`,
+    finding.evidence ? `证据：${finding.evidence}` : '',
+    `来源[${finding.source_id ?? '?'}] ${finding.source_tier || ''} ${finding.source_url || finding.source || ''}`,
+    finding.confidence ? `confidence=${finding.confidence}` : '',
+  ].filter(Boolean).join('；'))
+  const sourceLines = sources.map(source =>
+    `[${source.id}] ${source.url} (${source.source_tier || 'T3'} / ${source.type || 'media'})`,
+  )
+  return [
+    '',
+    '## 已核实的外部研究发现',
+    ...findingLines,
+    '',
+    '## 研究来源',
+    ...sourceLines,
+  ].join('\n')
 }
 
 function extractJsonObject(text) {
@@ -115,11 +150,16 @@ function normalizeRef(ref, brief) {
     return { source: ref, type: 'unknown', source_tier: 'T3' }
   }
   const source = normalizeString(ref?.source || ref?.source_url || ref?.url)
+  const inferred = source && isHttpSource(source) ? classifySource(source) : {}
+  const httpSource = source && isHttpSource(source)
   return {
     ...ref,
     source: source || `inputs/${brief?.slug || 'unknown'}/summary.md`,
-    type: normalizeString(ref?.type) || 'client_input',
-    source_tier: normalizeString(ref?.source_tier) || 'T3',
+    source_tier: httpSource ? inferred.source_tier : (normalizeString(ref?.source_tier) || inferred.source_tier || 'T3'),
+    source_label: httpSource ? inferred.source_label : (normalizeString(ref?.source_label) || inferred.source_label),
+    type: httpSource ? inferred.type : (normalizeString(ref?.type) || inferred.type || 'client_input'),
+    model_source_tier: httpSource && normalizeString(ref?.source_tier) ? normalizeString(ref.source_tier) : undefined,
+    model_source_type: httpSource && normalizeString(ref?.type) ? normalizeString(ref.type) : undefined,
   }
 }
 

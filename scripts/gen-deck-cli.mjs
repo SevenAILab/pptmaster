@@ -4,6 +4,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildBriefFromInputs, generateDeck } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
+import { deriveResearchQuestions, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
+import { webSearch } from './web-search.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -15,6 +17,8 @@ function parseArgs(argv) {
     maxTokens: 3000,
     temperature: 0,
     pages: 5,
+    research: false,
+    searchResults: 3,
   }
   const positional = []
   for (let index = 0; index < argv.length; index += 1) {
@@ -31,6 +35,8 @@ function parseArgs(argv) {
       opts.outputDir = path.resolve(arg.slice('--output='.length))
     } else if (arg === '--dry-run') {
       opts.dryRun = true
+    } else if (arg === '--research') {
+      opts.research = true
     } else if (arg === '--model') {
       opts.model = argv[index + 1]
       index += 1
@@ -46,6 +52,11 @@ function parseArgs(argv) {
       index += 1
     } else if (arg.startsWith('--pages=')) {
       opts.pages = Number(arg.slice('--pages='.length))
+    } else if (arg === '--search-results') {
+      opts.searchResults = Number(argv[index + 1])
+      index += 1
+    } else if (arg.startsWith('--search-results=')) {
+      opts.searchResults = Number(arg.slice('--search-results='.length))
     } else {
       positional.push(arg)
     }
@@ -81,11 +92,37 @@ function writeOutput(outputDir, result) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run]')
+    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run] [--research]')
     process.exit(2)
   }
   const outputDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-nonlocked`)
   const brief = buildBriefFromInputs({ root: opts.root, slug })
+  let researchBrief
+  if (opts.research) {
+    fs.mkdirSync(outputDir, { recursive: true })
+    const questions = deriveResearchQuestions(brief)
+    researchBrief = await gatherResearch({
+      questions,
+      search: async question => normalizeSearchHits(await webSearch(question, {
+        maxResults: opts.searchResults,
+        slug,
+      })),
+      callModel: async (system, user) => {
+        const response = await callClaude(system, user, {
+          model: opts.model,
+          maxTokens: Math.min(Math.max(opts.maxTokens, 2000), 3000),
+          temperature: 0,
+        })
+        return response.text
+      },
+      maxResultsPerQuestion: opts.searchResults,
+    })
+    fs.writeFileSync(path.join(outputDir, 'research-brief.json'), JSON.stringify({
+      questions,
+      ...researchBrief,
+    }, null, 2))
+    console.log(`[nonlocked] research -> ${researchBrief.findings.length} findings / ${researchBrief.sources.length} sources`)
+  }
   let result
   try {
     result = await generateDeck({
@@ -95,7 +132,7 @@ async function cliMain() {
         maxTokens: opts.maxTokens,
         temperature: opts.temperature,
       }),
-      options: { dryRun: opts.dryRun, pages: opts.pages },
+      options: { dryRun: opts.dryRun, pages: opts.pages, researchBrief },
     })
   } catch (error) {
     fs.mkdirSync(outputDir, { recursive: true })
