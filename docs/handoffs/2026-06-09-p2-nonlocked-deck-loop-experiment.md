@@ -2,9 +2,11 @@
 
 ## 结论
 
-P2 工具链已落地：新增非锁页生成、过程锁、scorecard 对照和 CLI，且同源输入的本地 smoke 产物可以通过过程锁、确定性评分和 HTML 渲染。
+P2 工具链已落地并完成同源真实验：新增非锁页生成、过程锁、scorecard 对照和 CLI；使用同一输入生成 5 页非锁页 deck，并完成过程锁、确定性评分、语义评分和 HTML render smoke。
 
-真实模型生成尚未完成。P0.5 语义基线已成功跑通，但 P2 生成阶段调用当前 `ANTHROPIC_WIRE_API=chat_completions` / `ANTHROPIC_MODEL=gpt-5.5` provider 时先后遇到网关超时，最后返回 `INSUFFICIENT_BALANCE`。因此本次不能声称已完成真实模型对照，只能确认工具链和前置 gate 已准备好，待模型余额恢复后重跑实验。
+结果支持“少而精、少重复”的 harness 方向：页数从 80 页降到 5 页，确定性重复率从 7.5% 降到 0%，语义重复率从 91.25% 降到 20%，新洞察率从 71.25% 提升到 100%。但短 deck 的 actionability 只有 40%，外部实证比例为 0，后续 prompt 仍需要强化“可执行动作”和外部强证据引用。
+
+环境说明：项目 `.env` 中的 `mdlbus.com / gpt-5.5` provider 当前返回 `INSUFFICIENT_BALANCE`；本次真实验使用本机已存在的 `tokenclub_free` provider 临时环境变量完成，未修改 `.env`。
 
 ## 同源输入
 
@@ -35,9 +37,9 @@ env -u ANTHROPIC_API_KEY -u ANTHROPIC_BASE_URL node -r dotenv/config scripts/sco
 
 Gate 通过：语义重复率显著高于确定性重复率，且超过 `>=0.20` / `+0.15` 的建议阈值。
 
-## 本地 Smoke 产物
+## 真实验产物
 
-由于真实生成被模型余额阻断，本次只生成明确标记为 `generation_mode: "dry-run"` 的本地 smoke deck，用来验证 P2 链路。
+本次生成的 `deck.json` 明确标记为 `generation_mode: "model"`。
 
 产物目录：
 
@@ -54,23 +56,40 @@ Gate 通过：语义重复率显著高于确定性重复率，且超过 `>=0.20`
 - `prompt-bundle.md`
 - `raw-response.txt`
 
-Smoke 指标：
+结果指标：
 
 | 指标 | 值 |
 |---|---:|
-| generation_mode | dry-run |
+| generation_mode | model |
 | 页数 | 5 |
 | process locks | PASS |
 | deterministic repetitionRate | 0 |
 | insightDensity | 1 |
 | actionability | 0.4 |
+| semanticRepetitionRate | 0.2 |
+| newInsightRate | 1 |
+| empiricalRatio | 0.4 |
+| deductiveRate | 0.4 |
+| hypothesisRate | 0.2 |
 | HTML smoke | PASS |
 
-说明：dry-run 产物只用于验证 CLI、过程锁、评分和渲染链路，不作为真实模型质量结论。
+对照摘要：
+
+| 指标 | 80 页 blueprint | 5 页 nonlocked | delta |
+|---|---:|---:|---:|
+| pages | 80 | 5 | -75 |
+| deterministic repetitionRate | 7.5% | 0% | -7.5pp |
+| insightDensity | 92.5% | 100% | +7.5pp |
+| actionability | 67.5% | 40% | -27.5pp |
+| externalEmpiricalRatio | 1.25% | 0% | -1.25pp |
+| semanticRepetitionRate | 91.25% | 20% | -71.25pp |
+| newInsightRate | 71.25% | 100% | +28.75pp |
+| empiricalRatio | 6.25% | 40% | +33.75pp |
+| hypothesisRate | 47.5% | 20% | -27.5pp |
 
 ## 后续重跑命令
 
-模型余额恢复后，直接重跑：
+默认 `.env` provider 恢复后，直接重跑：
 
 ```bash
 node -r dotenv/config scripts/gen-deck-cli.mjs pptagent-phase3-validation-20260602-155549
@@ -82,3 +101,13 @@ node scripts/compare-decks.mjs outputs/_quality-baseline/pptagent-phase3-validat
 ```
 
 若 `gen-deck-cli` 非 0 退出，仍优先查看 `outputs/pptagent-phase3-validation-20260602-155549-nonlocked/generation-error.txt` 或保留的 `deck.json` / `process-locks.json`。
+
+本次临时 provider 跑法（不把 key 写入 repo；`TOKENCLUB_KEY` 来自本机已有 auth 快照）：
+
+```bash
+ANTHROPIC_API_KEY="$TOKENCLUB_KEY" \
+ANTHROPIC_BASE_URL="http://69.5.20.196:8080/v1" \
+ANTHROPIC_WIRE_API="responses" \
+ANTHROPIC_MODEL="gpt-5.5" \
+node -r dotenv/config scripts/gen-deck-cli.mjs pptagent-phase3-validation-20260602-155549
+```
