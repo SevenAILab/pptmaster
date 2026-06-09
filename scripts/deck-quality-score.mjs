@@ -34,6 +34,27 @@ export function pageDiscipline(deck, { min = 8, max = 60 } = {}) {
   }
 }
 
+export function mergeChunkSlides(chunkDatas = []) {
+  const byPage = new Map()
+  const duplicatePages = new Set()
+  let collected = 0
+
+  for (const data of chunkDatas) {
+    for (const slide of data.slides || []) {
+      collected += 1
+      if (byPage.has(slide.page_no)) duplicatePages.add(slide.page_no)
+      byPage.set(slide.page_no, slide)
+    }
+  }
+
+  const slides = [...byPage.values()].sort((a, b) => (a.page_no || 0) - (b.page_no || 0))
+  return {
+    slides,
+    collapsedDuplicates: collected - slides.length,
+    duplicatePages: [...duplicatePages].sort((a, b) => a - b),
+  }
+}
+
 function slideTextForScore(slide = {}) {
   return [
     slide.action_title,
@@ -88,6 +109,47 @@ export function evidenceRatio(deck, opts = {}) {
     unsourcedPages,
     weakEvidencePages,
     unsourcedNumberPages,
+  }
+}
+
+function isExternalStrongRef(ref = {}) {
+  const tier = ref.source_tier
+  const type = String(ref.type || '')
+  const source = String(ref.source || ref.source_url || ref.url || '')
+  const localInput = source.startsWith('inputs/') || source.includes('/inputs/')
+  return STRONG_TIERS.has(tier) &&
+    type !== 'first_party' &&
+    type !== 'client_input' &&
+    !localInput
+}
+
+export function externalEvidenceRatio(deck) {
+  const slides = Array.isArray(deck?.slides) ? deck.slides : []
+  let numberSlides = 0
+  let externalEmpiricalSlides = 0
+  const externalEmpiricalPages = []
+  const numberOnlyPages = []
+
+  for (const slide of slides) {
+    const hasNumber = findPreciseNumbers(slideTextForScore(slide)).length > 0
+    if (!hasNumber) continue
+    numberSlides += 1
+    if ((slide.data_refs || []).some(ref => isExternalStrongRef(ref))) {
+      externalEmpiricalSlides += 1
+      externalEmpiricalPages.push(slide.page_no)
+    } else {
+      numberOnlyPages.push(slide.page_no)
+    }
+  }
+
+  const total = slides.length || 1
+  return {
+    slides: slides.length,
+    numberSlides,
+    externalEmpiricalSlides,
+    externalEmpiricalRatio: externalEmpiricalSlides / total,
+    externalEmpiricalPages,
+    numberOnlyPages,
   }
 }
 
@@ -194,6 +256,8 @@ function inputDiagnostics(deck, input = {}) {
     sourceType: input.sourceType || 'deck',
     sourcePath: input.sourcePath || '',
     sourceFiles: input.sourceFiles ?? 1,
+    collapsedDuplicates: input.collapsedDuplicates || 0,
+    collapsedDuplicatePages: input.collapsedDuplicatePages || [],
     slides: slides.length,
     minPage: pageNumbers.length ? Math.min(...pageNumbers) : null,
     maxPage: pageNumbers.length ? Math.max(...pageNumbers) : null,
@@ -208,6 +272,7 @@ export function scoreDeck(deck, opts = {}) {
     inputDiagnostics: inputDiagnostics(deck, opts.input),
     pageDiscipline: pageDiscipline(deck, opts.budget),
     evidenceRatio: evidenceRatio(deck, opts),
+    externalEvidence: externalEvidenceRatio(deck),
     actionability: actionability(deck),
     repetition: crossPageRepetition(deck, opts.similarity),
     insightDensity: insightDensity(deck, opts.similarity),

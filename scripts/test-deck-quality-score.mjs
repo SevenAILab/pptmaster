@@ -9,8 +9,10 @@ import {
   charNgrams,
   crossPageRepetition,
   evidenceRatio,
+  externalEvidenceRatio,
   insightDensity,
   jaccard,
+  mergeChunkSlides,
   pageDiscipline,
   scoreDeck,
 } from './deck-quality-score.mjs'
@@ -96,11 +98,58 @@ assert.equal(den.pages, 3)
 assert.equal(den.distinctInsights, 2)
 assert.equal(Math.round(den.density * 100), 67)
 
+const merged = mergeChunkSlides([
+  { slides: [{ page_no: 2, action_title: 'B' }] },
+  { slides: [{ page_no: 1, action_title: 'A' }] },
+  { slides: [{ page_no: 1, action_title: 'A-alt' }] },
+])
+assert.equal(merged.slides.length, 2)
+assert.equal(merged.collapsedDuplicates, 1)
+assert.deepEqual(merged.duplicatePages, [1])
+assert.deepEqual(merged.slides.map(slide => slide.page_no), [1, 2])
+assert.equal(merged.slides[0].action_title, 'A-alt')
+
+const extDeck = {
+  slides: [
+    {
+      page_no: 1,
+      action_title: '市场规模 30万',
+      core_points: [],
+      data_refs: [{ source_tier: 'T2', type: 'industry_report', source: 'https://example.com/report' }],
+    },
+    {
+      page_no: 2,
+      action_title: '复购率 8.6%',
+      core_points: [],
+      data_refs: [{ source_tier: 'T1', type: 'first_party', source: 'inputs/demo/first-party/a.md' }],
+    },
+    {
+      page_no: 3,
+      action_title: '应建立差异化心智',
+      core_points: [],
+      data_refs: [{ source_tier: 'T2', type: 'industry_report', source: 'https://example.com/report' }],
+    },
+    {
+      page_no: 4,
+      action_title: '客户预算 12万元',
+      core_points: [],
+      data_refs: [{ source_tier: 'T1', type: 'client_input', source: 'inputs/demo/summary.md' }],
+    },
+  ],
+}
+const ext = externalEvidenceRatio(extDeck)
+assert.equal(ext.slides, 4)
+assert.equal(ext.numberSlides, 3)
+assert.equal(ext.externalEmpiricalSlides, 1)
+assert.deepEqual(ext.externalEmpiricalPages, [1])
+assert.equal(Math.round(ext.externalEmpiricalRatio * 100), 25)
+
 const full = scoreDeck(repDeck, { budget: { min: 8, max: 60 }, slug: 'demo' })
 assert.equal(full.pages, 3)
 assert.ok('inputDiagnostics' in full)
 assert.ok('pageDiscipline' in full)
 assert.ok('evidenceRatio' in full)
+assert.ok('externalEvidence' in full)
 assert.ok('actionability' in full)
 assert.ok('repetition' in full)
 assert.ok('insightDensity' in full)
@@ -149,9 +198,22 @@ try {
   const out2 = JSON.parse(r2.stdout)
   assert.equal(out2.pages, 2)
   assert.equal(out2.inputDiagnostics.sourceFiles, 2)
+  assert.equal(out2.inputDiagnostics.collapsedDuplicates, 0)
   assert.equal(out2.inputDiagnostics.minPage, 1)
   assert.equal(out2.inputDiagnostics.maxPage, 2)
   assert.equal(out2.inputDiagnostics.duplicatePageNumbers, 0)
+
+  fs.writeFileSync(path.join(chunkDir, 'c.json'), JSON.stringify({
+    slides: [{ page_no: 1, action_title: 'A replacement', core_points: [] }],
+  }))
+  const r3 = spawnSync('node', [cli, chunkDir, '--chunks', '--json'], { encoding: 'utf8' })
+  assert.equal(r3.status, 0, r3.stderr)
+  const out3 = JSON.parse(r3.stdout)
+  assert.equal(out3.pages, 2)
+  assert.equal(out3.inputDiagnostics.sourceFiles, 3)
+  assert.equal(out3.inputDiagnostics.collapsedDuplicates, 1)
+  assert.deepEqual(out3.inputDiagnostics.collapsedDuplicatePages, [1])
+  assert.equal(out3.inputDiagnostics.duplicatePageNumbers, 0)
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true })
 }
