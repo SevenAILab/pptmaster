@@ -16,7 +16,7 @@ import { renderS22 } from './renderers/render-s22-image-hero.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
-const STYLE_TEMPLATES = {
+export const STYLE_TEMPLATES = {
   swiss: 'templates/template-swiss.html',
   magazine: 'templates/template-magazine.html',
 }
@@ -71,7 +71,7 @@ function renderSlide(slide) {
   }, escapeHtml)
 }
 
-function replaceSlides(template, slidesHtml) {
+export function replaceSlides(template, slidesHtml) {
   if (template.includes('<!-- SLIDES_HERE')) {
     return template.replace(
       /<!-- SLIDES_HERE[\s\S]*?(?=\n<\/div>\s*\n\s*<div id="nav")/,
