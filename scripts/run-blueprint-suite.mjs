@@ -20,6 +20,7 @@ import { prepareSubAgentBundle, runRealLLMSubAgent } from './run-sub-agent.mjs'
 import { ensureStrategicQuestion } from './strategic-question.mjs'
 import { applyLayoutDecisions, runLayoutDesigner } from './sub-agents/layout-designer.mjs'
 import { ensureResearchBlueprint } from './sub-agents/research-blueprint.mjs'
+import { loadSchemeRegistry } from '../core/registry/scheme-registry.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -27,6 +28,8 @@ export const SCHEME_TO_BLUEPRINT = {
   brand_positioning_case: 'assets/_compiled/blueprints/brand-positioning-deck-v1.json',
   brand_building_case: 'assets/_compiled/blueprints/brand-building-deck-v1.json',
 }
+
+const schemeRegistry = loadSchemeRegistry({ root: REPO_ROOT, fallbackBlueprints: SCHEME_TO_BLUEPRINT })
 
 function repoPath(...segments) {
   return path.join(REPO_ROOT, ...segments)
@@ -37,11 +40,7 @@ async function readJson(filePath) {
 }
 
 export async function loadBlueprintForScheme(schemeType) {
-  const blueprintPath = SCHEME_TO_BLUEPRINT[schemeType]
-  if (!blueprintPath) {
-    throw new Error(`Unknown scheme_type: ${schemeType}. Supported: ${Object.keys(SCHEME_TO_BLUEPRINT).join(', ')}`)
-  }
-
+  const { path: blueprintPath } = schemeRegistry.resolveBlueprintPath(schemeType)
   const blueprint = await readJson(repoPath(blueprintPath))
   return { blueprint, blueprintPath }
 }

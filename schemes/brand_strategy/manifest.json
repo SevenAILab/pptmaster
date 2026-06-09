@@ -1,0 +1,27 @@
+{
+  "schema_version": "pptagent-scheme/v1",
+  "scheme_id": "brand_strategy",
+  "label_zh": "品牌策略方案",
+  "status": "mvp",
+  "blueprints": [
+    {
+      "blueprint_id": "brand-positioning-deck-v1",
+      "scheme_type": "brand_positioning_case",
+      "path": "assets/_compiled/blueprints/brand-positioning-deck-v1.json"
+    },
+    {
+      "blueprint_id": "brand-building-deck-v1",
+      "scheme_type": "brand_building_case",
+      "path": "assets/_compiled/blueprints/brand-building-deck-v1.json"
+    }
+  ],
+  "domain_expert_workers": [
+    "industry_analysis",
+    "competitor_analysis",
+    "consumer_insight",
+    "brand_positioning",
+    "brand_building",
+    "annual_planning"
+  ],
+  "default_workflow": "consulting_deck_generation/v1"
+}

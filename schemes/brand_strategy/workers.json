@@ -1,0 +1,122 @@
+{
+  "industry_analysis": {
+    "role_zh": "行业分析专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/industry_analysis",
+    "prompt_paths": {
+      "system": "prompts/industry_analysis/system.md",
+      "user": "prompts/industry_analysis/user.md",
+      "examples": "prompts/industry_analysis/examples.md"
+    },
+    "runner": "scripts/sub-agents/industry-analysis-deepresearch.mjs",
+    "validators": [
+      "validators/industry_analysis/content-check.mjs",
+      "validators/industry_analysis/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": "required",
+      "max_searches": 8
+    }
+  },
+  "competitor_analysis": {
+    "role_zh": "竞品分析专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/competitor_analysis",
+    "prompt_paths": {
+      "system": "prompts/competitor_analysis/system.md",
+      "user": "prompts/competitor_analysis/user.md",
+      "examples": "prompts/competitor_analysis/examples.md"
+    },
+    "runner": "scripts/sub-agents/competitor-analysis-deepresearch.mjs",
+    "validators": [
+      "validators/competitor_analysis/content-check.mjs",
+      "validators/competitor_analysis/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": "required",
+      "max_searches": 12
+    }
+  },
+  "consumer_insight": {
+    "role_zh": "消费者洞察专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/consumer_insight",
+    "prompt_paths": {
+      "system": "prompts/consumer_insight/system.md",
+      "user": "prompts/consumer_insight/user.md",
+      "examples": "prompts/consumer_insight/examples.md"
+    },
+    "runner": "scripts/sub-agents/consumer-insight-deepresearch.mjs",
+    "validators": [
+      "validators/consumer_insight/content-check.mjs",
+      "validators/consumer_insight/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": "optional",
+      "max_searches": 3
+    }
+  },
+  "brand_positioning": {
+    "role_zh": "品牌定位专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/brand_positioning",
+    "prompt_paths": {
+      "system": "prompts/brand_positioning/system.md",
+      "user": "prompts/brand_positioning/user.md",
+      "examples": "prompts/brand_positioning/examples.md"
+    },
+    "runner": "scripts/sub-agents/brand-positioning-deepresearch.mjs",
+    "validators": [
+      "validators/brand_positioning/content-check.mjs",
+      "validators/brand_positioning/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": false,
+      "max_searches": 0
+    }
+  },
+  "brand_building": {
+    "role_zh": "品牌建设专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/brand_building",
+    "prompt_paths": {
+      "system": "prompts/brand_building/system.md",
+      "user": "prompts/brand_building/user.md",
+      "examples": "prompts/brand_building/examples.md"
+    },
+    "runner": "scripts/sub-agents/brand-building-deepresearch.mjs",
+    "validators": [
+      "validators/brand_building/content-check.mjs",
+      "validators/brand_building/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": false,
+      "max_searches": 0
+    }
+  },
+  "annual_planning": {
+    "role_zh": "年度规划专家",
+    "worker_kind": "domain_expert",
+    "scheme_id": "brand_strategy",
+    "promptsDir": "prompts/annual_planning",
+    "prompt_paths": {
+      "system": "prompts/annual_planning/system.md",
+      "user": "prompts/annual_planning/user.md",
+      "examples": "prompts/annual_planning/examples.md"
+    },
+    "runner": "scripts/sub-agents/annual-planning-deepresearch.mjs",
+    "validators": [
+      "validators/annual_planning/content-check.mjs",
+      "validators/annual_planning/methodology-check.mjs"
+    ],
+    "tools": {
+      "web_search": "optional",
+      "max_searches": 4
+    }
+  }
+}

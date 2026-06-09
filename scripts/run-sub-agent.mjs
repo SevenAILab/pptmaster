@@ -29,7 +29,7 @@ import { buildBlueprintContextSnippet, loadMethodologyFramework } from './sub-ag
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
-const SUB_AGENTS = {
+export const SUB_AGENTS = {
   consumer_insight: {
     promptsDir: 'prompts/consumer_insight',
     validators: [consumerInsightContentCheck, consumerInsightMethodologyCheck],
