@@ -81,6 +81,30 @@ const retriedChapter = await draftChapter({
 assert.equal(retryChapterCalls, 2)
 assert.equal(retriedChapter.slides.length, 3)
 
+let retryInvalidKindCalls = 0
+const retriedInvalidKind = await draftChapter({
+  brief,
+  outline,
+  chapter: outline.chapters[1],
+  previousTakeaways: [],
+  usedTitles: [],
+  callModel: async (retrySystem, retryUser) => {
+    retryInvalidKindCalls += 1
+    assert.match(retrySystem, /empirical\/deductive\/hypothesis/)
+    if (retryInvalidKindCalls === 1) {
+      return JSON.stringify({
+        slides: ok.slides.map((slide, index) => index === 0 ? { ...slide, evidence_kind: 'secondary_research' } : slide),
+        chapter_takeaways: ['定位锚点 = A'],
+      })
+    }
+    assert.match(retryUser, /上一次章节输出校验失败/)
+    assert.match(retryUser, /evidence_kind/)
+    return JSON.stringify({ slides: ok.slides, chapter_takeaways: ['定位锚点 = A'] })
+  },
+})
+assert.equal(retryInvalidKindCalls, 2)
+assert.equal(retriedInvalidKind.slides[0].evidence_kind, 'deductive')
+
 let groupedCalls = 0
 const grouped = await draftChapter({
   brief,
@@ -134,13 +158,13 @@ await assert.rejects(draftChapter({
   callModel: async (badSystem) => badSystem.includes('第 1-2 页')
     ? JSON.stringify({
       slides: [
-        { page_no: 1, action_title: 'a' },
-        { page_no: 2, action_title: 'b' },
+        { page_no: 1, intent: 'i', action_title: 'a', layout: 'split-statement', core_points: ['a'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'a' }] },
+        { page_no: 2, intent: 'i', action_title: 'b', layout: 'split-statement', core_points: ['b'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'b' }] },
       ],
     })
     : JSON.stringify({
       slides: [
-        { page_no: 1, action_title: 'wrong' },
+        { page_no: 1, intent: 'i', action_title: 'wrong', layout: 'split-statement', core_points: ['wrong'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'wrong' }] },
       ],
       chapter_takeaways: ['t'],
     }),

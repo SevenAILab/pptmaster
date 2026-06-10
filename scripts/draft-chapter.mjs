@@ -1,5 +1,7 @@
 import { ALLOWED_BLOCK_TYPES } from './process-locks.mjs'
 
+const EVIDENCE_KINDS = new Set(['empirical', 'deductive', 'hypothesis'])
+
 function text(value) {
   return String(value ?? '').trim()
 }
@@ -51,7 +53,7 @@ export function buildChapterPrompt({
     !isWholeChapter && !isFirstGroup
       ? '本次不包含章首页，不要再写章节导入页；直接承接本章已生成页面继续推进。'
       : '',
-    '每页字段：page_no（章内 1 起）, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks。',
+    '每页字段：page_no（章内 1 起）, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks；evidence_kind 只能是 empirical/deductive/hypothesis。',
     `blocks[].type 只能使用：${ALLOWED_BLOCK_TYPES.join(', ')}。`,
     '跨章纪律：每页必须提供"已用标题清单"之外的新增信息，action_title 不得与已用标题语义重复；本章必须承接前章 takeaways 继续推进，不得重复论证前章已得出的结论。',
     '语义去重纪律：不要把同一个定位结论换一种说法反复讲；每页必须引入一个此前没有的新变量/新证据/新取舍/新机制，并在 core_points 第一条写清“本页新增：...”。目标是整份 deck 语义重复率 <=20%。',
@@ -99,6 +101,16 @@ export function buildChapterPrompt({
   return { system, user }
 }
 
+function assertChapterSchema(parsed) {
+  for (const [index, slide] of (parsed.slides || []).entries()) {
+    const page = slide?.page_no ?? index + 1
+    const kind = text(slide?.evidence_kind)
+    if (!EVIDENCE_KINDS.has(kind)) {
+      throw new Error(`page ${page}: evidence_kind 必须是 empirical/deductive/hypothesis`)
+    }
+  }
+}
+
 export function parseChapterResponse(value, { requireTakeaways = true } = {}) {
   const parsed = extractJson(value)
   if (!Array.isArray(parsed?.slides) || parsed.slides.length === 0) {
@@ -107,6 +119,7 @@ export function parseChapterResponse(value, { requireTakeaways = true } = {}) {
   if (requireTakeaways && (!Array.isArray(parsed?.chapter_takeaways) || parsed.chapter_takeaways.length === 0)) {
     throw new Error('Chapter response must contain chapter_takeaways[]')
   }
+  assertChapterSchema(parsed)
   return {
     slides: parsed.slides,
     chapter_takeaways: Array.isArray(parsed?.chapter_takeaways)
@@ -137,14 +150,15 @@ async function callAndParseChapter({
   try {
     return parseChapterResponse(typeof response === 'string' ? response : response?.text, { requireTakeaways })
   } catch (error) {
-    if (!(error instanceof SyntaxError)) throw error
+    const retryable = error instanceof SyntaxError || /evidence_kind/.test(String(error?.message || error))
+    if (!retryable) throw error
     const retryUser = [
       user,
       '',
-      '# 上一次 JSON 解析失败',
+      error instanceof SyntaxError ? '# 上一次 JSON 解析失败' : '# 上一次章节输出校验失败',
       String(error?.message || error),
       '',
-      '只重新输出合法 JSON，不要解释，不要 markdown fence；保持同样页数、page_no 与 schema。',
+      '只重新输出合法 JSON，不要解释，不要 markdown fence；保持同样页数、page_no 与 schema；evidence_kind 只能是 empirical/deductive/hypothesis。',
     ].join('\n')
     const retryResponse = await callModel(system, retryUser)
     return parseChapterResponse(typeof retryResponse === 'string' ? retryResponse : retryResponse?.text, { requireTakeaways })
