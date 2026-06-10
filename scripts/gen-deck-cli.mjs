@@ -2,10 +2,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { buildBriefFromInputs, generateDeck } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
+import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
 import { deriveResearchQuestionsLLM, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
-import { loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
+import { loadCasePattern, loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
 import { webSearch } from './web-search.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -19,6 +21,7 @@ function parseArgs(argv) {
     temperature: 0,
     pages: 5,
     research: false,
+    methodology: true,
     searchResults: 3,
   }
   const positional = []
@@ -38,6 +41,8 @@ function parseArgs(argv) {
       opts.dryRun = true
     } else if (arg === '--research') {
       opts.research = true
+    } else if (arg === '--no-methodology') {
+      opts.methodology = false
     } else if (arg === '--model') {
       opts.model = argv[index + 1]
       index += 1
@@ -93,7 +98,7 @@ function writeOutput(outputDir, result) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run] [--research]')
+    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run] [--research] [--no-methodology]')
     process.exit(2)
   }
   const outputDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-nonlocked`)
@@ -137,6 +142,30 @@ async function cliMain() {
     }, null, 2))
     console.log(`[nonlocked] research -> ${researchBrief.findings.length} findings / ${researchBrief.sources.length} sources`)
   }
+  let methodology
+  if (opts.methodology && !opts.dryRun) {
+    const schemeConfig = loadNonlockedSchemeConfig({ root: opts.root })
+    const index = loadConceptIndex({ root: opts.root })
+    const cheapCall = async (system, user) => {
+      const response = await callClaude(system, user, {
+        model: opts.model,
+        maxTokens: 800,
+        temperature: 0,
+      })
+      return response.text
+    }
+    const slugs = await selectConcepts({ brief, index, callModel: cheapCall, max: 4 })
+    const concepts = loadConceptBodies({ slugs, root: opts.root, maxCharsPerConcept: 1200 })
+    const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
+    methodology = { concepts, casePattern }
+    fs.mkdirSync(outputDir, { recursive: true })
+    fs.writeFileSync(path.join(outputDir, 'methodology-selection.json'), JSON.stringify({
+      slugs,
+      concepts: concepts.map(concept => ({ slug: concept.slug, name: concept.name })),
+      case_pattern: casePattern.file,
+    }, null, 2))
+    console.log(`[nonlocked] methodology -> ${slugs.join(', ')}`)
+  }
   let result
   try {
     result = await generateDeck({
@@ -146,7 +175,7 @@ async function cliMain() {
         maxTokens: opts.maxTokens,
         temperature: opts.temperature,
       }),
-      options: { dryRun: opts.dryRun, pages: opts.pages, researchBrief },
+      options: { dryRun: opts.dryRun, pages: opts.pages, researchBrief, methodology },
     })
   } catch (error) {
     fs.mkdirSync(outputDir, { recursive: true })
@@ -159,6 +188,15 @@ async function cliMain() {
   if (!result.locks.ok) {
     console.error(result.locks.violations.map(v => `- ${v}`).join('\n'))
     process.exit(1)
+  }
+  if (methodology) {
+    const usage = checkMethodologyUsage(result.deck)
+    fs.writeFileSync(path.join(outputDir, 'methodology-usage.json'), JSON.stringify(usage, null, 2))
+    console.log(`[nonlocked] methodology usage: ${usage.ok ? 'PASS' : 'FAIL'} (${usage.usedPageCount}/${usage.totalPages}: ${usage.frameworks.join('、')})`)
+    if (!usage.ok) {
+      console.error(usage.violations.map(violation => `- ${violation}`).join('\n'))
+      process.exit(1)
+    }
   }
 }
 
