@@ -23,5 +23,15 @@
     "brand_building",
     "annual_planning"
   ],
-  "default_workflow": "consulting_deck_generation/v1"
+  "default_workflow": "consulting_deck_generation/v1",
+  "nonlocked": {
+    "research_angles": [
+      "{industry} 的市场规模、增长趋势与最新可引用数字（优先权威行业报告与咨询机构数据）",
+      "{name} 在 {industry} 中的主要替代方案、直接竞品的定位与差异化证据（竞品从客户表单 competitors 与行业常识推导）",
+      "{audience} 的核心任务、消费或采购痛点、行为与预算趋势数据"
+    ],
+    "case_patterns": [
+      "assets/_compiled/case-patterns/brand-positioning-case-pattern.md"
+    ]
+  }
 }
