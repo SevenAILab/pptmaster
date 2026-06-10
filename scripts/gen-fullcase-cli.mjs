@@ -2,6 +2,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
 import { renderFreeformDeck } from './freeform-renderer.mjs'
@@ -110,6 +111,7 @@ async function cliMain() {
   }
   const runDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-fullcase`)
   const brief = buildBriefFromInputs({ root: opts.root, slug })
+  const runId = `fullcase-${brief.slug}`
   const schemeConfig = loadNonlockedSchemeConfig({ root: opts.root })
   const call = async (system, user, callOpts = {}) => (await callClaude(system, user, {
     model: opts.model,
@@ -153,6 +155,16 @@ async function cliMain() {
       fs.writeFileSync(researchPath, JSON.stringify({ questions, ...researchBrief }, null, 2))
       console.log(`[fullcase] research -> ${researchBrief.findings.length} findings / ${researchBrief.sources.length} sources`)
     }
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'research_completed',
+      metadata: {
+        findings: researchBrief.findings?.length || 0,
+        sources: researchBrief.sources?.length || 0,
+        search_calls_used: researchBrief.search_calls_used || 0,
+      },
+    })
   }
 
   const selectionPath = path.join(runDir, 'methodology-selection.json')
@@ -173,6 +185,15 @@ async function cliMain() {
     fs.writeFileSync(selectionPath, JSON.stringify(selection, null, 2))
     console.log(`[fullcase] methodology -> ${slugs.join(', ')}`)
   }
+  await appendRunEvent({
+    runDir,
+    runId,
+    eventType: 'methodology_selected',
+    metadata: {
+      slugs: selection.slugs || [],
+      count: selection.slugs?.length || 0,
+    },
+  })
 
   const concepts = loadConceptBodies({ slugs: selection.slugs, root: opts.root, maxCharsPerConcept: 1200 })
   const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
@@ -219,6 +240,12 @@ async function cliMain() {
       fs.writeFileSync(path.join(runDir, 'critic-rounds.json'), JSON.stringify(loop.rounds, null, 2))
       fs.writeFileSync(path.join(runDir, 'deck.json'), JSON.stringify(loop.deck, null, 2))
       console.log(`[fullcase] critic loop: ${loop.finalVerdict} (${loop.rounds.length} 轮)`)
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'critic_completed',
+        metadata: { finalVerdict: loop.finalVerdict, rounds: loop.rounds.length },
+      })
       if (loop.finalVerdict !== 'pass') process.exit(1)
       result.deck = loop.deck
     }
@@ -238,6 +265,12 @@ async function cliMain() {
           if (event.type === 'start') console.log(`[freeform] design start ${event.label}`)
           if (event.type === 'done') console.log(`[freeform] design done ${event.label}`)
         },
+      })
+      await appendRunEvent({
+        runDir,
+        runId,
+        eventType: 'design_completed',
+        metadata: { slides: freeform.designed.slides.length, htmlPath: freeform.htmlPath },
       })
       console.log(`[freeform] ${freeform.designed.slides.length} slides -> ${freeform.htmlPath}`)
     }
