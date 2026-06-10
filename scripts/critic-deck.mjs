@@ -1,3 +1,6 @@
+import { selectConceptsForQuery } from './methodology-kb.mjs'
+import { validateProcessLocks } from './process-locks.mjs'
+
 function text(value) {
   return String(value ?? '').trim()
 }
@@ -118,4 +121,56 @@ export function mergeRevisedSlides(deck, revisedSlides, critique) {
     ...deck,
     slides: slides.map(slide => byPage.has(slide.page_no) ? { ...slide, ...byPage.get(slide.page_no) } : slide),
   }
+}
+
+export async function runCriticLoop({
+  deck,
+  brief,
+  index,
+  callModel,
+  loadBodies,
+  maxRounds = 2,
+  processLockOptions = {},
+} = {}) {
+  if (typeof callModel !== 'function') throw new Error('runCriticLoop requires callModel')
+  if (typeof loadBodies !== 'function') throw new Error('runCriticLoop requires loadBodies')
+  let current = deck
+  const rounds = []
+  let finalVerdict = 'revise'
+
+  for (let round = 1; round <= maxRounds; round += 1) {
+    const locks = validateProcessLocks(current, processLockOptions)
+    const criticPrompt = buildCriticPrompt({ deck: current, brief, locksSummary: locks.summary })
+    const critique = parseCriticResponse(await callModel(criticPrompt.system, criticPrompt.user), current)
+    if (critique.verdict === 'pass') {
+      rounds.push({ round, critique, pulledSlugs: [], revised: false })
+      finalVerdict = 'pass'
+      break
+    }
+
+    const gaps = critique.pages.map(page => page.needs_framework).filter(Boolean)
+    let pulledSlugs = []
+    let extraConcepts = []
+    if (gaps.length && Array.isArray(index) && index.length) {
+      pulledSlugs = await selectConceptsForQuery({
+        query: gaps.join('；'),
+        index,
+        callModel,
+        max: 2,
+      })
+      extraConcepts = loadBodies(pulledSlugs)
+    }
+
+    const revisionPrompt = buildRevisionPrompt({ deck: current, brief, critique, extraConcepts })
+    const revisedRaw = extractJson(await callModel(revisionPrompt.system, revisionPrompt.user))
+    if (!Array.isArray(revisedRaw?.slides)) throw new Error('Revision response must contain slides[]')
+    current = mergeRevisedSlides(current, revisedRaw.slides, critique)
+    const postLocks = validateProcessLocks(current, processLockOptions)
+    if (!postLocks.ok) {
+      throw new Error(['修订后过程锁未通过：', ...postLocks.violations.map(violation => `  - ${violation}`)].join('\n'))
+    }
+    rounds.push({ round, critique, pulledSlugs, revised: true })
+  }
+
+  return { deck: current, rounds, finalVerdict }
 }
