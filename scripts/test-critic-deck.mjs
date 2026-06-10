@@ -67,6 +67,7 @@ const extraConcepts = [{ slug: 'jtbd', name: 'JTBD', content: 'JTBD 正文……
 const rp = buildRevisionPrompt({ deck, brief, critique, extraConcepts })
 assert.match(rp.system, /只输出.*需要修订的页|只重写/)
 assert.match(rp.system, /\[框架: 名称\]/)
+assert.match(rp.system, /blocks\[\]\.type 只能使用/)
 assert.match(rp.user, /论证薄弱/)
 assert.match(rp.user, /JTBD 正文/)
 assert.ok(!rp.user.includes('"page_no": 1,\n      "verdict": "pass"'))

@@ -1,5 +1,5 @@
 import { selectConceptsForQuery } from './methodology-kb.mjs'
-import { validateProcessLocks } from './process-locks.mjs'
+import { ALLOWED_BLOCK_TYPES, validateProcessLocks } from './process-locks.mjs'
 
 function text(value) {
   return String(value ?? '').trim()
@@ -83,6 +83,7 @@ export function buildRevisionPrompt({ deck, brief, critique, extraConcepts = [] 
     '你是资深品牌策略主笔。评审指出了若干页的问题，请只重写这些页。',
     '只输出 JSON：{"slides":[...]}，slides 里只包含需要修订的页，page_no 保持不变。',
     '每页字段与原 deck 相同：page_no, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks。',
+    `blocks[].type 只能使用：${ALLOWED_BLOCK_TYPES.join(', ')}。`,
     '修订要求：直接解决评审指出的 issues；保持与未修订页的叙事衔接；运用补充框架时在 intent 或 core_points 以 "[框架: 名称]" 标注，但禁止复述框架定义。',
     '证据规则不变：empirical 必须有真实出处；缺证据就标 hypothesis 并给 validation_method；不许编造 URL。',
   ].join('\n')
