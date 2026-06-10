@@ -197,4 +197,41 @@ assert.equal(advisoryLoop.rounds.length, 1)
 assert.equal(advisoryLoop.rounds[0].revised, false)
 assert.equal(advisoryCalls.length, 1)
 
+const finalAuditResponses = [
+  JSON.stringify({
+    verdict: 'revise',
+    pages: [
+      { page_no: 1, verdict: 'revise', issues: [{ text: '重复', severity: 'blocking' }] },
+    ],
+    overall_issues: [],
+  }),
+  JSON.stringify({
+    slides: [{
+      page_no: 1,
+      intent: '修订后',
+      action_title: '修订后判断',
+      layout: 'split-statement',
+      core_points: ['新论证'],
+      data_refs: [{ source: 'inputs/x/summary.md', type: 'client_input', source_tier: 'T1' }],
+      evidence_kind: 'deductive',
+      validation_method: '访谈验证',
+      blocks: [{ type: 'callout', text: 'x' }],
+    }],
+  }),
+  JSON.stringify({ verdict: 'pass', pages: [], overall_issues: [] }),
+]
+const finalAudited = await runCriticLoop({
+  deck: loopDeck,
+  brief: { ...brief, slug: 'x', form: { name: 'LUMA' } },
+  index,
+  loadBodies: () => [],
+  callModel: async () => finalAuditResponses.shift(),
+  maxRounds: 1,
+  processLockOptions: { minPages: 1, maxPages: 8 },
+})
+assert.equal(finalAudited.finalVerdict, 'pass')
+assert.equal(finalAudited.rounds.length, 2)
+assert.equal(finalAudited.rounds[1].finalAudit, true)
+assert.equal(finalAudited.rounds[1].revised, false)
+
 console.log('✅ critic-deck: prompt + parse passed')

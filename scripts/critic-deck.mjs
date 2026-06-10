@@ -209,5 +209,22 @@ export async function runCriticLoop({
     rounds.push({ round, critique, pulledSlugs, revised: true })
   }
 
+  const lastRound = rounds[rounds.length - 1]
+  if (finalVerdict !== 'pass' && lastRound?.revised) {
+    const locks = validateProcessLocks(current, processLockOptions)
+    const criticPrompt = buildCriticPrompt({ deck: current, brief, locksSummary: locks.summary })
+    const critique = parseCriticResponse(await callModel(criticPrompt.system, criticPrompt.user), current)
+    rounds.push({
+      round: rounds.length + 1,
+      critique,
+      pulledSlugs: [],
+      revised: false,
+      finalAudit: true,
+    })
+    if (critique.effectiveVerdict === 'pass') {
+      finalVerdict = 'pass'
+    }
+  }
+
   return { deck: current, rounds, finalVerdict }
 }
