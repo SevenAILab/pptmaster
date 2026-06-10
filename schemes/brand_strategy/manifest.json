@@ -32,6 +32,36 @@
     ],
     "case_patterns": [
       "assets/_compiled/case-patterns/brand-positioning-case-pattern.md"
+    ],
+    "required_conclusions": [
+      {
+        "id": "root_answer",
+        "label": "根问题的明确回答"
+      },
+      {
+        "id": "industry_diagnosis",
+        "label": "行业与品类诊断结论"
+      },
+      {
+        "id": "competitor_gap",
+        "label": "竞争格局与空位判断"
+      },
+      {
+        "id": "consumer_insight",
+        "label": "目标人群核心洞察"
+      },
+      {
+        "id": "positioning_statement",
+        "label": "定位陈述（品类锚点 + 差异化）"
+      },
+      {
+        "id": "rtb_chain",
+        "label": "RTB 可信理由链与证据"
+      },
+      {
+        "id": "execution_roadmap",
+        "label": "落地路径、配称与验证计划"
+      }
     ]
   }
 }

@@ -11,6 +11,8 @@ const config = loadNonlockedSchemeConfig({ root: REPO_ROOT })
 assert.ok(config.research_angles.length >= 3)
 assert.ok(config.research_angles.every(angle => !angle.includes('site:')), '研究角度模板不得包含 site: 硬编码')
 assert.ok(config.case_patterns.length >= 1)
+assert.ok(Array.isArray(config.required_conclusions) && config.required_conclusions.length >= 5)
+assert.ok(config.required_conclusions.every(item => item.id && item.label))
 
 const rendered = renderResearchAngles(['{industry} 市场规模', '{name} 的竞品', '{audience} 的痛点'], {
   name: 'LUMA',
