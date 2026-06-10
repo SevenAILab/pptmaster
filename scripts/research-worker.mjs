@@ -99,6 +99,46 @@ export function parseResearchResponse(value) {
   return parsed
 }
 
+export function buildReflectionPrompt({ question, findings = [] } = {}) {
+  const system = [
+    '你是研究质量评估员。针对一个研究问题与已获发现，判断是否足够支撑一份咨询级方案引用。',
+    '判定标准：有 3+ 独立来源、含精确数字/日期，即 sufficient=true；新搜索预计不会带来新事实也算 sufficient=true。宁停勿过投。',
+    '不足时给出 gaps（缺什么）与 next_queries（最多 2 条更收窄的搜索词，不要重复已试过的角度）。',
+    '只输出 JSON：{"sufficient":true|false,"gaps":["..."],"next_queries":["..."]}。',
+  ].join('\n')
+  const findingLines = findings.map(finding =>
+    `- ${finding.claim}（${finding.source_url || finding.source || '无来源'} / ${finding.confidence || 'med'}）`,
+  )
+  const user = [
+    '# 研究问题',
+    String(question || ''),
+    '',
+    '# 已获发现',
+    ...(findingLines.length ? findingLines : ['（无）']),
+  ].join('\n')
+  return { system, user }
+}
+
+export function parseReflectionResponse(value) {
+  const rawText = String(value || '')
+  const fenced = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
+  const raw = fenced ? fenced[1] : rawText
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error(`No JSON object in reflection response: ${rawText.slice(0, 200)}`)
+  }
+  const parsed = JSON.parse(raw.slice(start, end + 1))
+  if (typeof parsed?.sufficient !== 'boolean') {
+    throw new Error('Reflection response requires boolean sufficient')
+  }
+  return {
+    sufficient: parsed.sufficient,
+    gaps: (Array.isArray(parsed.gaps) ? parsed.gaps : []).map(text).filter(Boolean),
+    next_queries: (Array.isArray(parsed.next_queries) ? parsed.next_queries : []).map(text).filter(Boolean).slice(0, 2),
+  }
+}
+
 export function tagSources(findings = [], opts = {}) {
   const sources = []
   const idByUrl = new Map()

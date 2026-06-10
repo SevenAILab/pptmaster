@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict'
 import {
   buildQuestionPrompt,
+  buildReflectionPrompt,
   buildResearchPrompt,
   deriveResearchQuestionsLLM,
   gatherResearch,
   normalizeSearchHits,
   parseQuestionResponse,
+  parseReflectionResponse,
   parseResearchResponse,
   tagSources,
 } from './research-worker.mjs'
@@ -101,6 +103,25 @@ assert.match(user, /AI tooling budget increased 32%/)
 const parsed = parseResearchResponse('```json\n{"findings":[{"claim":"a","evidence":"b","source_url":"https://www.gartner.com/report","confidence":"high"}]}\n```')
 assert.equal(parsed.findings.length, 1)
 assert.throws(() => parseResearchResponse('无 JSON'), /No JSON object/)
+
+const rfl = buildReflectionPrompt({
+  question: '精品咖啡市场规模？',
+  findings: [{ claim: '2025 年市场 1200 亿', source_url: 'https://a.com', confidence: 'high' }],
+})
+assert.match(rfl.system, /sufficient/)
+assert.match(rfl.system, /next_queries/)
+assert.match(rfl.system, /宁停勿过投|不要过度/)
+assert.match(rfl.user, /精品咖啡市场规模/)
+assert.match(rfl.user, /1200 亿/)
+
+assert.deepEqual(
+  parseReflectionResponse('{"sufficient":false,"gaps":["缺增速"],"next_queries":["精品咖啡 年增速 2025"]}'),
+  { sufficient: false, gaps: ['缺增速'], next_queries: ['精品咖啡 年增速 2025'] },
+)
+assert.equal(parseReflectionResponse('{"sufficient":true,"gaps":[],"next_queries":[]}').sufficient, true)
+assert.equal(parseReflectionResponse('{"sufficient":false,"gaps":[],"next_queries":["a","b","c"]}').next_queries.length, 2)
+assert.throws(() => parseReflectionResponse('不是 JSON'), /No JSON/)
+assert.throws(() => parseReflectionResponse('{"gaps":[]}'), /sufficient/)
 
 const gathered = await gatherResearch({
   questions: ['AI 工具预算?'],
