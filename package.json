@@ -40,5 +40,8 @@
     "@anthropic-ai/sdk": "^0.99.0",
     "dotenv": "^16.4.0",
     "openai": "^6.39.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }
