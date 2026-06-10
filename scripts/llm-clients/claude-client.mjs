@@ -4,6 +4,10 @@ import 'dotenv/config'
 
 export const DEFAULT_CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929'
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 function requireEnv(name) {
   const value = process.env[name]
   if (!value) throw new Error(`Missing required environment variable: ${name}`)
@@ -67,6 +71,37 @@ function normalizeOpenAIBaseURL(baseURL) {
   return baseURL.replace(/\/+$/, '').endsWith('/v1')
     ? baseURL.replace(/\/+$/, '')
     : `${baseURL.replace(/\/+$/, '')}/v1`
+}
+
+export function isTransientLLMError(error) {
+  const message = String(error?.message || error || '')
+  const causeCode = String(error?.cause?.code || error?.code || '')
+  return /(?:\b(?:408|409|425|429|500|502|503|504|520|522|524)\b|fetch failed|network|timeout|temporar|rate limit|socket|other side closed|ECONNRESET|ETIMEDOUT|UND_ERR_SOCKET)/i
+    .test(`${message} ${causeCode}`)
+}
+
+export async function withTransientLLMRetry(fn, {
+  maxAttempts = Number(process.env.LLM_RETRY_ATTEMPTS || 3),
+  baseDelayMs = Number(process.env.LLM_RETRY_DELAY_MS || 800),
+  onRetry,
+} = {}) {
+  if (typeof fn !== 'function') throw new Error('withTransientLLMRetry requires fn')
+  const attempts = Math.max(1, Number(maxAttempts || 1))
+  let lastError
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fn(attempt)
+    } catch (error) {
+      lastError = error
+      if (!isTransientLLMError(error) || attempt >= attempts) throw error
+      if (typeof onRetry === 'function') {
+        await onRetry({ attempt, nextAttempt: attempt + 1, maxAttempts: attempts, error })
+      }
+      const delay = Math.max(0, Number(baseDelayMs || 0)) * attempt
+      if (delay > 0) await sleep(delay)
+    }
+  }
+  throw lastError
 }
 
 function normalizeResponsesUsage(usage = {}) {
@@ -179,13 +214,19 @@ export async function callClaude(systemPromptOrArgs, userPrompt, opts = {}) {
   const model = normalized.opts.model || DEFAULT_CLAUDE_MODEL
   if (normalized.opts.dryRun) return dryRunResponse(normalized.systemPrompt, normalized.userPrompt, model)
 
-  const wireApi = getWireApi(normalized.opts)
-  if (wireApi === 'responses') {
-    return callOpenAIResponses(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
-  }
-  if (wireApi === 'chat_completions' || wireApi === 'chat-completions') {
-    return callOpenAIChatCompletions(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
-  }
+  return withTransientLLMRetry(async () => {
+    const wireApi = getWireApi(normalized.opts)
+    if (wireApi === 'responses') {
+      return callOpenAIResponses(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
+    }
+    if (wireApi === 'chat_completions' || wireApi === 'chat-completions') {
+      return callOpenAIChatCompletions(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
+    }
 
-  return callAnthropicMessages(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
+    return callAnthropicMessages(normalized.systemPrompt, normalized.userPrompt, normalized.opts)
+  }, {
+    maxAttempts: normalized.opts.retryAttempts ?? normalized.opts.llmRetryAttempts,
+    baseDelayMs: normalized.opts.retryDelayMs ?? normalized.opts.llmRetryDelayMs,
+    onRetry: normalized.opts.onRetry,
+  })
 }
