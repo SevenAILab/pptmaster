@@ -1,0 +1,101 @@
+import assert from 'node:assert/strict'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import { runFullcasePipeline } from './fullcase-pipeline.mjs'
+
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pptmaster-fullcase-'))
+try {
+  const brief = {
+    slug: 'pipe-test',
+    form: { name: 'LUMA', industry: '精品咖啡', target_audience: ['白领'], render_style: 'swiss' },
+    formText: '{"name":"LUMA","industry":"精品咖啡"}',
+    summary: '摘要',
+    strategicQuestion: '# 根问题\n如何定位？',
+  }
+  const requiredConclusions = [{ id: 'root_answer', label: '根问题回答' }]
+  const stubOutline = {
+    narrative: '弧',
+    chapters: [1, 2, 3, 4].map(no => ({
+      chapter_no: no,
+      title: `章${no}`,
+      goal: `g${no}`,
+      pages_budget: 5,
+      key_questions: ['q'],
+      covers: no === 1 ? ['root_answer'] : [],
+    })),
+  }
+  const chapterStub = chapter => JSON.stringify({
+    slides: Array.from({ length: 5 }, (_, i) => ({
+      page_no: i + 1,
+      intent: i === 0 ? '章节导入' : `章${chapter.chapter_no} 页${i + 1} 的推进`,
+      action_title: `章${chapter.chapter_no} 第 ${i + 1} 个不同判断：${'ABCDE'[i]}${chapter.chapter_no}`,
+      layout: i === 0 ? 'hero-statement' : 'split-statement',
+      core_points: [`章${chapter.chapter_no}-${i + 1} 论点`],
+      data_refs: [{ source: 'inputs/pipe-test/summary.md', type: 'client_input', source_tier: 'T1' }],
+      evidence_kind: 'deductive',
+      validation_method: '访谈验证',
+      blocks: [{ type: 'callout', text: `c${chapter.chapter_no}${i}` }],
+    })),
+    chapter_takeaways: [`章${chapter.chapter_no} 结论`],
+  })
+  let outlineCalls = 0
+  const callModel = async (system, user) => {
+    if (system.includes('叙事大纲')) {
+      outlineCalls += 1
+      return JSON.stringify(stubOutline)
+    }
+    const match = user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/)
+    const chapter = stubOutline.chapters[Number(match[1]) - 1]
+    return chapterStub(chapter)
+  }
+
+  const runDir = path.join(tmp, 'run')
+  const result = await runFullcasePipeline({
+    brief,
+    runDir,
+    callModel,
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30 },
+  })
+  assert.equal(outlineCalls, 1)
+  assert.equal(result.deck.slides.length, 20)
+  assert.deepEqual(result.deck.slides.map(slide => slide.page_no), Array.from({ length: 20 }, (_, i) => i + 1))
+  assert.equal(result.locks.ok, true, result.locks.violations?.join('; '))
+  assert.equal(result.deck.metadata.schema, 'fullcase-deck-v1')
+  assert.ok(fs.existsSync(path.join(runDir, 'outline.json')))
+  assert.ok(fs.existsSync(path.join(runDir, 'chapters', 'ch-1.json')))
+  assert.ok(fs.existsSync(path.join(runDir, 'chapters', 'ch-4.json')))
+
+  let chapterCallCount = 0
+  const countingModel = async (system, user) => {
+    if (system.includes('叙事大纲')) return JSON.stringify(stubOutline)
+    chapterCallCount += 1
+    const match = user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/)
+    return chapterStub(stubOutline.chapters[Number(match[1]) - 1])
+  }
+  const resumed = await runFullcasePipeline({
+    brief,
+    runDir,
+    callModel: countingModel,
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30 },
+  })
+  assert.equal(resumed.deck.slides.length, 20)
+  assert.equal(chapterCallCount, 0, 'resume 时已完成章不应再调模型')
+
+  const badModel = async system => system.includes('叙事大纲')
+    ? JSON.stringify({ narrative: 'x', chapters: [{ chapter_no: 1, title: 't', goal: 'g', pages_budget: 50, key_questions: [], covers: [] }] })
+    : '{}'
+  await assert.rejects(runFullcasePipeline({
+    brief,
+    runDir: path.join(tmp, 'run-bad'),
+    callModel: badModel,
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30 },
+  }), /大纲校验未通过/)
+} finally {
+  fs.rmSync(tmp, { recursive: true, force: true })
+}
+
+console.log('✅ fullcase-pipeline: outline -> chapters(resume) -> merge -> locks passed')
