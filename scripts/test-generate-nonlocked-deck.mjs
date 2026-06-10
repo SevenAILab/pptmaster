@@ -48,7 +48,7 @@ try {
   assert.match(system, /外部 T1\/T2|真实来源/)
   assert.match(user, /strategic-question\.md/)
   assert.match(user, /PPTAgent 如何被清晰识别/)
-  assert.match(user, /每页都必须回扣根问题/)
+  assert.match(user, /每页都必须回扣/)
 
   const researchBrief = {
     findings: [
@@ -70,6 +70,19 @@ try {
   assert.match(withResearch.user, /AI 工具预算 32%/)
   assert.match(withResearch.user, /gartner\.com/)
   assert.match(withResearch.system, /data_refs.*真实来源|真实来源.*data_refs/)
+
+  const withMethodology = buildGenerationPrompt(brief, {
+    methodology: {
+      concepts: [{ slug: 'jtbd', name: 'JTBD', content: 'JTBD：用户雇佣产品完成任务……' }],
+      casePattern: { name: 'brand-positioning-case-pattern', content: '定位案推导结构……' },
+    },
+  })
+  assert.match(withMethodology.user, /Seven 方法论框架/)
+  assert.match(withMethodology.user, /\[框架: JTBD\]/)
+  assert.match(withMethodology.user, /范例 pattern/)
+  assert.match(withMethodology.system, /\[框架: 名称\]/)
+  assert.match(withMethodology.system, /禁止.*复述/)
+  assert.ok(!buildGenerationPrompt(brief).user.includes('Seven 方法论框架'))
 
   const response = '```json\n{"slides":[{"page_no":1,"intent":"回答根问题","action_title":"PPTAgent 应先占据品牌策划方案 Agent 心智","layout":"split-statement","core_points":["不是更快做页面，而是替代基础品牌策划提案","先服务高频提案人群"],"data_refs":[{"source":"inputs/same-source/summary.md","type":"client_input","source_tier":"T1"}],"evidence_kind":"deductive","validation_method":"访谈 5 位目标用户验证说法是否清晰","blocks":[{"type":"bullet_list","items":["a"]}]}]}\n```'
   const parsed = parseGeneratedDeck(response)

@@ -59,6 +59,7 @@ export function buildGenerationPrompt(brief, options = {}) {
   const researchBrief = options.researchBrief
   const researchSection = formatResearchBrief(researchBrief)
   const hasResearch = Boolean(researchSection)
+  const methodologySection = formatMethodologySection(options.methodology)
   const system = [
     '你是 PPTAgent 的资深品牌策略主笔，目标是生成一份少而精的非锁页小闭环 deck。',
     `只输出 JSON，不要 Markdown，不要解释。${pageRequirement}`,
@@ -72,10 +73,13 @@ export function buildGenerationPrompt(brief, options = {}) {
     hasResearch
       ? '外部证据：至少 2 页引用研究简报中的外部 T1/T2 真实来源，在页面文本中写出对应精确数字，并在 data_refs 写入真实来源 URL、source_tier、type。'
       : '外部证据：若使用公开来源，data_refs 必须写真实来源 URL、source_tier、type；无来源的判断显式标为假设。',
+    methodologySection
+      ? `方法论运用：至少 ${Math.max(2, Math.ceil((exactPages || minPages) / 3))} 页必须显式运用所给框架，运用页须在 intent 或某条 core_points 中以 "[框架: 名称]" 格式标注；框架必须落到该客户的具体判断，禁止任何一页复述框架定义本身。`
+      : '',
     '每页 core_points 最多 3 条，blocks 最多 2 个；不要输出 thinking_log、分析过程或额外字段。',
     'layout 使用现有 smart layout 名称，例如 split-statement、framework-grid、timeline、pyramid、matrix-2x2、hero-statement。',
     'action_title 必须是完整判断句，不要只写页面主题。',
-  ].join('\n')
+  ].filter(Boolean).join('\n')
   const user = [
     `input slug: ${brief.slug}`,
     '',
@@ -88,11 +92,12 @@ export function buildGenerationPrompt(brief, options = {}) {
     '## strategic-question.md',
     brief.strategicQuestion,
     researchSection,
+    methodologySection,
     '',
     '## 生成要求',
     `- ${pageRequirement}`,
-    '- 每页都必须回扣根问题，说明它如何证明 PPTAgent 不是“做得更快的 PPT 工具”，而是“品牌策划方案 Agent”。',
-    '- 优先使用同源输入中的事实：客户资料、Seven 方法论资产、6 个品牌策略 Sub-Agent、HTML 横向翻页 PPT、竞品资料来源。',
+    '- 每页都必须回扣 strategic-question.md 的根问题，每页推进一个针对该客户的新判断。',
+    '- 优先使用同源输入中的事实：客户表单、资料摘要与已核实研究发现。',
     '- data_refs.source 可以引用 inputs/<slug>/summary.md、inputs/<slug>/form.json、inputs/<slug>/strategic-question.md 或摘要中列出的公开 URL。',
     hasResearch
       ? '- 有外部研究发现支撑的页必须优先引用研究简报的真实 URL；引用研究发现时不要只写 source_id，data_refs.source 必须是完整 URL。'
@@ -100,6 +105,19 @@ export function buildGenerationPrompt(brief, options = {}) {
     '- 若是建议性判断但缺真实证据，明确标 hypothesis，并写后续验证方法。',
   ].join('\n')
   return { system, user }
+}
+
+function formatMethodologySection(methodology) {
+  const concepts = Array.isArray(methodology?.concepts) ? methodology.concepts : []
+  if (concepts.length === 0) return ''
+  const blocks = concepts.map(concept => `### [框架: ${concept.name}]\n${concept.content}`)
+  const casePattern = methodology?.casePattern
+  return [
+    '',
+    '## Seven 方法论框架（本案必须运用）',
+    ...blocks,
+    ...(casePattern ? ['', '## 范例 pattern（学结构与推导方式，不抄内容）', casePattern.content] : []),
+  ].join('\n')
 }
 
 function formatResearchBrief(researchBrief) {
@@ -232,23 +250,28 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
 }
 
 export function buildDryRunDeck(brief) {
+  const form = brief.form || {}
+  const name = normalizeString(form.name) || '客户品牌'
+  const industry = normalizeString(form.industry) || '所在行业'
+  const audienceList = asArray(form.target_audience).map(normalizeString).filter(Boolean)
+  const audience = audienceList[0] || '目标人群'
   const source = `inputs/${brief.slug}/summary.md`
   const rootQuestion = brief.strategicQuestion
     .split('\n')
     .find(line => line.includes('根问题')) || '回扣根问题'
   const titles = [
-    '新品类锚点应落在“品牌策划方案 Agent”，避免滑回通用演示工具',
-    '首批客群应锁定高频提案顾问与小型咨询团队，先吃最痛任务',
-    '可信理由来自 Sub-Agent 分工、Seven 方法论资产和真实案例库组合',
-    'HTML 横向翻页只是交付外壳，销售话术要强调策略判断与可提案结果',
-    '上线验证要追踪用户能否复述品类名、使用场景和替代对象',
+    `${name} 的品类锚点应重新定义，避免落入 ${industry} 的同质化竞争`,
+    `首批客群应锁定 ${audience}，优先解决其最高频最痛的任务`,
+    `${name} 的可信理由应来自现有资产与可验证的差异化证据`,
+    '交付与传播形态应服务于价值表达，聚焦客户可感知的结果',
+    `上线后应持续验证 ${audience} 能否准确复述品类名、使用场景与替代对象`,
   ]
   const pointSets = [
-    ['竞争参照从 presentation creation 上移到品牌策略交付。', '第一心智必须能区隔 Gamma/WPS/AiPPT/ChatPPT。'],
-    ['顾问与小团队拥有更高频、更明确的方案生产压力。', '泛甲方市场部可作为第二阶段扩展人群。'],
-    ['方法论资产决定判断质量，Sub-Agent 分工决定生产稳定性。', '案例库提供从框架到表达的可信样例。'],
-    ['页面形态服务于提案体验，不应遮蔽策略价值。', '对外表达应少讲自动排版，多讲可被客户讨论的结论。'],
-    ['用访谈检查“品牌策划方案 Agent”是否被准确复述。', '用转化页 A/B 测试替代对象表述是否降低误解。'],
+    [`竞争参照系需要从 ${industry} 的默认品类上移一层。`, '第一心智联想必须能与主要竞品区隔。'],
+    [`${audience} 具有更明确的方案需求与决策路径。`, '第二阶段再扩展到泛人群。'],
+    ['资产盘点决定差异化是否站得住。', '证据链给出从主张到信任的样例。'],
+    ['形态服务于体验，不应遮蔽核心价值。', '对外表达多讲可被讨论的结论。'],
+    ['用访谈检查品类名是否被准确复述。', '用转化实验验证表述是否降低误解。'],
   ]
   return {
     slides: titles.map((title, index) => ({
