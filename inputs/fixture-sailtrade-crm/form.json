@@ -1,0 +1,12 @@
+{
+  "name": "SailTrade",
+  "industry": "外贸 B2B SaaS（出口企业 CRM）",
+  "stage": "PMF 后增长期",
+  "core_products": ["外贸客户管理 CRM", "邮件营销自动化", "海关数据线索挖掘"],
+  "target_audience": ["中小出口企业老板", "外贸业务团队负责人"],
+  "competitors": ["小满科技 OKKI", "孚盟", "纷享销客"],
+  "budget_level": "中等偏上",
+  "tonality": "务实、增长导向",
+  "render_style": "swiss",
+  "expected_pages": 12
+}

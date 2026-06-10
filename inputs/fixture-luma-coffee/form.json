@@ -1,0 +1,12 @@
+{
+  "name": "LUMA Coffee",
+  "industry": "精品咖啡连锁",
+  "stage": "区域扩张期",
+  "core_products": ["手冲精品咖啡", "创意特调", "咖啡豆零售"],
+  "target_audience": ["一线城市年轻白领", "咖啡爱好者"],
+  "competitors": ["Manner", "M Stand", "瑞幸"],
+  "budget_level": "中等",
+  "tonality": "克制、专业、有温度",
+  "render_style": "swiss",
+  "expected_pages": 12
+}

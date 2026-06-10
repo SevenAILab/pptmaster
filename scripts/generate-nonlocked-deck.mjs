@@ -61,7 +61,7 @@ export function buildGenerationPrompt(brief, options = {}) {
   const hasResearch = Boolean(researchSection)
   const methodologySection = formatMethodologySection(options.methodology)
   const system = [
-    '你是 PPTAgent 的资深品牌策略主笔，目标是生成一份少而精的非锁页小闭环 deck。',
+    '你是资深品牌策略主笔，目标是生成一份少而精的非锁页小闭环 deck。',
     `只输出 JSON，不要 Markdown，不要解释。${pageRequirement}`,
     '每页都必须推进一个新判断，并明确回扣 strategic-question.md 的根问题。',
     '不要把 80 页 blueprint 的章节机械压缩；请用顾问判断取舍，只保留最能证明定位的主线。',

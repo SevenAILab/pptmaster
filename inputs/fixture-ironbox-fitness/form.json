@@ -1,0 +1,12 @@
+{
+  "name": "IronBox",
+  "industry": "24 小时自助健身舱连锁",
+  "stage": "0-1 验证期",
+  "core_products": ["24h 自助健身舱", "按次付费团课", "AI 体测与训练计划"],
+  "target_audience": ["三四线城市健身新手", "下班后碎片时间锻炼人群"],
+  "competitors": ["乐刻", "超级猩猩", "Keep 线下店"],
+  "budget_level": "有限",
+  "tonality": "亲切、去专业门槛",
+  "render_style": "swiss",
+  "expected_pages": 12
+}
