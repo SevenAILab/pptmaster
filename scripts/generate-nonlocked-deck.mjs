@@ -145,19 +145,22 @@ export function parseGeneratedDeck(text) {
   return parsed
 }
 
-function normalizeRef(ref, brief) {
+function normalizeRef(ref) {
   if (typeof ref === 'string') {
-    return { source: ref, type: 'unknown', source_tier: 'T3' }
+    const source = normalizeString(ref)
+    if (!source) return null
+    return { source, type: 'unknown', source_tier: 'T3' }
   }
   const source = normalizeString(ref?.source || ref?.source_url || ref?.url)
-  const inferred = source && isHttpSource(source) ? classifySource(source) : {}
-  const httpSource = source && isHttpSource(source)
+  if (!source) return null
+  const httpSource = isHttpSource(source)
+  const inferred = httpSource ? classifySource(source) : {}
   return {
     ...ref,
-    source: source || `inputs/${brief?.slug || 'unknown'}/summary.md`,
-    source_tier: httpSource ? inferred.source_tier : (normalizeString(ref?.source_tier) || inferred.source_tier || 'T3'),
-    source_label: httpSource ? inferred.source_label : (normalizeString(ref?.source_label) || inferred.source_label),
-    type: httpSource ? inferred.type : (normalizeString(ref?.type) || inferred.type || 'client_input'),
+    source,
+    source_tier: httpSource ? inferred.source_tier : (normalizeString(ref?.source_tier) || 'T3'),
+    source_label: httpSource ? inferred.source_label : normalizeString(ref?.source_label),
+    type: httpSource ? inferred.type : (normalizeString(ref?.type) || 'client_input'),
     model_source_tier: httpSource && normalizeString(ref?.source_tier) ? normalizeString(ref.source_tier) : undefined,
     model_source_type: httpSource && normalizeString(ref?.type) ? normalizeString(ref.type) : undefined,
   }
@@ -191,7 +194,7 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
     const corePoints = asArray(slide?.core_points).map(normalizeString).filter(Boolean)
     const blocks = (Array.isArray(slide?.blocks) && slide.blocks.length ? slide.blocks : fallbackBlocks({ ...slide, core_points: corePoints }))
       .map(normalizeBlock)
-    const dataRefs = asArray(slide?.data_refs).map(ref => normalizeRef(ref, brief))
+    const dataRefs = asArray(slide?.data_refs).map(normalizeRef).filter(Boolean)
     const intent = normalizeString(slide?.intent || slide?.page_intent)
     return {
       page_no: pageNo,

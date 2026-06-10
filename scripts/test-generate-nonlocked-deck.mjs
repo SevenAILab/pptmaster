@@ -11,6 +11,7 @@ import {
   normalizeGeneratedDeck,
   parseGeneratedDeck,
 } from './generate-nonlocked-deck.mjs'
+import { validateProcessLocks } from './process-locks.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -112,6 +113,24 @@ try {
   }, { brief })
   assert.equal(httpTierNormalized.slides[0].data_refs[0].source_tier, 'T3')
   assert.equal(httpTierNormalized.slides[0].data_refs[0].model_source_tier, 'T1')
+
+  const unsourced = normalizeGeneratedDeck({
+    slides: [{
+      page_no: 1,
+      intent: '验证红线',
+      action_title: '无来源引用不能被伪造成可追溯',
+      layout: 'split-statement',
+      core_points: ['a'],
+      data_refs: [{ type: 'industry_report' }],
+      evidence_kind: 'empirical',
+      validation_method: '',
+      blocks: [{ type: 'callout', text: 'x' }],
+    }],
+  }, { brief })
+  assert.deepEqual(unsourced.slides[0].data_refs, [])
+  const unsourcedLocks = validateProcessLocks(unsourced, { minPages: 1, maxPages: 8 })
+  assert.equal(unsourcedLocks.ok, false)
+  assert.ok(unsourcedLocks.violations.some(v => v.includes('缺可追溯 data_refs')))
 
   const stubDeck = {
     slides: Array.from({ length: 5 }, (_, index) => ({
