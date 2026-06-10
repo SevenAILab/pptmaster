@@ -8,7 +8,7 @@ import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
-import { deriveResearchQuestionsLLM, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
+import { deriveResearchQuestionsLLM, gatherResearch, gatherResearchDeep, normalizeSearchHits } from './research-worker.mjs'
 import { loadCasePattern, loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
 import { webSearch } from './web-search.mjs'
 
@@ -28,6 +28,7 @@ function parseArgs(argv) {
     outlineAttempts: 2,
     maxPagesPerChapterCall: 2,
     searchResults: 3,
+    researchRounds: 2,
   }
   const positional = []
   for (let index = 0; index < argv.length; index += 1) {
@@ -58,6 +59,10 @@ function parseArgs(argv) {
       opts.searchResults = Number(argv[++index])
     } else if (arg.startsWith('--search-results=')) {
       opts.searchResults = Number(arg.slice('--search-results='.length))
+    } else if (arg === '--research-rounds') {
+      opts.researchRounds = Number(argv[++index])
+    } else if (arg.startsWith('--research-rounds=')) {
+      opts.researchRounds = Number(arg.slice('--research-rounds='.length))
     } else if (arg === '--outline-attempts') {
       opts.outlineAttempts = Number(argv[++index])
     } else if (arg.startsWith('--outline-attempts=')) {
@@ -86,7 +91,7 @@ function parseArgs(argv) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--outline-attempts=2] [--max-pages-per-chapter-call=2] [--pages=20,30] [--output=<dir>]')
+    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--research-rounds=2] [--outline-attempts=2] [--max-pages-per-chapter-call=2] [--pages=20,30] [--output=<dir>]')
     process.exit(2)
   }
   const runDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-fullcase`)
@@ -109,18 +114,28 @@ async function cliMain() {
     } else {
       const angles = renderResearchAngles(schemeConfig.research_angles, brief.form)
       const questions = await deriveResearchQuestionsLLM({ brief, angles, callModel: cheapCall })
-      researchBrief = await gatherResearch({
-        questions,
-        search: async question => normalizeSearchHits(await webSearch(question, {
+      const search = async question => normalizeSearchHits(await webSearch(question, {
           maxResults: opts.searchResults,
           slug,
-        })),
-        callModel: async (system, user) => call(system, user, {
+        }))
+      const researchCallModel = async (system, user) => call(system, user, {
           maxTokens: Math.min(Math.max(opts.maxTokens, 2000), 3000),
           temperature: 0,
-        }),
-        maxResultsPerQuestion: opts.searchResults,
-      })
+        })
+      researchBrief = opts.researchRounds > 1
+        ? await gatherResearchDeep({
+          questions,
+          search,
+          callModel: researchCallModel,
+          maxRounds: opts.researchRounds,
+          maxResultsPerQuery: opts.searchResults,
+        })
+        : await gatherResearch({
+          questions,
+          search,
+          callModel: researchCallModel,
+          maxResultsPerQuestion: opts.searchResults,
+        })
       fs.writeFileSync(researchPath, JSON.stringify({ questions, ...researchBrief }, null, 2))
       console.log(`[fullcase] research -> ${researchBrief.findings.length} findings / ${researchBrief.sources.length} sources`)
     }
@@ -162,6 +177,7 @@ async function cliMain() {
         maxPages: opts.maxPages,
         outlineAttempts: opts.outlineAttempts,
         maxPagesPerChapterCall: opts.maxPagesPerChapterCall,
+        outlineOnly: opts.outlineOnly,
       },
     })
     if (opts.outlineOnly) {

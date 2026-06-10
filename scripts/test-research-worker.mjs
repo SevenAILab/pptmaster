@@ -5,6 +5,7 @@ import {
   buildResearchPrompt,
   deriveResearchQuestionsLLM,
   gatherResearch,
+  gatherResearchDeep,
   normalizeSearchHits,
   parseQuestionResponse,
   parseReflectionResponse,
@@ -202,5 +203,20 @@ await assert.rejects(researchQuestionWithReflection({
   search: async () => ({ results: [] }),
   callModel: async () => '{"findings":[]}',
 }), /No search results/)
+
+const deep = await gatherResearchDeep({
+  questions: ['q1', 'q2'],
+  maxRounds: 1,
+  search: async () => ({ results: [{ url: 'https://www.gartner.com/r', title: 'G', snippet: 'AI budget +32%' }] }),
+  callModel: async deepSystem => deepSystem.includes('研究质量评估员')
+    ? '{"sufficient":true,"gaps":[],"next_queries":[]}'
+    : JSON.stringify({ findings: [{ claim: 'AI 预算 +32%', evidence: '32%', source_url: 'https://www.gartner.com/r', confidence: 'high' }] }),
+})
+assert.ok(deep.findings.length >= 1)
+assert.equal(deep.sources.length, 1)
+assert.equal(deep.findings[0].source_id, 1)
+assert.equal(deep.findings[0].source_tier, 'T2')
+assert.ok(deep.search_calls_used >= 2)
+assert.ok(Array.isArray(deep.per_question) && deep.per_question.length === 2)
 
 console.log('✅ research-worker: derive + normalize + tag + parse + gather passed')

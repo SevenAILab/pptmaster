@@ -7,7 +7,7 @@ import { runCriticLoop } from './critic-deck.mjs'
 import { buildBriefFromInputs, generateDeck } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
-import { deriveResearchQuestionsLLM, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
+import { deriveResearchQuestionsLLM, gatherResearch, gatherResearchDeep, normalizeSearchHits } from './research-worker.mjs'
 import { loadCasePattern, loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
 import { webSearch } from './web-search.mjs'
 
@@ -25,6 +25,7 @@ function parseArgs(argv) {
     methodology: true,
     critic: false,
     searchResults: 3,
+    researchRounds: 1,
   }
   const positional = []
   for (let index = 0; index < argv.length; index += 1) {
@@ -67,6 +68,11 @@ function parseArgs(argv) {
       index += 1
     } else if (arg.startsWith('--search-results=')) {
       opts.searchResults = Number(arg.slice('--search-results='.length))
+    } else if (arg === '--research-rounds') {
+      opts.researchRounds = Number(argv[index + 1])
+      index += 1
+    } else if (arg.startsWith('--research-rounds=')) {
+      opts.researchRounds = Number(arg.slice('--research-rounds='.length))
     } else {
       positional.push(arg)
     }
@@ -124,22 +130,32 @@ async function cliMain() {
         return response.text
       },
     })
-    researchBrief = await gatherResearch({
-      questions,
-      search: async question => normalizeSearchHits(await webSearch(question, {
+    const search = async question => normalizeSearchHits(await webSearch(question, {
         maxResults: opts.searchResults,
         slug,
-      })),
-      callModel: async (system, user) => {
-        const response = await callClaude(system, user, {
-          model: opts.model,
-          maxTokens: Math.min(Math.max(opts.maxTokens, 2000), 3000),
-          temperature: 0,
-        })
-        return response.text
-      },
-      maxResultsPerQuestion: opts.searchResults,
-    })
+      }))
+    const researchCallModel = async (system, user) => {
+      const response = await callClaude(system, user, {
+        model: opts.model,
+        maxTokens: Math.min(Math.max(opts.maxTokens, 2000), 3000),
+        temperature: 0,
+      })
+      return response.text
+    }
+    researchBrief = opts.researchRounds > 1
+      ? await gatherResearchDeep({
+        questions,
+        search,
+        callModel: researchCallModel,
+        maxRounds: opts.researchRounds,
+        maxResultsPerQuery: opts.searchResults,
+      })
+      : await gatherResearch({
+        questions,
+        search,
+        callModel: researchCallModel,
+        maxResultsPerQuestion: opts.searchResults,
+      })
     fs.writeFileSync(path.join(outputDir, 'research-brief.json'), JSON.stringify({
       questions,
       ...researchBrief,

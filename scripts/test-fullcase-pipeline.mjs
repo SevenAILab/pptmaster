@@ -84,6 +84,24 @@ try {
   assert.equal(resumed.deck.slides.length, 20)
   assert.equal(chapterCallCount, 0, 'resume 时已完成章不应再调模型')
 
+  let outlineOnlyChapterCalls = 0
+  const outlineOnlyRunDir = path.join(tmp, 'run-outline-only')
+  const outlined = await runFullcasePipeline({
+    brief,
+    runDir: outlineOnlyRunDir,
+    callModel: async (system, user) => {
+      if (system.includes('叙事大纲')) return JSON.stringify(stubOutline)
+      outlineOnlyChapterCalls += 1
+      return chapterStub(stubOutline.chapters[0])
+    },
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30, outlineOnly: true },
+  })
+  assert.equal(outlined.outline.chapters.length, 4)
+  assert.equal(outlineOnlyChapterCalls, 0)
+  assert.ok(fs.existsSync(path.join(outlineOnlyRunDir, 'outline.json')))
+  assert.equal(fs.existsSync(path.join(outlineOnlyRunDir, 'deck.json')), false)
+
   const badModel = async system => system.includes('叙事大纲')
     ? JSON.stringify({ narrative: 'x', chapters: [{ chapter_no: 1, title: 't', goal: 'g', pages_budget: 50, key_questions: [], covers: [] }] })
     : '{}'

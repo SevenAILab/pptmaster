@@ -36,6 +36,7 @@ export async function runFullcasePipeline({
   const maxPages = Number(options.maxPages ?? 30)
   const outlineAttempts = Number(options.outlineAttempts ?? 1)
   const maxPagesPerChapterCall = Number(options.maxPagesPerChapterCall || Infinity)
+  const outlineOnly = Boolean(options.outlineOnly)
   const runId = `fullcase-${brief.slug}`
 
   const outlinePath = path.join(runDir, 'outline.json')
@@ -89,6 +90,9 @@ export async function runFullcasePipeline({
     eventType: 'outline_ready',
     metadata: { chapters: outline.chapters.length },
   })
+  if (outlineOnly) {
+    return { outline, runDir }
+  }
 
   const chapterResults = []
   const takeaways = []

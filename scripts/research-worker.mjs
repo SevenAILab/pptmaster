@@ -260,3 +260,40 @@ export async function researchQuestionWithReflection({
   }
   return { question, findings, rounds_used: roundsUsed, search_calls_used: searchCallsUsed }
 }
+
+export async function gatherResearchDeep({
+  questions,
+  search,
+  callModel,
+  sourceOptions,
+  maxRounds = 2,
+  maxResultsPerQuery = 3,
+} = {}) {
+  if (!Array.isArray(questions) || questions.length === 0) {
+    throw new Error('gatherResearchDeep requires questions[]')
+  }
+  if (typeof search !== 'function') throw new Error('gatherResearchDeep requires search')
+  if (typeof callModel !== 'function') throw new Error('gatherResearchDeep requires callModel')
+  const allFindings = []
+  const perQuestion = []
+  let searchCallsUsed = 0
+  for (const question of questions) {
+    const result = await researchQuestionWithReflection({
+      question,
+      search,
+      callModel,
+      maxRounds,
+      maxResultsPerQuery,
+    })
+    allFindings.push(...result.findings)
+    searchCallsUsed += result.search_calls_used
+    perQuestion.push({
+      question,
+      rounds_used: result.rounds_used,
+      search_calls_used: result.search_calls_used,
+      findings: result.findings.length,
+    })
+  }
+  const tagged = tagSources(allFindings, sourceOptions)
+  return { ...tagged, search_calls_used: searchCallsUsed, per_question: perQuestion }
+}
