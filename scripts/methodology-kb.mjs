@@ -103,6 +103,32 @@ export async function selectConcepts({ brief, index, callModel, max = 4 } = {}) 
   return parseConceptSelection(typeof response === 'string' ? response : response?.text, index, { max })
 }
 
+export function buildQuerySelectionPrompt({ query, index, max = 2 } = {}) {
+  const system = [
+    '你是品牌策略方法论路由器。现在一份方案的某些页被评审指出论证缺口，请从框架清单中挑选最能补上该缺口的框架。',
+    `最多选 ${max} 个，可以只选 1 个。只能从清单中的 slug 里选，不要发明新的。`,
+    '只输出 JSON：{"selected":[{"slug":"...","why":"一句话"}]}，不要解释。',
+  ].join('\n')
+  const lines = (index || []).map(item =>
+    `- ${item.slug} | ${item.name} | ${text(item.definition).slice(0, 80)}`,
+  )
+  const user = [
+    '# 评审指出的缺口',
+    String(query || ''),
+    '',
+    '# 可选框架清单',
+    ...lines,
+  ].join('\n')
+  return { system, user }
+}
+
+export async function selectConceptsForQuery({ query, index, callModel, max = 2 } = {}) {
+  if (typeof callModel !== 'function') throw new Error('selectConceptsForQuery requires callModel')
+  const { system, user } = buildQuerySelectionPrompt({ query, index, max })
+  const response = await callModel(system, user)
+  return parseConceptSelection(typeof response === 'string' ? response : response?.text, index, { max })
+}
+
 export function loadConceptBodies({ slugs, root, maxCharsPerConcept = 1200 } = {}) {
   if (!root) throw new Error('loadConceptBodies requires root')
   return (slugs || []).map(slug => {

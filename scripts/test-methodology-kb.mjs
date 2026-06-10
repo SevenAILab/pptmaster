@@ -3,11 +3,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   buildConceptSelectionPrompt,
+  buildQuerySelectionPrompt,
   loadConceptBodies,
   loadConceptIndex,
   parseConceptDoc,
   parseConceptSelection,
   selectConcepts,
+  selectConceptsForQuery,
 } from './methodology-kb.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -67,5 +69,17 @@ assert.ok(bodies[0].name.length > 0)
 assert.ok(bodies[0].content.length <= 500)
 assert.ok(!bodies[0].content.startsWith('---'))
 assert.throws(() => loadConceptBodies({ slugs: ['nope-xyz'], root: REPO_ROOT }), /missing/i)
+
+const qsp = buildQuerySelectionPrompt({ query: '这页缺少人群任务视角的论证', index, max: 2 })
+assert.match(qsp.system, /最多选 2/)
+assert.match(qsp.user, /人群任务视角/)
+assert.ok(qsp.user.includes(index[0].slug))
+const pulled = await selectConceptsForQuery({
+  query: '缺少人群任务视角',
+  index,
+  max: 2,
+  callModel: async () => '{"selected":[{"slug":"jtbd","why":"补任务视角"}]}',
+})
+assert.deepEqual(pulled, ['jtbd'])
 
 console.log('✅ methodology-kb: parse + index + select + bodies passed')
