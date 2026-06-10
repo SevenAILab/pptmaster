@@ -143,13 +143,17 @@ export function parseResearchResponse(value) {
   return parsed
 }
 
-export function buildReflectionPrompt({ question, findings = [] } = {}) {
-  const system = [
+export function buildReflectionPrompt({ question, findings = [], strongSourceHint = false } = {}) {
+  const systemLines = [
     '你是研究质量评估员。针对一个研究问题与已获发现，判断是否足够支撑一份咨询级方案引用。',
     '判定标准：有 3+ 独立来源、含精确数字/日期，即 sufficient=true；新搜索预计不会带来新事实也算 sufficient=true。宁停勿过投。',
     '不足时给出 gaps（缺什么）与 next_queries（最多 2 条更收窄的搜索词，不要重复已试过的角度）。',
     '只输出 JSON：{"sufficient":true|false,"gaps":["..."],"next_queries":["..."]}。',
-  ].join('\n')
+  ]
+  if (strongSourceHint) {
+    systemLines.push('优先建议能命中强来源的下一查询：咨询机构报告、行业协会与统计局数据、行业研究院白皮书、上市公司年报；next_queries 中至少 1 条带“报告/白皮书/研究院/统计/年报”类词。')
+  }
+  const system = systemLines.join('\n')
   const findingLines = findings.map(finding =>
     `- ${finding.claim}（${finding.source_url || finding.source || '无来源'} / ${finding.confidence || 'med'}）`,
   )
@@ -250,6 +254,7 @@ export async function researchQuestionWithReflection({
   callModel,
   maxRounds = 3,
   maxResultsPerQuery = 3,
+  strongSourceHint = false,
 } = {}) {
   if (typeof search !== 'function') throw new Error('researchQuestionWithReflection requires search')
   if (typeof callModel !== 'function') throw new Error('researchQuestionWithReflection requires callModel')
@@ -300,7 +305,7 @@ export async function researchQuestionWithReflection({
     if (round > 1 && newCount === 0) break
     if (round >= maxRounds) break
 
-    const reflectionPrompt = buildReflectionPrompt({ question, findings })
+    const reflectionPrompt = buildReflectionPrompt({ question, findings, strongSourceHint })
     const reflectionResponse = await callModel(reflectionPrompt.system, reflectionPrompt.user)
     const reflection = parseReflectionResponse(
       typeof reflectionResponse === 'string' ? reflectionResponse : reflectionResponse?.text,
@@ -315,6 +320,16 @@ export async function researchQuestionWithReflection({
   return { question, findings, rounds_used: roundsUsed, search_calls_used: searchCallsUsed }
 }
 
+function summarizeStrongSources(sources = []) {
+  const total = Array.isArray(sources) ? sources.length : 0
+  const strong = (sources || []).filter(source => source.source_tier === 'T1' || source.source_tier === 'T2').length
+  return {
+    strong_source_sources: strong,
+    strong_source_total_sources: total,
+    strong_source_ratio: total > 0 ? strong / total : 0,
+  }
+}
+
 export async function gatherResearchDeep({
   questions,
   search,
@@ -322,6 +337,7 @@ export async function gatherResearchDeep({
   sourceOptions,
   maxRounds = 2,
   maxResultsPerQuery = 3,
+  strongSourceMinRatio = 0.3,
 } = {}) {
   if (!Array.isArray(questions) || questions.length === 0) {
     throw new Error('gatherResearchDeep requires questions[]')
@@ -338,6 +354,7 @@ export async function gatherResearchDeep({
       callModel,
       maxRounds,
       maxResultsPerQuery,
+      strongSourceHint: true,
     })
     allFindings.push(...result.findings)
     searchCallsUsed += result.search_calls_used
@@ -348,6 +365,43 @@ export async function gatherResearchDeep({
       findings: result.findings.length,
     })
   }
-  const tagged = tagSources(allFindings, sourceOptions)
-  return { ...tagged, search_calls_used: searchCallsUsed, per_question: perQuestion }
+  let tagged = tagSources(allFindings, sourceOptions)
+  let strongSummary = summarizeStrongSources(tagged.sources)
+  let strongSourceFollowup = false
+
+  if (strongSourceMinRatio > 0 && strongSummary.strong_source_ratio < strongSourceMinRatio) {
+    strongSourceFollowup = true
+    console.log('[research] strong-source followup triggered')
+    for (const question of questions) {
+      const targetedQuery = `${question} 行业报告 研究院 统计 白皮书`
+      const result = await researchQuestionWithReflection({
+        question: targetedQuery,
+        search,
+        callModel,
+        maxRounds: 1,
+        maxResultsPerQuery,
+        strongSourceHint: true,
+      })
+      allFindings.push(...result.findings)
+      searchCallsUsed += result.search_calls_used
+      perQuestion.push({
+        question,
+        followup_query: targetedQuery,
+        rounds_used: result.rounds_used,
+        search_calls_used: result.search_calls_used,
+        findings: result.findings.length,
+        strong_source_followup: true,
+      })
+    }
+    tagged = tagSources(allFindings, sourceOptions)
+    strongSummary = summarizeStrongSources(tagged.sources)
+  }
+
+  return {
+    ...tagged,
+    search_calls_used: searchCallsUsed,
+    per_question: perQuestion,
+    strong_source_followup: strongSourceFollowup,
+    ...strongSummary,
+  }
 }

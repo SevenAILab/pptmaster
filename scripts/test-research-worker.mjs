@@ -121,6 +121,13 @@ assert.match(rfl.system, /宁停勿过投|不要过度/)
 assert.match(rfl.user, /精品咖啡市场规模/)
 assert.match(rfl.user, /1200 亿/)
 
+const rflStrong = buildReflectionPrompt({
+  question: '精品咖啡市场规模？',
+  findings: [],
+  strongSourceHint: true,
+})
+assert.match(rflStrong.system, /咨询机构|行业协会|统计局|研究院|年报/)
+
 assert.deepEqual(
   parseReflectionResponse('{"sufficient":false,"gaps":["缺增速"],"next_queries":["精品咖啡 年增速 2025"]}'),
   { sufficient: false, gaps: ['缺增速'], next_queries: ['精品咖啡 年增速 2025'] },
@@ -241,5 +248,28 @@ assert.equal(deep.findings[0].source_id, 1)
 assert.equal(deep.findings[0].source_tier, 'T2')
 assert.ok(deep.search_calls_used >= 2)
 assert.ok(Array.isArray(deep.per_question) && deep.per_question.length === 2)
+assert.equal(deep.strong_source_followup, false)
+assert.equal(deep.strong_source_sources, 1)
+assert.equal(deep.strong_source_total_sources, 1)
+assert.equal(deep.strong_source_ratio, 1)
+
+const weakCalls = []
+const weak = await gatherResearchDeep({
+  questions: ['市场规模?'],
+  maxRounds: 1,
+  strongSourceMinRatio: 0.3,
+  search: async query => {
+    weakCalls.push(query)
+    return { results: [{ url: 'https://www.sohu.com/a/1', snippet: '规模 100 亿' }] }
+  },
+  callModel: async weakSystem => weakSystem.includes('研究质量评估员')
+    ? '{"sufficient":true,"gaps":[],"next_queries":[]}'
+    : '{"findings":[{"claim":"规模 100 亿","evidence":"100 亿","source_url":"https://www.sohu.com/a/1","confidence":"med"}]}',
+})
+assert.ok(weakCalls.some(query => /报告|研究院|统计|白皮书/.test(query)), '弱来源时应追加定向强来源查询')
+assert.equal(weak.strong_source_followup, true)
+assert.equal(weak.strong_source_sources, 0)
+assert.equal(weak.strong_source_total_sources, 1)
+assert.equal(weak.strong_source_ratio, 0)
 
 console.log('✅ research-worker: derive + normalize + tag + parse + gather passed')
