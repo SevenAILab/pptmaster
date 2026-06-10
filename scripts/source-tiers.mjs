@@ -18,6 +18,14 @@ const T2_DOMAINS = [
   'statista.com',
   'iresearch.com.cn',
   'chinainsightsconsultancy.com',
+  'iimedia.cn',
+  'leadleo.com',
+  'cbndata.com',
+  'questmobile.com.cn',
+  'analysys.cn',
+  'mob.com',
+  'cnnic.cn',
+  'frostchina.com',
   'euromonitor.com',
   'mordorintelligence.com',
   'grandviewresearch.com',
@@ -31,6 +39,12 @@ const T3_DOMAINS = [
   'dlz123.cn',
   'pandaily.com',
   'technode.com',
+  'baogao.com',
+  'chinabgao.com',
+  'gonyn.com',
+  'actstat.com',
+  'thepaper.cn',
+  'sohu.com',
 ]
 
 const T4_DOMAINS = [
@@ -94,10 +108,10 @@ function classifyUrl(source, opts = {}) {
     }
   }
 
-  if (host.endsWith('.gov') || hostMatches(host, 'sec.gov')) {
+  if (host.endsWith('.gov') || host.endsWith('.gov.cn') || hostMatches(host, 'sec.gov') || hostMatches(host, 'stats.gov.cn')) {
     return { source_tier: 'T2', source_label: '政府/监管来源', type: 'official_data', tier_inferred: false }
   }
-  if (host.endsWith('.edu')) {
+  if (host.endsWith('.edu') || host.endsWith('.edu.cn')) {
     return { source_tier: 'T2', source_label: '高校/研究机构来源', type: 'industry_report', tier_inferred: false }
   }
   if (T2_DOMAINS.some(domain => hostMatches(host, domain))) {

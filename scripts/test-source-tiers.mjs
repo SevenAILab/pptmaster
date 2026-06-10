@@ -25,6 +25,22 @@ assert.equal(classifySource('https://www.36kr.com/p/example').source_tier, 'T3')
 assert.equal(classifySource('https://www.reddit.com/r/videography/comments/example').source_tier, 'T4')
 assert.equal(isVerifiableSource('inputs/smallrig/summary.md', { slug: 'smallrig' }), false)
 
+assert.equal(classifySource('https://www.stats.gov.cn/sj/ndsj/').source_tier, 'T2')
+assert.equal(classifySource('https://www.tsinghua.edu.cn/report').source_tier, 'T2')
+for (const url of [
+  'https://report.iimedia.cn/repo199-0/46641.html',
+  'https://www.leadleo.com/article/details/65e179',
+  'https://www.cbndata.com/report/123',
+  'https://www.questmobile.com.cn/research/report/1',
+  'https://www.analysys.cn/article/detail/2025',
+]) assert.equal(classifySource(url).source_tier, 'T2', url)
+for (const url of [
+  'https://www.baogao.com/report/20723009.html',
+  'https://big5.chinabgao.com/report/20476449.html',
+  'https://www.thepaper.cn/newsDetail_forward_28614235',
+  'https://www.sohu.com/a/780629439',
+]) assert.equal(classifySource(url).source_tier, 'T3', url)
+
 assert.throws(() => verifyLocalDataRef({
   value: '90天内各平台用户复购率平均超过 30%',
   source: localSource,
