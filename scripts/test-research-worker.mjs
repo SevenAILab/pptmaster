@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict'
 import {
+  buildQuestionPrompt,
   buildResearchPrompt,
-  deriveResearchQuestions,
+  deriveResearchQuestionsLLM,
   gatherResearch,
   normalizeSearchHits,
+  parseQuestionResponse,
   parseResearchResponse,
   tagSources,
 } from './research-worker.mjs'
@@ -17,11 +19,34 @@ const brief = {
   },
 }
 
-const qs = deriveResearchQuestions(brief)
-assert.equal(qs.length, 3)
-assert.ok(qs.some(q => /PPTAgent/.test(q)))
-assert.ok(qs.some(q => /AI Agent|品牌策划工具/.test(q)))
-assert.ok(qs.some(q => /独立品牌顾问|小型咨询团队/.test(q)))
+const angles = [
+  'AI Agent / 品牌策划工具 的市场规模与最新数字',
+  'PPTAgent 的主要替代方案与竞品定位',
+  '独立品牌顾问 的核心任务与采购痛点',
+]
+const qp = buildQuestionPrompt({ brief, angles })
+assert.match(qp.system, /3-5 个/)
+assert.match(qp.system, /不要使用 site:/)
+assert.match(qp.user, /PPTAgent/)
+assert.match(qp.user, /市场规模与最新数字/)
+
+assert.deepEqual(
+  parseQuestionResponse('{"questions":["q1 市场?","q2 竞品?","q3 人群?"]}'),
+  ['q1 市场?', 'q2 竞品?', 'q3 人群?'],
+)
+assert.throws(() => parseQuestionResponse('{"questions":["只有一个"]}'), /至少 2/)
+assert.throws(() => parseQuestionResponse('没有 JSON'), /No JSON/)
+
+const derived = await deriveResearchQuestionsLLM({
+  brief,
+  angles,
+  callModel: async (qpSystem, qpUser) => {
+    assert.match(qpSystem, /研究规划员/)
+    assert.match(qpUser, /研究角度/)
+    return '```json\n{"questions":["A 市场规模?","B 竞品定位?","C 人群痛点?"]}\n```'
+  },
+})
+assert.equal(derived.length, 3)
 
 assert.deepEqual(
   normalizeSearchHits({

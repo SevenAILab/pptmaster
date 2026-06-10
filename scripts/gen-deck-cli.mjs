@@ -4,7 +4,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildBriefFromInputs, generateDeck } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
-import { deriveResearchQuestions, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
+import { deriveResearchQuestionsLLM, gatherResearch, normalizeSearchHits } from './research-worker.mjs'
+import { loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
 import { webSearch } from './web-search.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -100,7 +101,20 @@ async function cliMain() {
   let researchBrief
   if (opts.research) {
     fs.mkdirSync(outputDir, { recursive: true })
-    const questions = deriveResearchQuestions(brief)
+    const schemeConfig = loadNonlockedSchemeConfig({ root: opts.root })
+    const angles = renderResearchAngles(schemeConfig.research_angles, brief.form)
+    const questions = await deriveResearchQuestionsLLM({
+      brief,
+      angles,
+      callModel: async (system, user) => {
+        const response = await callClaude(system, user, {
+          model: opts.model,
+          maxTokens: 800,
+          temperature: 0,
+        })
+        return response.text
+      },
+    })
     researchBrief = await gatherResearch({
       questions,
       search: async question => normalizeSearchHits(await webSearch(question, {

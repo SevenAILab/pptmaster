@@ -8,18 +8,48 @@ function briefForm(brief = {}) {
   return brief.form && typeof brief.form === 'object' ? brief.form : brief
 }
 
-export function deriveResearchQuestions(brief = {}) {
-  const form = briefForm(brief)
-  const name = text(form.name) || '该品牌'
-  const industry = text(form.industry) || '该行业'
-  const audience = Array.isArray(form.target_audience)
-    ? form.target_audience.map(text).filter(Boolean).join('、')
-    : text(form.target_audience) || '目标人群'
-  return [
-    `${industry} 的市场规模、增长趋势与最新可引用数字 site:iresearch.com.cn OR site:gartner.com OR site:idc.com OR site:statista.com`,
-    `${name} 的主要替代方案、竞品定位和差异化证据 site:gamma.app OR site:beautiful.ai OR site:canva.com OR site:microsoft.com`,
-    `${audience} 的核心任务、采购痛点与 AI 工具采用证据 site:gartner.com OR site:idc.com OR site:statista.com OR site:iresearch.com.cn`,
-  ]
+export function buildQuestionPrompt({ brief, angles } = {}) {
+  const system = [
+    '你是研究规划员。基于客户表单与根问题，产出 3-5 个可直接用于 web 搜索的研究问题。',
+    '每个问题必须包含该客户的行业/品牌/人群等具体词，能搜出外部可引用证据（市场数字、竞品事实、人群行为数据）。',
+    '不要使用 site: 过滤；不要预设竞品名单，竞品应从客户表单 competitors 字段与行业常识推导。',
+    '只输出 JSON：{"questions":["..."]}。',
+  ].join('\n')
+  const user = [
+    '# 客户表单',
+    brief?.formText || JSON.stringify(briefForm(brief), null, 2),
+    '',
+    '# 根问题',
+    brief?.strategicQuestion || '',
+    '',
+    '# 研究角度（必须覆盖）',
+    ...(angles || []).map(angle => `- ${angle}`),
+  ].join('\n')
+  return { system, user }
+}
+
+export function parseQuestionResponse(value) {
+  const rawText = String(value || '')
+  const fenced = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
+  const raw = fenced ? fenced[1] : rawText
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error(`No JSON object in question response: ${rawText.slice(0, 200)}`)
+  }
+  const parsed = JSON.parse(raw.slice(start, end + 1))
+  const questions = (Array.isArray(parsed?.questions) ? parsed.questions : [])
+    .map(question => text(question))
+    .filter(Boolean)
+  if (questions.length < 2) throw new Error(`研究问题至少 2 个，实际 ${questions.length}`)
+  return questions.slice(0, 5)
+}
+
+export async function deriveResearchQuestionsLLM({ brief, angles, callModel } = {}) {
+  if (typeof callModel !== 'function') throw new Error('deriveResearchQuestionsLLM requires callModel')
+  const { system, user } = buildQuestionPrompt({ brief, angles })
+  const response = await callModel(system, user)
+  return parseQuestionResponse(typeof response === 'string' ? response : response?.text)
 }
 
 export function normalizeSearchHits(input = []) {
