@@ -2,10 +2,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { assembleFreeformDeck } from './assemble-freeform-deck.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
-import { designPage, isWellFormedSection } from './design-page.mjs'
+import { renderFreeformDeck } from './freeform-renderer.mjs'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
@@ -179,48 +178,6 @@ async function cliMain() {
   const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
   const methodology = { concepts, casePattern }
 
-  const renderFreeform = async deck => {
-    const designedPath = path.join(runDir, 'deck.designed.json')
-    let checkpoint = []
-    try {
-      checkpoint = JSON.parse(fs.readFileSync(designedPath, 'utf8')).slides || []
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error
-    }
-    const cached = new Map(checkpoint
-      .filter(slide => slide?.page_no && isWellFormedSection(slide.section_html))
-      .map(slide => [String(slide.page_no), slide]))
-    const designed = { ...deck, slides: [] }
-    const designCall = async (system, user) => call(system, user, {
-      maxTokens: opts.designMaxTokens,
-      temperature: 0.2,
-    })
-    for (const [index, slide] of (deck.slides || []).entries()) {
-      const key = String(slide.page_no)
-      const label = `page ${slide.page_no || index + 1}/${deck.slides.length}`
-      const cachedSlide = cached.get(key)
-      if (cachedSlide) {
-        console.log(`[freeform] design reuse ${label}`)
-        designed.slides.push(cachedSlide)
-      } else {
-        console.log(`[freeform] design start ${label}`)
-        designed.slides.push(await designPage(slide, { callModel: designCall, maxAttempts: opts.designMaxAttempts }))
-        console.log(`[freeform] design done ${label}`)
-      }
-      fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))
-    }
-    const malformed = designed.slides
-      .filter(slide => !isWellFormedSection(slide.section_html))
-      .map(slide => slide.page_no)
-    if (malformed.length) throw new Error(`malformed section_html on pages: ${malformed.join(', ')}`)
-    const html = await assembleFreeformDeck(designed, { style: brief.form?.render_style || 'swiss', root: opts.root })
-    const htmlPath = path.join(runDir, 'deck.freeform.html')
-    fs.writeFileSync(htmlPath, html)
-    fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))
-    console.log(`[freeform] ${designed.slides.length} slides -> ${htmlPath}`)
-    return { designed, htmlPath }
-  }
-
   try {
     const result = await runFullcasePipeline({
       brief,
@@ -266,7 +223,23 @@ async function cliMain() {
       result.deck = loop.deck
     }
     if (opts.design) {
-      await renderFreeform(result.deck)
+      const designCall = async (system, user) => call(system, user, {
+        maxTokens: opts.designMaxTokens,
+        temperature: 0.2,
+      })
+      const freeform = await renderFreeformDeck(result.deck, {
+        runDir,
+        root: opts.root,
+        style: brief.form?.render_style || 'swiss',
+        callModel: designCall,
+        maxAttempts: opts.designMaxAttempts,
+        onProgress: event => {
+          if (event.type === 'reuse') console.log(`[freeform] design reuse ${event.label}`)
+          if (event.type === 'start') console.log(`[freeform] design start ${event.label}`)
+          if (event.type === 'done') console.log(`[freeform] design done ${event.label}`)
+        },
+      })
+      console.log(`[freeform] ${freeform.designed.slides.length} slides -> ${freeform.htmlPath}`)
     }
   } catch (error) {
     fs.writeFileSync(path.join(runDir, 'generation-error.txt'), String(error?.stack || error))
