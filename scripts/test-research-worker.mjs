@@ -3,6 +3,7 @@ import {
   buildQuestionPrompt,
   buildReflectionPrompt,
   buildResearchPrompt,
+  buildResearchQueryVariants,
   deriveResearchQuestionsLLM,
   gatherResearch,
   gatherResearchDeep,
@@ -106,6 +107,10 @@ const parsed = parseResearchResponse('```json\n{"findings":[{"claim":"a","eviden
 assert.equal(parsed.findings.length, 1)
 assert.throws(() => parseResearchResponse('无 JSON'), /No JSON object/)
 
+const variants = buildResearchQueryVariants('LUMA Coffee 竞品 Manner M Stand 瑞幸 精品咖啡连锁 定位 差异化 价格 门店模型 会员体系', { retry: true })
+assert.ok(variants.length >= 2)
+assert.ok(variants.some(query => query.includes('competitor positioning') || query.length < 50))
+
 const rfl = buildReflectionPrompt({
   question: '精品咖啡市场规模？',
   findings: [{ claim: '2025 年市场 1200 亿', source_url: 'https://a.com', confidence: 'high' }],
@@ -203,6 +208,24 @@ await assert.rejects(researchQuestionWithReflection({
   search: async () => ({ results: [] }),
   callModel: async () => '{"findings":[]}',
 }), /No search results/)
+
+const retryQueries = []
+const zeroRetry = await researchQuestionWithReflection({
+  question: 'zero result oversized essay question about creator workflow report evidence and market validation needs retry',
+  maxRounds: 1,
+  search: async query => {
+    retryQueries.push(query)
+    return retryQueries.length === 1
+      ? { results: [] }
+      : { results: [{ url: 'https://retry.example.com', title: 'Retry', snippet: 'retry result 42%' }] }
+  },
+  callModel: async () => JSON.stringify({
+    findings: [{ claim: '重试查询找到 42% 证据', evidence: '42%', source_url: 'https://retry.example.com', confidence: 'med' }],
+  }),
+})
+assert.equal(zeroRetry.findings.length, 1)
+assert.ok(retryQueries.length > 1)
+assert.equal(zeroRetry.search_calls_used, retryQueries.length)
 
 const deep = await gatherResearchDeep({
   questions: ['q1', 'q2'],

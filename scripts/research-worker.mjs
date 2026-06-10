@@ -4,6 +4,50 @@ function text(value) {
   return String(value ?? '').trim()
 }
 
+function queryTokens(query) {
+  return text(query)
+    .split(/[\s,，、:：;；?？。()（）/]+/)
+    .map(token => token.trim())
+    .filter(Boolean)
+}
+
+function dedupe(values) {
+  const seen = new Set()
+  const result = []
+  for (const value of values) {
+    const normalized = text(value).replace(/\s+/g, ' ')
+    if (!normalized || seen.has(normalized)) continue
+    seen.add(normalized)
+    result.push(normalized)
+  }
+  return result
+}
+
+export function buildResearchQueryVariants(question, { retry = false, maxVariants = 3 } = {}) {
+  const original = text(question).replace(/\s+/g, ' ')
+  if (!original) return []
+  const tokens = queryTokens(original)
+  const stopwords = /^(如何|哪些|什么|为什么|是否|以及|应该|需要|支撑|判断|定位|差异化|价格|门店模型|会员体系|what|how|why|which|should|need|needs|and|or|the)$/i
+  const keywords = tokens.filter(token => token.length >= 2 && !stopwords.test(token))
+  const entityPrefix = keywords.slice(0, 4).join(' ')
+  const variants = [original]
+  if (original.length > 36 || retry) {
+    variants.push(keywords.slice(0, 8).join(' '))
+  }
+  if (retry) {
+    if (/竞品|竞争|对比|差异|定位/.test(original)) {
+      variants.push(`${entityPrefix || original} competitor positioning`)
+    }
+    if (/市场|行业|规模|趋势|增长/.test(original)) {
+      variants.push(`${entityPrefix || original} market report trend`)
+    }
+    if (/用户|人群|消费者|痛点|场景|会员/.test(original)) {
+      variants.push(`${entityPrefix || original} consumer insight`)
+    }
+  }
+  return dedupe(variants).slice(0, maxVariants)
+}
+
 function briefForm(brief = {}) {
   return brief.form && typeof brief.form === 'object' ? brief.form : brief
 }
@@ -222,6 +266,16 @@ export async function researchQuestionWithReflection({
     for (const query of queries) {
       searchCallsUsed += 1
       hits.push(...normalizeSearchHits(await search(query)).slice(0, maxResultsPerQuery))
+    }
+    if (round === 1 && hits.length === 0) {
+      const retryQueries = buildResearchQueryVariants(question, { retry: true, maxVariants: 3 })
+        .filter(query => !queries.includes(query))
+      for (const query of retryQueries) {
+        searchCallsUsed += 1
+        const retryHits = normalizeSearchHits(await search(query)).slice(0, maxResultsPerQuery)
+        hits.push(...retryHits)
+        if (hits.length > 0) break
+      }
     }
     if (round === 1 && hits.length === 0) {
       throw new Error(`No search results for question: ${question}`)
