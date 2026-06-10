@@ -82,7 +82,7 @@ const server = http.createServer(async (request, response) => {
       if (request.method === 'POST' && parts[3] === 'approve-outline') {
         const { notes } = await readBody(request)
         approveOutline({ root: REPO_ROOT, slug, notes })
-        spawnStage(slug, [])
+        spawnStage(slug, ['--critic'])
         return send(response, 200, { ok: true })
       }
       if (request.method === 'GET' && parts[3] === 'deck') {

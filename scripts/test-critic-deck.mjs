@@ -36,6 +36,8 @@ assert.match(system, /论点|逻辑链/)
 assert.match(system, /复述方法论|方法论复述/)
 assert.match(system, /死板|套用/)
 assert.match(system, /needs_framework/)
+assert.match(system, /blocking/)
+assert.match(system, /advisory/)
 assert.match(system, /只输出 JSON/)
 assert.match(user, /如何定位/)
 assert.match(user, /A1/)
@@ -49,11 +51,39 @@ const parsed = parseCriticResponse(JSON.stringify({
   overall_issues: ['章节间递进不足'],
 }))
 assert.equal(parsed.verdict, 'revise')
+assert.equal(parsed.effectiveVerdict, 'revise')
 assert.equal(parsed.pages.length, 2)
 assert.equal(parsed.pages[1].needs_framework, '需要人群任务视角框架')
+assert.equal(parsed.pages[1].issues[0].severity, 'blocking')
 assert.throws(() => parseCriticResponse('不是 JSON'), /No JSON/)
 assert.throws(() => parseCriticResponse('{"verdict":"maybe","pages":[]}'), /verdict/)
 assert.throws(() => parseCriticResponse('{"verdict":"revise","pages":[{"page_no":99,"verdict":"revise"}]}', deck), /unknown page/)
+assert.throws(() => parseCriticResponse('{"verdict":"revise","pages":[{"page_no":1,"verdict":"revise","issues":[{"text":"x","severity":"urgent"}]}]}', deck), /severity/)
+
+const advisoryOnly = parseCriticResponse(JSON.stringify({
+  verdict: 'revise',
+  pages: [{ page_no: 1, verdict: 'revise', issues: [{ text: '证据可以更强', severity: 'advisory' }] }],
+  overall_issues: [],
+}), deck)
+assert.equal(advisoryOnly.effectiveVerdict, 'pass')
+assert.equal(advisoryOnly.pages[0].issues[0].severity, 'advisory')
+assert.equal(advisoryOnly.pages[0].effectiveVerdict, 'pass')
+
+const blockingOnly = parseCriticResponse(JSON.stringify({
+  verdict: 'revise',
+  pages: [{ page_no: 1, verdict: 'revise', issues: [{ text: '论点自相矛盾', severity: 'blocking' }] }],
+  overall_issues: [],
+}), deck)
+assert.equal(blockingOnly.effectiveVerdict, 'revise')
+assert.equal(blockingOnly.pages[0].effectiveVerdict, 'revise')
+
+const legacyIssue = parseCriticResponse(JSON.stringify({
+  verdict: 'revise',
+  pages: [{ page_no: 1, verdict: 'revise', issues: ['论证薄弱'] }],
+  overall_issues: [],
+}), deck)
+assert.equal(legacyIssue.pages[0].issues[0].severity, 'blocking')
+assert.equal(legacyIssue.effectiveVerdict, 'revise')
 
 const critique = {
   verdict: 'revise',
@@ -140,5 +170,31 @@ assert.equal(result.rounds.length, 2)
 assert.deepEqual(result.rounds[0].pulledSlugs, ['jtbd'])
 assert.match(result.deck.slides[1].action_title, /修订后判断/)
 assert.equal(calls.length, 4)
+
+const advisoryCalls = []
+const advisoryLoop = await runCriticLoop({
+  deck: loopDeck,
+  brief: { ...brief, slug: 'x', form: { name: 'LUMA' } },
+  index,
+  loadBodies: () => {
+    throw new Error('advisory-only critique should not pull frameworks')
+  },
+  callModel: async (cSystem) => {
+    advisoryCalls.push(cSystem)
+    return JSON.stringify({
+      verdict: 'revise',
+      pages: [
+        { page_no: 1, verdict: 'revise', issues: [{ text: '证据可以更强', severity: 'advisory' }] },
+      ],
+      overall_issues: [],
+    })
+  },
+  maxRounds: 2,
+  processLockOptions: { minPages: 1, maxPages: 8 },
+})
+assert.equal(advisoryLoop.finalVerdict, 'pass')
+assert.equal(advisoryLoop.rounds.length, 1)
+assert.equal(advisoryLoop.rounds[0].revised, false)
+assert.equal(advisoryCalls.length, 1)
 
 console.log('✅ critic-deck: prompt + parse passed')

@@ -23,8 +23,9 @@ export function buildCriticPrompt({ deck, brief, locksSummary } = {}) {
     '逐页检查 5 件事：① 论点是否明确且是判断句；② 证据是否支撑论点（empirical 必须有真实出处，hypothesis 必须有验证方法）；③ 逻辑链是否递进（相对前页有新增信息，不原地打转）；④ 是否在复述方法论定义而非应用到客户；⑤ 是否死板套用案例结构而非按客户情况推导。',
     '整体检查：叙事是否回答根问题、章节间是否递进。',
     '宁可指出问题也不要客气；但 pass 的页不要硬挑刺。',
+    '每条 issue 必须标 severity："blocking" 表示这份稿子里能直接修的问题（论点错误/自相矛盾/伪造证据/复述定义/跨页重复），"advisory" 表示需要补研究才能解决的问题（证据可以更强、研究可以更深）。只因 advisory 不要判 revise。',
     '某页问题源于"缺一个合适的分析框架"时，在该页填 needs_framework（一句话描述需要什么样的框架）；否则省略该字段。',
-    '只输出 JSON：{"verdict":"pass|revise","pages":[{"page_no":1,"verdict":"pass|revise","issues":["..."],"needs_framework":"可选"}],"overall_issues":["..."]}。',
+    '只输出 JSON：{"verdict":"pass|revise","pages":[{"page_no":1,"verdict":"pass|revise","issues":[{"text":"...","severity":"blocking|advisory"}],"needs_framework":"可选"}],"overall_issues":["..."]}。',
   ].join('\n')
   const user = [
     '# 根问题',
@@ -42,6 +43,23 @@ export function buildCriticPrompt({ deck, brief, locksSummary } = {}) {
   return { system, user }
 }
 
+function normalizeIssue(issue) {
+  if (typeof issue === 'string') {
+    const value = text(issue)
+    return value ? { text: value, severity: 'blocking' } : null
+  }
+  if (issue && typeof issue === 'object') {
+    const value = text(issue.text || issue.issue || issue.message)
+    if (!value) return null
+    const severity = text(issue.severity || 'blocking')
+    if (!['blocking', 'advisory'].includes(severity)) {
+      throw new Error(`Critic issue severity must be blocking|advisory, got: ${severity}`)
+    }
+    return { text: value, severity }
+  }
+  return null
+}
+
 export function parseCriticResponse(value, deck) {
   const parsed = extractJson(value)
   if (!['pass', 'revise'].includes(parsed?.verdict)) {
@@ -57,14 +75,24 @@ export function parseCriticResponse(value, deck) {
       throw new Error(`Critic referenced unknown page: ${page.page_no}`)
     }
   }
-  return {
-    verdict: parsed.verdict,
-    pages: pages.map(page => ({
+  const normalizedPages = pages.map(page => {
+    const issues = Array.isArray(page.issues)
+      ? page.issues.map(normalizeIssue).filter(Boolean)
+      : []
+    const hasBlocking = issues.some(issue => issue.severity === 'blocking')
+    return {
       page_no: page.page_no,
       verdict: page.verdict,
-      issues: Array.isArray(page.issues) ? page.issues.map(text).filter(Boolean) : [],
+      effectiveVerdict: hasBlocking ? 'revise' : 'pass',
+      issues,
       ...(text(page.needs_framework) ? { needs_framework: text(page.needs_framework) } : {}),
-    })),
+    }
+  })
+  const hasBlocking = normalizedPages.some(page => page.effectiveVerdict === 'revise')
+  return {
+    verdict: parsed.verdict,
+    effectiveVerdict: hasBlocking ? 'revise' : 'pass',
+    pages: normalizedPages,
     overall_issues: Array.isArray(parsed.overall_issues)
       ? parsed.overall_issues.map(text).filter(Boolean)
     : [],
@@ -73,7 +101,7 @@ export function parseCriticResponse(value, deck) {
 
 export function buildRevisionPrompt({ deck, brief, critique, extraConcepts = [] } = {}) {
   const revisePages = (critique?.pages || [])
-    .filter(page => page.verdict === 'revise')
+    .filter(page => page.effectiveVerdict === 'revise' || page.verdict === 'revise' && !page.effectiveVerdict)
     .map(page => ({
       page_no: page.page_no,
       issues: page.issues || [],
@@ -107,7 +135,7 @@ export function mergeRevisedSlides(deck, revisedSlides, critique) {
   const slides = deck?.slides || []
   const knownPages = new Set(slides.map(slide => slide.page_no))
   const expected = new Set((critique?.pages || [])
-    .filter(page => page.verdict === 'revise')
+    .filter(page => page.effectiveVerdict === 'revise' || page.verdict === 'revise' && !page.effectiveVerdict)
     .map(page => page.page_no))
   const byPage = new Map()
   for (const slide of revisedSlides || []) {
@@ -151,7 +179,7 @@ export async function runCriticLoop({
     const locks = validateProcessLocks(current, processLockOptions)
     const criticPrompt = buildCriticPrompt({ deck: current, brief, locksSummary: locks.summary })
     const critique = parseCriticResponse(await callModel(criticPrompt.system, criticPrompt.user), current)
-    if (critique.verdict === 'pass') {
+    if (critique.effectiveVerdict === 'pass') {
       rounds.push({ round, critique, pulledSlugs: [], revised: false })
       finalVerdict = 'pass'
       break
