@@ -127,6 +127,30 @@ function assertPageGroup(parsed, chapter, { start, end }) {
   }
 }
 
+async function callAndParseChapter({
+  system,
+  user,
+  callModel,
+  requireTakeaways,
+} = {}) {
+  const response = await callModel(system, user)
+  try {
+    return parseChapterResponse(typeof response === 'string' ? response : response?.text, { requireTakeaways })
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error
+    const retryUser = [
+      user,
+      '',
+      '# 上一次 JSON 解析失败',
+      String(error?.message || error),
+      '',
+      '只重新输出合法 JSON，不要解释，不要 markdown fence；保持同样页数、page_no 与 schema。',
+    ].join('\n')
+    const retryResponse = await callModel(system, retryUser)
+    return parseChapterResponse(typeof retryResponse === 'string' ? retryResponse : retryResponse?.text, { requireTakeaways })
+  }
+}
+
 export async function draftChapter({
   brief,
   outline,
@@ -159,8 +183,10 @@ export async function draftChapter({
         pageRange: { start, end },
         generatedSlides: slides,
       })
-      const response = await callModel(system, user)
-      const parsed = parseChapterResponse(typeof response === 'string' ? response : response?.text, {
+      const parsed = await callAndParseChapter({
+        system,
+        user,
+        callModel,
         requireTakeaways: isLastGroup,
       })
       assertPageGroup(parsed, chapter, { start, end })
@@ -179,8 +205,12 @@ export async function draftChapter({
     methodology,
     researchBrief,
   })
-  const response = await callModel(system, user)
-  const parsed = parseChapterResponse(typeof response === 'string' ? response : response?.text)
+  const parsed = await callAndParseChapter({
+    system,
+    user,
+    callModel,
+    requireTakeaways: true,
+  })
   if (parsed.slides.length !== chapter.pages_budget) {
     throw new Error(`第 ${chapter.chapter_no} 章页数 ${parsed.slides.length} 不等于预算 pages_budget=${chapter.pages_budget}`)
   }

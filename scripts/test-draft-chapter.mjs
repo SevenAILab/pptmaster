@@ -62,6 +62,25 @@ const drafted = await draftChapter({
 assert.equal(drafted.slides.length, 3)
 assert.equal(drafted.chapter_no, 2)
 
+let retryChapterCalls = 0
+const retriedChapter = await draftChapter({
+  brief,
+  outline,
+  chapter: outline.chapters[1],
+  previousTakeaways: [],
+  usedTitles: [],
+  callModel: async (retrySystem, retryUser) => {
+    retryChapterCalls += 1
+    assert.match(retrySystem, /资深品牌策略主笔/)
+    if (retryChapterCalls === 1) return '{"slides":[{"page_no":1,"action_title":"坏 JSON"}'
+    assert.match(retryUser, /上一次 JSON 解析失败/)
+    assert.match(retryUser, /只重新输出合法 JSON/)
+    return JSON.stringify({ slides: ok.slides, chapter_takeaways: ['定位锚点 = A'] })
+  },
+})
+assert.equal(retryChapterCalls, 2)
+assert.equal(retriedChapter.slides.length, 3)
+
 let groupedCalls = 0
 const grouped = await draftChapter({
   brief,
