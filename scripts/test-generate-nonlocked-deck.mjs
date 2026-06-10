@@ -127,6 +127,22 @@ try {
   assert.equal(httpTierNormalized.slides[0].data_refs[0].source_tier, 'T3')
   assert.equal(httpTierNormalized.slides[0].data_refs[0].model_source_tier, 'T1')
 
+  const mixedEvidence = normalizeGeneratedDeck({
+    slides: [{
+      page_no: 1,
+      intent: '验证混合证据',
+      action_title: '混合证据必须收敛到 hypothesis 合同',
+      layout: 'split-statement',
+      core_points: ['a'],
+      data_refs: [{ source: 'https://example.com/report' }],
+      evidence_kind: 'mixed: empirical context + hypothesis recommendation',
+      validation_method: '后续用用户访谈验证',
+      blocks: [{ type: 'callout', text: 'x' }],
+    }],
+  }, { brief })
+  assert.equal(mixedEvidence.slides[0].evidence_kind, 'hypothesis')
+  assert.equal(mixedEvidence.slides[0].model_evidence_kind, 'mixed: empirical context + hypothesis recommendation')
+
   const unsourced = normalizeGeneratedDeck({
     slides: [{
       page_no: 1,

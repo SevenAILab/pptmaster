@@ -202,6 +202,17 @@ function fallbackBlocks(slide) {
   }]
 }
 
+function normalizeEvidenceKind(value) {
+  const raw = normalizeString(value)
+  const lower = raw.toLowerCase()
+  if (!lower) return ''
+  if (lower === 'empirical' || lower === 'deductive' || lower === 'hypothesis') return lower
+  if (lower.includes('hypothesis') || lower.includes('mixed')) return 'hypothesis'
+  if (lower.includes('deductive')) return 'deductive'
+  if (lower.includes('empirical')) return 'empirical'
+  return raw
+}
+
 export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' } = {}) {
   if (!Array.isArray(deck?.slides)) {
     throw new Error('normalizeGeneratedDeck requires deck.slides[]')
@@ -214,6 +225,8 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
       .map(normalizeBlock)
     const dataRefs = asArray(slide?.data_refs).map(normalizeRef).filter(Boolean)
     const intent = normalizeString(slide?.intent || slide?.page_intent)
+    const rawEvidenceKind = normalizeString(slide?.evidence_kind)
+    const evidenceKind = normalizeEvidenceKind(rawEvidenceKind)
     return {
       page_no: pageNo,
       intent,
@@ -223,7 +236,8 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
       layout: normalizeString(slide?.layout) || 'split-statement',
       core_points: corePoints,
       data_refs: dataRefs,
-      evidence_kind: normalizeString(slide?.evidence_kind),
+      evidence_kind: evidenceKind,
+      ...(rawEvidenceKind && rawEvidenceKind !== evidenceKind ? { model_evidence_kind: rawEvidenceKind } : {}),
       validation_method: normalizeString(slide?.validation_method),
       blocks,
       content_blocks: blocks,
