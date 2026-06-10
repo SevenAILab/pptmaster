@@ -77,9 +77,11 @@ const merged = mergeRevisedSlides(deck, [{
   intent: 'i2v2',
   action_title: 'A2v2',
   core_points: ['新论证'],
+  blocks: [{ type: 'callout', text: '新内容' }],
 }], critique)
 assert.equal(merged.slides[1].action_title, 'A2v2')
 assert.equal(merged.slides[0].action_title, 'A1')
+assert.deepEqual(merged.slides[1].content_blocks, [{ type: 'callout', text: '新内容' }])
 assert.throws(() => mergeRevisedSlides(deck, [{ page_no: 99, action_title: 'X' }], critique), /unknown page/)
 assert.throws(() => mergeRevisedSlides(deck, [], critique), /missing revised/)
 

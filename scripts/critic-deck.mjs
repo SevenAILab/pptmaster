@@ -119,7 +119,15 @@ export function mergeRevisedSlides(deck, revisedSlides, critique) {
   if (missing.length) throw new Error(`Revision missing revised pages: ${missing.join(', ')}`)
   return {
     ...deck,
-    slides: slides.map(slide => byPage.has(slide.page_no) ? { ...slide, ...byPage.get(slide.page_no) } : slide),
+    slides: slides.map(slide => {
+      if (!byPage.has(slide.page_no)) return slide
+      const revised = byPage.get(slide.page_no)
+      const merged = { ...slide, ...revised }
+      if (Array.isArray(revised.blocks)) {
+        merged.content_blocks = revised.blocks
+      }
+      return merged
+    }),
   }
 }
 
