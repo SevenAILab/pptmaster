@@ -64,6 +64,58 @@ export function parseCriticResponse(value, deck) {
     })),
     overall_issues: Array.isArray(parsed.overall_issues)
       ? parsed.overall_issues.map(text).filter(Boolean)
-      : [],
+    : [],
+  }
+}
+
+export function buildRevisionPrompt({ deck, brief, critique, extraConcepts = [] } = {}) {
+  const revisePages = (critique?.pages || [])
+    .filter(page => page.verdict === 'revise')
+    .map(page => ({
+      page_no: page.page_no,
+      issues: page.issues || [],
+      ...(text(page.needs_framework) ? { needs_framework: text(page.needs_framework) } : {}),
+    }))
+  const system = [
+    '你是资深品牌策略主笔。评审指出了若干页的问题，请只重写这些页。',
+    '只输出 JSON：{"slides":[...]}，slides 里只包含需要修订的页，page_no 保持不变。',
+    '每页字段与原 deck 相同：page_no, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks。',
+    '修订要求：直接解决评审指出的 issues；保持与未修订页的叙事衔接；运用补充框架时在 intent 或 core_points 以 "[框架: 名称]" 标注，但禁止复述框架定义。',
+    '证据规则不变：empirical 必须有真实出处；缺证据就标 hypothesis 并给 validation_method；不许编造 URL。',
+  ].join('\n')
+  const user = [
+    '# 根问题',
+    text(brief?.strategicQuestion),
+    '',
+    '# 评审意见（只修这些页）',
+    JSON.stringify({ pages: revisePages, overall_issues: critique?.overall_issues || [] }, null, 2),
+    '',
+    ...(extraConcepts.length
+      ? ['# 补充方法论框架（按需运用）', ...extraConcepts.map(concept => `### [框架: ${concept.name}]\n${concept.content}`), '']
+      : []),
+    '# 当前 Deck 全文（JSON，提供上下文，未点名的页不要动）',
+    JSON.stringify({ slides: deck?.slides || [] }, null, 2),
+  ].join('\n')
+  return { system, user }
+}
+
+export function mergeRevisedSlides(deck, revisedSlides, critique) {
+  const slides = deck?.slides || []
+  const knownPages = new Set(slides.map(slide => slide.page_no))
+  const expected = new Set((critique?.pages || [])
+    .filter(page => page.verdict === 'revise')
+    .map(page => page.page_no))
+  const byPage = new Map()
+  for (const slide of revisedSlides || []) {
+    if (!knownPages.has(slide?.page_no)) {
+      throw new Error(`Revised slide references unknown page: ${slide?.page_no}`)
+    }
+    byPage.set(slide.page_no, slide)
+  }
+  const missing = [...expected].filter(pageNo => !byPage.has(pageNo))
+  if (missing.length) throw new Error(`Revision missing revised pages: ${missing.join(', ')}`)
+  return {
+    ...deck,
+    slides: slides.map(slide => byPage.has(slide.page_no) ? { ...slide, ...byPage.get(slide.page_no) } : slide),
   }
 }
