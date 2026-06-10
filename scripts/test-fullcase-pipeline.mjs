@@ -136,12 +136,15 @@ try {
   assert.equal(retryCalls, 2)
 
   let groupedChapterCalls = 0
+  let groupedSawPriorClaimSummary = false
   const groupedModel = async (system, user) => {
     if (system.includes('叙事大纲')) return JSON.stringify(stubOutline)
     groupedChapterCalls += 1
     const chapterNo = Number((user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/))[1])
     const pageMatch = system.match(/第 (\d+)-(\d+) 页/)
     assert.ok(pageMatch, 'maxPagesPerChapterCall 应触发页组生成')
+    assert.match(system, /本页新增|语义重复率/)
+    if (chapterNo > 1 && user.includes('章1-1 论点')) groupedSawPriorClaimSummary = true
     const start = Number(pageMatch[1])
     const end = Number(pageMatch[2])
     return JSON.stringify({
@@ -171,6 +174,7 @@ try {
   })
   assert.equal(groupedRun.deck.slides.length, 20)
   assert.equal(groupedChapterCalls, 12)
+  assert.equal(groupedSawPriorClaimSummary, true)
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true })
 }

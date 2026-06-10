@@ -15,6 +15,7 @@ const { system, user } = buildChapterPrompt({
   chapter: outline.chapters[1],
   previousTakeaways: ['第 1 章结论：行业同质化加剧'],
   usedTitles: ['行业正在同质化'],
+  usedPageClaims: ['P1 行业正在同质化 / 门店越开越像 / 价格带挤压'],
   methodology: { concepts: [{ name: 'JTBD', content: 'JTBD...' }] },
   researchBrief: { findings: [], sources: [] },
 })
@@ -22,8 +23,10 @@ assert.match(system, /正好 3 页/)
 assert.match(system, /第 1 页.*章首页/)
 assert.match(system, /chapter_takeaways/)
 assert.match(system, /不得与已用标题|不得重复/)
+assert.match(system, /语义重复率|新增变量|换一种说法/)
 assert.match(user, /行业同质化加剧/)
 assert.match(user, /行业正在同质化/)
+assert.match(user, /门店越开越像/)
 assert.match(user, /锚点是什么/)
 
 const ok = parseChapterResponse(JSON.stringify({
@@ -66,10 +69,12 @@ const grouped = await draftChapter({
   chapter: { ...outline.chapters[1], pages_budget: 5 },
   previousTakeaways: ['上一章结论'],
   usedTitles: ['旧标题'],
+  usedPageClaims: ['P1 旧标题 / 旧核心点'],
   callModel: async (groupSystem, groupUser) => {
     groupedCalls += 1
     assert.match(groupSystem, /本次只写本章第/)
-    assert.match(groupUser, groupedCalls === 1 ? /上一章结论/ : /本章已生成页面/)
+    assert.match(groupUser, groupedCalls === 1 ? /旧核心点/ : /本章已生成页面/)
+    if (groupedCalls > 1) assert.match(groupUser, /P1: 页组 1-1.*a/)
     if (groupedCalls === 1) {
       assert.match(groupSystem, /第 1 页必须是章首页/)
       return JSON.stringify({

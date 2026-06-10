@@ -97,6 +97,7 @@ export async function runFullcasePipeline({
   const chapterResults = []
   const takeaways = []
   const usedTitles = []
+  const usedPageClaims = []
   for (const chapter of outline.chapters) {
     const chunkId = `ch-${chapter.chapter_no}`
     const chapterPath = path.join(runDir, 'chapters', `${chunkId}.json`)
@@ -107,6 +108,9 @@ export async function runFullcasePipeline({
       chapterResults.push(cached)
       takeaways.push(...cached.chapter_takeaways)
       usedTitles.push(...cached.slides.map(slide => slide.action_title))
+      usedPageClaims.push(...cached.slides.map(slide =>
+        `P${slide.page_no} ${slide.action_title || ''} / ${(slide.core_points || []).join(' / ')}`,
+      ))
       continue
     }
     await markChunkStarted({ runDir, chunkId, workerId: 'draft-chapter' })
@@ -117,6 +121,7 @@ export async function runFullcasePipeline({
         chapter,
         previousTakeaways: [...takeaways],
         usedTitles: [...usedTitles],
+        usedPageClaims: [...usedPageClaims],
         methodology,
         researchBrief,
         callModel,
@@ -128,6 +133,9 @@ export async function runFullcasePipeline({
       chapterResults.push(result)
       takeaways.push(...result.chapter_takeaways)
       usedTitles.push(...result.slides.map(slide => slide.action_title))
+      usedPageClaims.push(...result.slides.map(slide =>
+        `P${slide.page_no} ${slide.action_title || ''} / ${(slide.core_points || []).join(' / ')}`,
+      ))
     } catch (error) {
       await markChunkFailed({
         runDir,

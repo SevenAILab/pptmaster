@@ -22,6 +22,7 @@ export function buildChapterPrompt({
   chapter,
   previousTakeaways = [],
   usedTitles = [],
+  usedPageClaims = [],
   methodology,
   researchBrief,
   pageRange,
@@ -53,6 +54,7 @@ export function buildChapterPrompt({
     '每页字段：page_no（章内 1 起）, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks。',
     `blocks[].type 只能使用：${ALLOWED_BLOCK_TYPES.join(', ')}。`,
     '跨章纪律：每页必须提供"已用标题清单"之外的新增信息，action_title 不得与已用标题语义重复；本章必须承接前章 takeaways 继续推进，不得重复论证前章已得出的结论。',
+    '语义去重纪律：不要把同一个定位结论换一种说法反复讲；每页必须引入一个此前没有的新变量/新证据/新取舍/新机制，并在 core_points 第一条写清“本页新增：...”。目标是整份 deck 语义重复率 <=20%。',
     '证据规则与短 deck 相同：empirical 必须有真实出处；缺证据标 hypothesis 并给 validation_method；引用研究发现时 data_refs.source 写完整 URL；不许编造 URL。',
     '运用框架时在 intent 或 core_points 以 "[框架: 名称]" 标注，禁止复述框架定义。',
     isLastGroup
@@ -72,11 +74,14 @@ export function buildChapterPrompt({
     '',
     '# 已用 action_title 清单（语义查重用，不得重复）',
     ...(usedTitles.length ? usedTitles.map(t => `- ${t}`) : ['（无）']),
+    '',
+    '# 已用页面主张摘要（标题 + 要点，必须避开实质重复）',
+    ...(usedPageClaims.length ? usedPageClaims.map(t => `- ${t}`) : ['（无）']),
     ...(generatedSlides.length
       ? [
         '',
         '# 本章已生成页面（必须承接，不得重复）',
-        ...generatedSlides.map(slide => `- P${slide.page_no}: ${slide.action_title}`),
+        ...generatedSlides.map(slide => `- P${slide.page_no}: ${slide.action_title} / ${(slide.core_points || []).join(' / ')}`),
       ]
       : []),
     '',
@@ -128,6 +133,7 @@ export async function draftChapter({
   chapter,
   previousTakeaways,
   usedTitles,
+  usedPageClaims = [],
   methodology,
   researchBrief,
   callModel,
@@ -147,6 +153,7 @@ export async function draftChapter({
         chapter,
         previousTakeaways,
         usedTitles,
+        usedPageClaims,
         methodology,
         researchBrief,
         pageRange: { start, end },
@@ -168,6 +175,7 @@ export async function draftChapter({
     chapter,
     previousTakeaways,
     usedTitles,
+    usedPageClaims,
     methodology,
     researchBrief,
   })
