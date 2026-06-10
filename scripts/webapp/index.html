@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PPTMaster Web</title>
+  <style>
+    :root { color-scheme: light; --ink:#111; --muted:#666; --line:#ddd; --blue:#0033ff; --bg:#f7f7f4; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+    main { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+    header { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--ink); padding-bottom: 14px; margin-bottom: 28px; }
+    h1 { font-size: 28px; margin: 0; font-weight: 760; letter-spacing: 0; }
+    h2 { font-size: 18px; margin: 0 0 14px; }
+    p { line-height: 1.55; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    label { display: grid; gap: 6px; font-size: 13px; font-weight: 650; }
+    input, textarea, select { width: 100%; border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 10px 11px; font: inherit; border-radius: 0; }
+    textarea { min-height: 140px; resize: vertical; }
+    button, a.button { appearance: none; border: 1px solid var(--ink); background: var(--ink); color: #fff; padding: 10px 15px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; min-height: 42px; }
+    button.secondary, a.secondary { background: #fff; color: var(--ink); }
+    button:disabled { opacity: .45; cursor: wait; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .panel { border-top: 1px solid var(--line); padding-top: 18px; margin-top: 22px; }
+    .chapters { display: grid; gap: 10px; }
+    .chapter { background: #fff; border: 1px solid var(--line); padding: 14px; }
+    .chapter strong { display: block; margin-bottom: 5px; }
+    .status { font-size: 36px; font-weight: 780; margin: 8px 0 0; }
+    .events { background: #111; color: #f3f3f3; padding: 14px; min-height: 90px; max-height: 260px; overflow: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+    .hidden { display: none; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } header { display: block; } .status { font-size: 28px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>PPTMaster</h1>
+    <div class="muted">Web intake / outline approval / editable deck</div>
+  </header>
+
+  <section id="view-form">
+    <form id="intake">
+      <div class="grid">
+        <label>品牌名<input name="name" required value="LUMA Coffee"></label>
+        <label>行业<input name="industry" required value="精品咖啡连锁"></label>
+        <label>阶段<input name="stage" required value="扩张期"></label>
+        <label>预算级别<input name="budget_level" required value="中"></label>
+        <label>核心产品<input name="core_products" required value="手冲, 创意特调, 咖啡豆零售"></label>
+        <label>目标人群<input name="target_audience" required value="一线城市年轻白领, 咖啡爱好者"></label>
+        <label>竞品<input name="competitors" required value="Manner, M Stand, 瑞幸"></label>
+        <label>语气<input name="tonality" required value="克制, 专业, 有温度"></label>
+      </div>
+      <div class="panel">
+        <label>资料摘要<textarea name="summary" required>目前有 12 家直营精品咖啡门店，客单价 28 元，单店日均 350 杯。品牌主打浅烘单一产地手冲、创意特调和咖啡豆零售，自建烘焙厂，但用户认知停留在“比瑞幸贵、比独立咖啡馆方便”。计划未来两年扩张到 50 家，需要明确定位、目标人群、竞争空位、品牌理由链和落地路径。</textarea></label>
+      </div>
+      <div class="panel">
+        <label>根问题<input name="strategicQuestion" required value="LUMA 应如何在低价连锁与独立精品店之间建立可复制的差异化定位？"></label>
+      </div>
+      <div class="actions">
+        <button type="submit">开始生成</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="view-run" class="hidden">
+    <div class="muted">Run</div>
+    <div id="run-slug" class="status"></div>
+    <div class="panel">
+      <h2 id="stage">created</h2>
+      <div id="events" class="events"></div>
+    </div>
+    <div id="outline-panel" class="panel hidden">
+      <h2>大纲确认</h2>
+      <p id="narrative"></p>
+      <div id="chapters" class="chapters"></div>
+      <label style="margin-top:14px;">修改意见<textarea id="approval-notes" placeholder="可以留空，或写下希望调整的方向"></textarea></label>
+      <div class="actions">
+        <button id="approve">批准大纲并继续</button>
+      </div>
+    </div>
+    <div id="done-panel" class="panel hidden">
+      <h2>方案已完成</h2>
+      <div class="actions">
+        <a id="open-deck" class="button" target="_blank">打开并轻编辑</a>
+        <button class="secondary" onclick="location.hash=''">再做一个</button>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id)
+let currentSlug = location.hash.replace(/^#/, '')
+let timer = null
+
+function listValue(form, name) {
+  return form.get(name).split(',').map(x => x.trim()).filter(Boolean)
+}
+
+function setView(name) {
+  $('view-form').classList.toggle('hidden', name !== 'form')
+  $('view-run').classList.toggle('hidden', name !== 'run')
+}
+
+async function api(path, options) {
+  const res = await fetch(path, options)
+  const data = await res.json()
+  if (!res.ok || data.error) throw new Error(data.error || res.statusText)
+  return data
+}
+
+function renderEvents(events) {
+  $('events').textContent = (events || []).map(event =>
+    `${event.timestamp || ''} ${event.event_type || event.type || ''} ${event.chunk_id || ''}`.trim()
+  ).join('\n') || 'waiting...'
+}
+
+function renderOutline(outline) {
+  $('narrative').textContent = outline.narrative || ''
+  $('chapters').innerHTML = (outline.chapters || []).map(chapter => `
+    <div class="chapter">
+      <strong>${chapter.chapter_no}. ${chapter.title}</strong>
+      <div class="muted">${chapter.pages_budget} 页 · ${(chapter.covers || []).join(', ') || 'no covers'}</div>
+      <p>${chapter.goal || ''}</p>
+    </div>
+  `).join('')
+}
+
+async function poll() {
+  if (!currentSlug) return
+  setView('run')
+  $('run-slug').textContent = currentSlug
+  const status = await api(`/api/runs/${currentSlug}/status`)
+  $('stage').textContent = status.stage + (status.running ? ' / running' : '')
+  renderEvents(status.events)
+  $('outline-panel').classList.toggle('hidden', status.stage !== 'awaiting_outline_approval')
+  $('done-panel').classList.toggle('hidden', status.stage !== 'done')
+  if (status.outline) renderOutline(status.outline)
+  if (status.stage === 'done') $('open-deck').href = `/api/runs/${currentSlug}/deck`
+  if (status.stage === 'failed') $('events').textContent = status.error || 'failed'
+}
+
+$('intake').addEventListener('submit', async event => {
+  event.preventDefault()
+  const submit = event.submitter
+  submit.disabled = true
+  try {
+    const form = new FormData(event.currentTarget)
+    const payload = {
+      form: {
+        name: form.get('name'),
+        industry: form.get('industry'),
+        stage: form.get('stage'),
+        core_products: listValue(form, 'core_products'),
+        target_audience: listValue(form, 'target_audience'),
+        competitors: listValue(form, 'competitors'),
+        budget_level: form.get('budget_level'),
+        tonality: form.get('tonality'),
+        render_style: 'swiss',
+        expected_pages: 24,
+      },
+      summary: form.get('summary'),
+      strategicQuestion: form.get('strategicQuestion'),
+    }
+    const created = await api('/api/runs', { method: 'POST', body: JSON.stringify(payload) })
+    currentSlug = created.slug
+    location.hash = currentSlug
+    await poll()
+    timer = setInterval(poll, 2500)
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    submit.disabled = false
+  }
+})
+
+$('approve').addEventListener('click', async () => {
+  $('approve').disabled = true
+  try {
+    await api(`/api/runs/${currentSlug}/approve-outline`, {
+      method: 'POST',
+      body: JSON.stringify({ notes: $('approval-notes').value }),
+    })
+    await poll()
+  } catch (error) {
+    alert(error.message)
+  } finally {
+    $('approve').disabled = false
+  }
+})
+
+if (currentSlug) {
+  poll()
+  timer = setInterval(poll, 2500)
+} else {
+  setView('form')
+}
+</script>
+</body>
+</html>

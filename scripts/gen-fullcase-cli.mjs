@@ -2,8 +2,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { assembleFreeformDeck } from './assemble-freeform-deck.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
+import { designPage, isWellFormedSection } from './design-page.mjs'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
@@ -29,6 +31,9 @@ function parseArgs(argv) {
     maxPagesPerChapterCall: 2,
     searchResults: 3,
     researchRounds: 2,
+    design: true,
+    designMaxTokens: 3000,
+    designMaxAttempts: 2,
   }
   const positional = []
   for (let index = 0; index < argv.length; index += 1) {
@@ -47,6 +52,8 @@ function parseArgs(argv) {
       opts.critic = true
     } else if (arg === '--outline-only') {
       opts.outlineOnly = true
+    } else if (arg === '--no-design') {
+      opts.design = false
     } else if (arg === '--model') {
       opts.model = argv[++index]
     } else if (arg.startsWith('--model=')) {
@@ -55,6 +62,14 @@ function parseArgs(argv) {
       opts.maxTokens = Number(argv[++index])
     } else if (arg.startsWith('--max-tokens=')) {
       opts.maxTokens = Number(arg.slice('--max-tokens='.length))
+    } else if (arg === '--design-max-tokens') {
+      opts.designMaxTokens = Number(argv[++index])
+    } else if (arg.startsWith('--design-max-tokens=')) {
+      opts.designMaxTokens = Number(arg.slice('--design-max-tokens='.length))
+    } else if (arg === '--design-max-attempts') {
+      opts.designMaxAttempts = Number(argv[++index])
+    } else if (arg.startsWith('--design-max-attempts=')) {
+      opts.designMaxAttempts = Number(arg.slice('--design-max-attempts='.length))
     } else if (arg === '--search-results') {
       opts.searchResults = Number(argv[++index])
     } else if (arg.startsWith('--search-results=')) {
@@ -91,7 +106,7 @@ function parseArgs(argv) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--research-rounds=2] [--outline-attempts=2] [--max-pages-per-chapter-call=2] [--pages=20,30] [--output=<dir>]')
+    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--no-design] [--research-rounds=2] [--outline-attempts=2] [--max-pages-per-chapter-call=2] [--pages=20,30] [--output=<dir>]')
     process.exit(2)
   }
   const runDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-fullcase`)
@@ -164,6 +179,48 @@ async function cliMain() {
   const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
   const methodology = { concepts, casePattern }
 
+  const renderFreeform = async deck => {
+    const designedPath = path.join(runDir, 'deck.designed.json')
+    let checkpoint = []
+    try {
+      checkpoint = JSON.parse(fs.readFileSync(designedPath, 'utf8')).slides || []
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error
+    }
+    const cached = new Map(checkpoint
+      .filter(slide => slide?.page_no && isWellFormedSection(slide.section_html))
+      .map(slide => [String(slide.page_no), slide]))
+    const designed = { ...deck, slides: [] }
+    const designCall = async (system, user) => call(system, user, {
+      maxTokens: opts.designMaxTokens,
+      temperature: 0.2,
+    })
+    for (const [index, slide] of (deck.slides || []).entries()) {
+      const key = String(slide.page_no)
+      const label = `page ${slide.page_no || index + 1}/${deck.slides.length}`
+      const cachedSlide = cached.get(key)
+      if (cachedSlide) {
+        console.log(`[freeform] design reuse ${label}`)
+        designed.slides.push(cachedSlide)
+      } else {
+        console.log(`[freeform] design start ${label}`)
+        designed.slides.push(await designPage(slide, { callModel: designCall, maxAttempts: opts.designMaxAttempts }))
+        console.log(`[freeform] design done ${label}`)
+      }
+      fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))
+    }
+    const malformed = designed.slides
+      .filter(slide => !isWellFormedSection(slide.section_html))
+      .map(slide => slide.page_no)
+    if (malformed.length) throw new Error(`malformed section_html on pages: ${malformed.join(', ')}`)
+    const html = await assembleFreeformDeck(designed, { style: brief.form?.render_style || 'swiss', root: opts.root })
+    const htmlPath = path.join(runDir, 'deck.freeform.html')
+    fs.writeFileSync(htmlPath, html)
+    fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))
+    console.log(`[freeform] ${designed.slides.length} slides -> ${htmlPath}`)
+    return { designed, htmlPath }
+  }
+
   try {
     const result = await runFullcasePipeline({
       brief,
@@ -206,6 +263,10 @@ async function cliMain() {
       fs.writeFileSync(path.join(runDir, 'deck.json'), JSON.stringify(loop.deck, null, 2))
       console.log(`[fullcase] critic loop: ${loop.finalVerdict} (${loop.rounds.length} 轮)`)
       if (loop.finalVerdict !== 'pass') process.exit(1)
+      result.deck = loop.deck
+    }
+    if (opts.design) {
+      await renderFreeform(result.deck)
     }
   } catch (error) {
     fs.writeFileSync(path.join(runDir, 'generation-error.txt'), String(error?.stack || error))
