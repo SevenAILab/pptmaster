@@ -116,6 +116,43 @@ try {
   })
   assert.equal(retried.deck.slides.length, 20)
   assert.equal(retryCalls, 2)
+
+  let groupedChapterCalls = 0
+  const groupedModel = async (system, user) => {
+    if (system.includes('叙事大纲')) return JSON.stringify(stubOutline)
+    groupedChapterCalls += 1
+    const chapterNo = Number((user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/))[1])
+    const pageMatch = system.match(/第 (\d+)-(\d+) 页/)
+    assert.ok(pageMatch, 'maxPagesPerChapterCall 应触发页组生成')
+    const start = Number(pageMatch[1])
+    const end = Number(pageMatch[2])
+    return JSON.stringify({
+      slides: Array.from({ length: end - start + 1 }, (_, idx) => {
+        const pageNo = start + idx
+        return {
+          page_no: pageNo,
+          intent: pageNo === 1 ? '章节导入' : `章${chapterNo} 页${pageNo} 的推进`,
+          action_title: `章${chapterNo} 页组生成第 ${pageNo} 个不同判断`,
+          layout: pageNo === 1 ? 'hero-statement' : 'split-statement',
+          core_points: [`章${chapterNo}-${pageNo} 论点`],
+          data_refs: [{ source: 'inputs/pipe-test/summary.md', type: 'client_input', source_tier: 'T1' }],
+          evidence_kind: 'deductive',
+          validation_method: '访谈验证',
+          blocks: [{ type: 'callout', text: `g${chapterNo}${pageNo}` }],
+        }
+      }),
+      ...(end === 5 ? { chapter_takeaways: [`章${chapterNo} 结论`] } : {}),
+    })
+  }
+  const groupedRun = await runFullcasePipeline({
+    brief,
+    runDir: path.join(tmp, 'run-grouped'),
+    callModel: groupedModel,
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30, maxPagesPerChapterCall: 2 },
+  })
+  assert.equal(groupedRun.deck.slides.length, 20)
+  assert.equal(groupedChapterCalls, 12)
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true })
 }

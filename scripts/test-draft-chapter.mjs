@@ -59,4 +59,68 @@ const drafted = await draftChapter({
 assert.equal(drafted.slides.length, 3)
 assert.equal(drafted.chapter_no, 2)
 
+let groupedCalls = 0
+const grouped = await draftChapter({
+  brief,
+  outline,
+  chapter: { ...outline.chapters[1], pages_budget: 5 },
+  previousTakeaways: ['上一章结论'],
+  usedTitles: ['旧标题'],
+  callModel: async (groupSystem, groupUser) => {
+    groupedCalls += 1
+    assert.match(groupSystem, /本次只写本章第/)
+    assert.match(groupUser, groupedCalls === 1 ? /上一章结论/ : /本章已生成页面/)
+    if (groupedCalls === 1) {
+      assert.match(groupSystem, /第 1 页必须是章首页/)
+      return JSON.stringify({
+        slides: [
+          { page_no: 1, intent: '章节导入', action_title: '页组 1-1', layout: 'hero-statement', core_points: ['a'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'a' }] },
+          { page_no: 2, intent: 'i', action_title: '页组 1-2', layout: 'split-statement', core_points: ['b'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'b' }] },
+        ],
+      })
+    }
+    if (groupedCalls === 2) {
+      assert.match(groupSystem, /不要再写章节导入页/)
+      return JSON.stringify({
+        slides: [
+          { page_no: 3, intent: 'i', action_title: '页组 2-3', layout: 'split-statement', core_points: ['c'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'c' }] },
+          { page_no: 4, intent: 'i', action_title: '页组 2-4', layout: 'split-statement', core_points: ['d'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'd' }] },
+        ],
+      })
+    }
+    return JSON.stringify({
+      slides: [
+        { page_no: 5, intent: 'i', action_title: '页组 3-5', layout: 'split-statement', core_points: ['e'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'e' }] },
+      ],
+      chapter_takeaways: ['拆分章结论'],
+    })
+  },
+  maxPagesPerCall: 2,
+})
+assert.equal(groupedCalls, 3)
+assert.deepEqual(grouped.slides.map(slide => slide.page_no), [1, 2, 3, 4, 5])
+assert.deepEqual(grouped.chapter_takeaways, ['拆分章结论'])
+
+await assert.rejects(draftChapter({
+  brief,
+  outline,
+  chapter: { ...outline.chapters[1], pages_budget: 3 },
+  previousTakeaways: [],
+  usedTitles: [],
+  callModel: async (badSystem) => badSystem.includes('第 1-2 页')
+    ? JSON.stringify({
+      slides: [
+        { page_no: 1, action_title: 'a' },
+        { page_no: 2, action_title: 'b' },
+      ],
+    })
+    : JSON.stringify({
+      slides: [
+        { page_no: 1, action_title: 'wrong' },
+      ],
+      chapter_takeaways: ['t'],
+    }),
+  maxPagesPerCall: 2,
+}), /page_no|页组/)
+
 console.log('✅ draft-chapter: prompt + parse + budget lock passed')

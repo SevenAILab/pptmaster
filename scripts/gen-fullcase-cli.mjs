@@ -26,6 +26,7 @@ function parseArgs(argv) {
     minPages: 20,
     maxPages: 30,
     outlineAttempts: 2,
+    maxPagesPerChapterCall: 2,
     searchResults: 3,
   }
   const positional = []
@@ -61,6 +62,10 @@ function parseArgs(argv) {
       opts.outlineAttempts = Number(argv[++index])
     } else if (arg.startsWith('--outline-attempts=')) {
       opts.outlineAttempts = Number(arg.slice('--outline-attempts='.length))
+    } else if (arg === '--max-pages-per-chapter-call') {
+      opts.maxPagesPerChapterCall = Number(argv[++index])
+    } else if (arg.startsWith('--max-pages-per-chapter-call=')) {
+      opts.maxPagesPerChapterCall = Number(arg.slice('--max-pages-per-chapter-call='.length))
     } else if (arg === '--pages') {
       const [min, max] = String(argv[++index]).split(',').map(Number)
       opts.minPages = min
@@ -81,7 +86,7 @@ function parseArgs(argv) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--outline-attempts=2] [--pages=20,30] [--output=<dir>]')
+    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--outline-attempts=2] [--max-pages-per-chapter-call=2] [--pages=20,30] [--output=<dir>]')
     process.exit(2)
   }
   const runDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-fullcase`)
@@ -152,7 +157,12 @@ async function cliMain() {
       requiredConclusions: schemeConfig.required_conclusions,
       methodology,
       researchBrief,
-      options: { minPages: opts.minPages, maxPages: opts.maxPages, outlineAttempts: opts.outlineAttempts },
+      options: {
+        minPages: opts.minPages,
+        maxPages: opts.maxPages,
+        outlineAttempts: opts.outlineAttempts,
+        maxPagesPerChapterCall: opts.maxPagesPerChapterCall,
+      },
     })
     if (opts.outlineOnly) {
       console.log(`[fullcase] outline ready -> ${path.join(runDir, 'outline.json')}`)

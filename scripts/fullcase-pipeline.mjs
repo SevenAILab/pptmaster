@@ -35,6 +35,7 @@ export async function runFullcasePipeline({
   const minPages = Number(options.minPages ?? 20)
   const maxPages = Number(options.maxPages ?? 30)
   const outlineAttempts = Number(options.outlineAttempts ?? 1)
+  const maxPagesPerChapterCall = Number(options.maxPagesPerChapterCall || Infinity)
   const runId = `fullcase-${brief.slug}`
 
   const outlinePath = path.join(runDir, 'outline.json')
@@ -115,6 +116,7 @@ export async function runFullcasePipeline({
         methodology,
         researchBrief,
         callModel,
+        maxPagesPerCall: maxPagesPerChapterCall,
       })
       writeJson(chapterPath, result)
       await markChunkCompleted({ runDir, chunkId, workerId: 'draft-chapter', outputPath: chapterPath })
