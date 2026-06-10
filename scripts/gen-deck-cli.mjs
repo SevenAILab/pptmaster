@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
+import { runCriticLoop } from './critic-deck.mjs'
 import { buildBriefFromInputs, generateDeck } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
@@ -22,6 +23,7 @@ function parseArgs(argv) {
     pages: 5,
     research: false,
     methodology: true,
+    critic: false,
     searchResults: 3,
   }
   const positional = []
@@ -43,6 +45,8 @@ function parseArgs(argv) {
       opts.research = true
     } else if (arg === '--no-methodology') {
       opts.methodology = false
+    } else if (arg === '--critic') {
+      opts.critic = true
     } else if (arg === '--model') {
       opts.model = argv[index + 1]
       index += 1
@@ -98,7 +102,7 @@ function writeOutput(outputDir, result) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run] [--research] [--no-methodology]')
+    console.error('Usage: node scripts/gen-deck-cli.mjs <input-slug> [--root <repo-root>] [--output <dir>] [--dry-run] [--research] [--no-methodology] [--critic]')
     process.exit(2)
   }
   const outputDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-nonlocked`)
@@ -195,6 +199,29 @@ async function cliMain() {
     console.log(`[nonlocked] methodology usage: ${usage.ok ? 'PASS' : 'FAIL'} (${usage.usedPageCount}/${usage.totalPages}: ${usage.frameworks.join('、')})`)
     if (!usage.ok) {
       console.error(usage.violations.map(violation => `- ${violation}`).join('\n'))
+      process.exit(1)
+    }
+  }
+  if (opts.critic && !opts.dryRun) {
+    const index = loadConceptIndex({ root: opts.root })
+    const loop = await runCriticLoop({
+      deck: result.deck,
+      brief,
+      index,
+      loadBodies: slugs => loadConceptBodies({ slugs, root: opts.root, maxCharsPerConcept: 1200 }),
+      callModel: async (system, user) => (await callClaude(system, user, {
+        model: opts.model,
+        maxTokens: opts.maxTokens,
+        temperature: 0,
+      })).text,
+      maxRounds: 2,
+      processLockOptions: {},
+    })
+    fs.writeFileSync(path.join(outputDir, 'critic-rounds.json'), JSON.stringify(loop.rounds, null, 2))
+    fs.writeFileSync(path.join(outputDir, 'deck.json'), JSON.stringify(loop.deck, null, 2))
+    console.log(`[nonlocked] critic loop: ${loop.finalVerdict} (${loop.rounds.length} 轮)`)
+    if (loop.finalVerdict !== 'pass') {
+      console.error('critic 仍判 revise，已保留产物供人工判读')
       process.exit(1)
     }
   }
