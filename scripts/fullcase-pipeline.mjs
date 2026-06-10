@@ -34,6 +34,7 @@ export async function runFullcasePipeline({
   if (typeof callModel !== 'function') throw new Error('runFullcasePipeline requires callModel')
   const minPages = Number(options.minPages ?? 20)
   const maxPages = Number(options.maxPages ?? 30)
+  const outlineAttempts = Number(options.outlineAttempts ?? 1)
   const runId = `fullcase-${brief.slug}`
 
   const outlinePath = path.join(runDir, 'outline.json')
@@ -42,18 +43,35 @@ export async function runFullcasePipeline({
     outline = JSON.parse(fs.readFileSync(outlinePath, 'utf8'))
     console.log(`[fullcase] reuse existing outline.json (${outline.chapters.length} 章)`)
   } else {
-    const prompt = buildOutlinePrompt(brief, {
-      requiredConclusions,
-      minPages,
-      maxPages,
-      methodology,
-      researchBrief,
-    })
-    outline = parseOutline(await callModel(prompt.system, prompt.user))
-    const check = validateOutline(outline, { requiredConclusions, minPages, maxPages })
-    if (!check.ok) {
-      throw new Error(['大纲校验未通过：', ...check.violations.map(violation => `  - ${violation}`)].join('\n'))
+    let lastCheck
+    let lastPrompt
+    for (let attempt = 1; attempt <= outlineAttempts; attempt += 1) {
+      const prompt = buildOutlinePrompt(brief, {
+        requiredConclusions,
+        minPages,
+        maxPages,
+        methodology,
+        researchBrief,
+      })
+      const user = attempt === 1
+        ? prompt.user
+        : [
+          prompt.user,
+          '',
+          '# 上一次大纲校验失败',
+          ...(lastCheck?.violations || []).map(violation => `- ${violation}`),
+          '',
+          `请重新输出满足 ${minPages}-${maxPages} 页、4-8 章、覆盖全部 covers 的 JSON 大纲。`,
+        ].join('\n')
+      lastPrompt = { system: prompt.system, user }
+      outline = parseOutline(await callModel(prompt.system, user))
+      lastCheck = validateOutline(outline, { requiredConclusions, minPages, maxPages })
+      if (lastCheck.ok) break
     }
+    if (!lastCheck?.ok) {
+      throw new Error(['大纲校验未通过：', ...(lastCheck?.violations || []).map(violation => `  - ${violation}`)].join('\n'))
+    }
+    if (!lastPrompt) throw new Error('Outline prompt was not built')
     writeJson(outlinePath, outline)
   }
 

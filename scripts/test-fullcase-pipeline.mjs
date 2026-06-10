@@ -94,6 +94,28 @@ try {
     requiredConclusions,
     options: { minPages: 20, maxPages: 30 },
   }), /大纲校验未通过/)
+
+  let retryCalls = 0
+  const retryModel = async (system, user) => {
+    if (system.includes('叙事大纲')) {
+      retryCalls += 1
+      return retryCalls === 1
+        ? JSON.stringify({ narrative: 'x', chapters: [{ chapter_no: 1, title: 't', goal: 'g', pages_budget: 12, key_questions: [], covers: ['root_answer'] }] })
+        : JSON.stringify(stubOutline)
+    }
+    const match = user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/)
+    const chapter = stubOutline.chapters[Number(match[1]) - 1]
+    return chapterStub(chapter)
+  }
+  const retried = await runFullcasePipeline({
+    brief,
+    runDir: path.join(tmp, 'run-retry'),
+    callModel: retryModel,
+    requiredConclusions,
+    options: { minPages: 20, maxPages: 30, outlineAttempts: 2 },
+  })
+  assert.equal(retried.deck.slides.length, 20)
+  assert.equal(retryCalls, 2)
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true })
 }

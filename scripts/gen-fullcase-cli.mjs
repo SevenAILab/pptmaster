@@ -25,6 +25,7 @@ function parseArgs(argv) {
     outlineOnly: false,
     minPages: 20,
     maxPages: 30,
+    outlineAttempts: 2,
     searchResults: 3,
   }
   const positional = []
@@ -56,6 +57,10 @@ function parseArgs(argv) {
       opts.searchResults = Number(argv[++index])
     } else if (arg.startsWith('--search-results=')) {
       opts.searchResults = Number(arg.slice('--search-results='.length))
+    } else if (arg === '--outline-attempts') {
+      opts.outlineAttempts = Number(argv[++index])
+    } else if (arg.startsWith('--outline-attempts=')) {
+      opts.outlineAttempts = Number(arg.slice('--outline-attempts='.length))
     } else if (arg === '--pages') {
       const [min, max] = String(argv[++index]).split(',').map(Number)
       opts.minPages = min
@@ -76,7 +81,7 @@ function parseArgs(argv) {
 async function cliMain() {
   const { slug, opts } = parseArgs(process.argv.slice(2))
   if (!slug) {
-    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--pages=20,30] [--output=<dir>]')
+    console.error('Usage: node scripts/gen-fullcase-cli.mjs <input-slug> [--no-research] [--critic] [--outline-only] [--outline-attempts=2] [--pages=20,30] [--output=<dir>]')
     process.exit(2)
   }
   const runDir = opts.outputDir || path.join(opts.root, 'outputs', `${slug}-fullcase`)
@@ -147,7 +152,7 @@ async function cliMain() {
       requiredConclusions: schemeConfig.required_conclusions,
       methodology,
       researchBrief,
-      options: { minPages: opts.minPages, maxPages: opts.maxPages },
+      options: { minPages: opts.minPages, maxPages: opts.maxPages, outlineAttempts: opts.outlineAttempts },
     })
     if (opts.outlineOnly) {
       console.log(`[fullcase] outline ready -> ${path.join(runDir, 'outline.json')}`)
