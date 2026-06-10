@@ -234,6 +234,24 @@ assert.equal(zeroRetry.findings.length, 1)
 assert.ok(retryQueries.length > 1)
 assert.equal(zeroRetry.search_calls_used, retryQueries.length)
 
+const chineseRetryQueries = []
+const chineseZeroRetry = await researchQuestionWithReflection({
+  question: '一线城市年轻白领 咖啡消费频次 客单价 购买渠道 外带 自提 2024 调研数据',
+  maxRounds: 1,
+  search: async query => {
+    chineseRetryQueries.push(query)
+    return chineseRetryQueries.length === 1
+      ? { results: [] }
+      : { results: [{ url: 'https://report.iimedia.cn/repo199-0/46641.html', title: 'Retry', snippet: '咖啡消费 42%' }] }
+  },
+  callModel: async () => JSON.stringify({
+    findings: [{ claim: '咖啡消费 42%', evidence: '42%', source_url: 'https://report.iimedia.cn/repo199-0/46641.html', confidence: 'med' }],
+  }),
+})
+assert.equal(chineseZeroRetry.findings.length, 1)
+assert.ok(chineseRetryQueries.length > 1)
+assert.notEqual(chineseRetryQueries[1], chineseRetryQueries[0])
+
 const deep = await gatherResearchDeep({
   questions: ['q1', 'q2'],
   maxRounds: 1,

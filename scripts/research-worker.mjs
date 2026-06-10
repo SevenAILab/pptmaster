@@ -31,8 +31,11 @@ export function buildResearchQueryVariants(question, { retry = false, maxVariant
   const keywords = tokens.filter(token => token.length >= 2 && !stopwords.test(token))
   const entityPrefix = keywords.slice(0, 4).join(' ')
   const variants = [original]
-  if (original.length > 36 || retry) {
+  if (original.length > 36 || tokens.length >= 7 || /调研|数据|报告|白皮书|研究/.test(original) || retry) {
     variants.push(keywords.slice(0, 8).join(' '))
+  }
+  if (tokens.length >= 7 || /调研|数据|报告|白皮书|研究/.test(original)) {
+    variants.push(`${keywords.slice(0, 5).join(' ')} 报告 数据`)
   }
   if (retry) {
     if (/竞品|竞争|对比|差异|定位/.test(original)) {
