@@ -33,6 +33,8 @@ for (const url of [
   'https://www.cbndata.com/report/123',
   'https://www.questmobile.com.cn/research/report/1',
   'https://www.analysys.cn/article/detail/2025',
+  'https://www.cninsights.com/report/38',
+  'https://www.spdbi.com/getfile/index/action/images/name/65f3a0c4ec550.pdf',
 ]) assert.equal(classifySource(url).source_tier, 'T2', url)
 for (const url of [
   'https://www.baogao.com/report/20723009.html',

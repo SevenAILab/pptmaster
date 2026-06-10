@@ -26,6 +26,8 @@ const T2_DOMAINS = [
   'mob.com',
   'cnnic.cn',
   'frostchina.com',
+  'cninsights.com',
+  'spdbi.com',
   'euromonitor.com',
   'mordorintelligence.com',
   'grandviewresearch.com',
