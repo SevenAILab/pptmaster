@@ -9,6 +9,7 @@ import {
   parseQuestionResponse,
   parseReflectionResponse,
   parseResearchResponse,
+  researchQuestionWithReflection,
   tagSources,
 } from './research-worker.mjs'
 
@@ -147,5 +148,59 @@ const gathered = await gatherResearch({
 assert.equal(gathered.findings.length, 1)
 assert.equal(gathered.findings[0].source_tier, 'T2')
 assert.equal(gathered.sources[0].url, 'https://www.gartner.com/report')
+
+const searchLog = []
+const deepResult = await researchQuestionWithReflection({
+  question: '市场规模?',
+  maxRounds: 3,
+  search: async query => {
+    searchLog.push(query)
+    return searchLog.length === 1
+      ? { results: [{ url: 'https://a.com/1', title: 'A', snippet: '规模 1200 亿' }] }
+      : { results: [{ url: 'https://b.com/2', title: 'B', snippet: '增速 12%' }, { url: 'https://c.com/3', title: 'C', snippet: '人群 3 亿' }] }
+  },
+  callModel: async (deepSystem, deepUser) => {
+    if (deepSystem.includes('研究质量评估员')) {
+      return searchLog.length === 1
+        ? '{"sufficient":false,"gaps":["缺增速"],"next_queries":["市场 增速 2025"]}'
+        : '{"sufficient":true,"gaps":[],"next_queries":[]}'
+    }
+    return deepUser.includes('增速')
+      ? JSON.stringify({ findings: [
+        { claim: '年增速 12%', evidence: '12%', source_url: 'https://b.com/2', confidence: 'high' },
+        { claim: '消费人群 3 亿', evidence: '3 亿', source_url: 'https://c.com/3', confidence: 'med' },
+      ] })
+      : JSON.stringify({ findings: [{ claim: '市场 1200 亿', evidence: '1200 亿', source_url: 'https://a.com/1', confidence: 'high' }] })
+  },
+})
+assert.equal(deepResult.rounds_used, 2)
+assert.equal(deepResult.search_calls_used, 2)
+assert.equal(deepResult.findings.length, 3)
+assert.deepEqual(searchLog, ['市场规模?', '市场 增速 2025'])
+
+const oneShot = await researchQuestionWithReflection({
+  question: 'q',
+  maxRounds: 3,
+  search: async () => ({ results: [
+    { url: 'https://a.com', snippet: 'x1' },
+    { url: 'https://b.com', snippet: 'x2' },
+    { url: 'https://c.com', snippet: 'x3' },
+  ] }),
+  callModel: async oneSystem => oneSystem.includes('研究质量评估员')
+    ? '{"sufficient":true,"gaps":[],"next_queries":[]}'
+    : JSON.stringify({ findings: [
+      { claim: 'c1', evidence: 'e', source_url: 'https://a.com', confidence: 'high' },
+      { claim: 'c2', evidence: 'e', source_url: 'https://b.com', confidence: 'high' },
+      { claim: 'c3', evidence: 'e', source_url: 'https://c.com', confidence: 'high' },
+    ] }),
+})
+assert.equal(oneShot.rounds_used, 1)
+
+await assert.rejects(researchQuestionWithReflection({
+  question: 'q',
+  maxRounds: 2,
+  search: async () => ({ results: [] }),
+  callModel: async () => '{"findings":[]}',
+}), /No search results/)
 
 console.log('✅ research-worker: derive + normalize + tag + parse + gather passed')

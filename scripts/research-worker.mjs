@@ -199,3 +199,64 @@ export async function gatherResearch({ questions, search, callModel, sourceOptio
   const parsed = parseResearchResponse(typeof response === 'string' ? response : response?.text)
   return tagSources(parsed.findings || [], sourceOptions)
 }
+
+export async function researchQuestionWithReflection({
+  question,
+  search,
+  callModel,
+  maxRounds = 3,
+  maxResultsPerQuery = 3,
+} = {}) {
+  if (typeof search !== 'function') throw new Error('researchQuestionWithReflection requires search')
+  if (typeof callModel !== 'function') throw new Error('researchQuestionWithReflection requires callModel')
+  const findings = []
+  const seenClaims = new Set()
+  const seenUrls = new Set()
+  let queries = [String(question || '')]
+  let roundsUsed = 0
+  let searchCallsUsed = 0
+
+  for (let round = 1; round <= maxRounds; round += 1) {
+    roundsUsed = round
+    const hits = []
+    for (const query of queries) {
+      searchCallsUsed += 1
+      hits.push(...normalizeSearchHits(await search(query)).slice(0, maxResultsPerQuery))
+    }
+    if (round === 1 && hits.length === 0) {
+      throw new Error(`No search results for question: ${question}`)
+    }
+
+    let newCount = 0
+    if (hits.length > 0) {
+      const { system, user } = buildResearchPrompt([question], hits)
+      const response = await callModel(system, user)
+      const parsed = parseResearchResponse(typeof response === 'string' ? response : response?.text)
+      for (const finding of parsed.findings || []) {
+        const claim = text(finding?.claim)
+        const url = text(finding?.source_url || finding?.source || finding?.url)
+        const key = `${claim}@@${url}`
+        if (!claim || !url || seenClaims.has(key)) continue
+        seenClaims.add(key)
+        seenUrls.add(url)
+        findings.push({ ...finding, claim, source_url: url })
+        newCount += 1
+      }
+    }
+    if (round > 1 && newCount === 0) break
+    if (round >= maxRounds) break
+
+    const reflectionPrompt = buildReflectionPrompt({ question, findings })
+    const reflectionResponse = await callModel(reflectionPrompt.system, reflectionPrompt.user)
+    const reflection = parseReflectionResponse(
+      typeof reflectionResponse === 'string' ? reflectionResponse : reflectionResponse?.text,
+    )
+    if (reflection.sufficient || reflection.next_queries.length === 0) break
+    queries = reflection.next_queries
+  }
+
+  if (findings.length === 0) {
+    throw new Error(`No traceable research findings for question: ${question}`)
+  }
+  return { question, findings, rounds_used: roundsUsed, search_calls_used: searchCallsUsed }
+}
