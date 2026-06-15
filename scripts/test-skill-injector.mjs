@@ -17,6 +17,22 @@ assert.deepEqual(STAGE_SKILLS.design, {
   skill: 'deck-design-system',
   refs: ['design-tokens-and-themes', 'layout-system', 'anti-ai-slop', 'visual-qa'],
 })
+assert.deepEqual(STAGE_SKILLS.analysis_industry, {
+  skill: 'industry-analysis',
+  refs: ['how-it-makes-money', 'market-and-trend', 'players-and-variables', 'evidence-and-sources'],
+})
+assert.deepEqual(STAGE_SKILLS.analysis_competitor, {
+  skill: 'competitor-analysis',
+  refs: ['scope-definition', 'teardown-layers', 'conclusions', 'evidence-discipline'],
+})
+assert.deepEqual(STAGE_SKILLS.analysis_self, {
+  skill: 'self-analysis',
+  refs: ['what-you-have', 'real-vs-fake-advantage', 'swot-matrix', 'from-analysis-to-focus'],
+})
+assert.deepEqual(STAGE_SKILLS.analysis_user, {
+  skill: 'user-insight',
+  refs: ['define-and-validate', 'deep-dig', 'insight-craft', 'evidence-and-synthesis'],
+})
 
 const guidance = loadSkillGuidance({ root: REPO_ROOT, stage: 'outline' })
 assert.equal(guidance.skill, 'proposal-narrative')
@@ -35,6 +51,11 @@ const limited = loadSkillGuidance({
 })
 assert.equal(limited.loaded.length, 1)
 assert.ok(limited.loaded[0].chars <= 80)
+
+const analysisGuidance = loadSkillGuidance({ root: REPO_ROOT, stage: 'analysis_competitor', maxCharsPerRef: 300 })
+assert.equal(analysisGuidance.skill, 'competitor-analysis')
+assert.match(analysisGuidance.text, /competitor-analysis 方法论指引/)
+assert.equal(analysisGuidance.loaded.length, 4)
 
 assert.throws(() => loadSkillGuidance({ root: REPO_ROOT, stage: 'nope' }), /Unknown stage/)
 assert.throws(() => loadSkillGuidance({ root: REPO_ROOT, stage: 'outline', refsOverride: ['nonexistent'] }), /missing/i)

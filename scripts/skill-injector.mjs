@@ -14,6 +14,22 @@ export const STAGE_SKILLS = {
     skill: 'deck-design-system',
     refs: ['design-tokens-and-themes', 'layout-system', 'anti-ai-slop', 'visual-qa'],
   },
+  analysis_industry: {
+    skill: 'industry-analysis',
+    refs: ['how-it-makes-money', 'market-and-trend', 'players-and-variables', 'evidence-and-sources'],
+  },
+  analysis_competitor: {
+    skill: 'competitor-analysis',
+    refs: ['scope-definition', 'teardown-layers', 'conclusions', 'evidence-discipline'],
+  },
+  analysis_self: {
+    skill: 'self-analysis',
+    refs: ['what-you-have', 'real-vs-fake-advantage', 'swot-matrix', 'from-analysis-to-focus'],
+  },
+  analysis_user: {
+    skill: 'user-insight',
+    refs: ['define-and-validate', 'deep-dig', 'insight-craft', 'evidence-and-synthesis'],
+  },
 }
 
 export function loadSkillGuidance({

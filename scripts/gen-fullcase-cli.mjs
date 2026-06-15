@@ -4,6 +4,7 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
+import { runAnalysisPass } from './analysis-pass.mjs'
 import { loadCaseLogic } from './case-logic.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
@@ -200,6 +201,42 @@ async function cliMain() {
     })
   }
 
+  let analysisCards
+  const analysisCardsPath = path.join(runDir, 'analysis-cards.json')
+  if (opts.research) {
+    if (fs.existsSync(analysisCardsPath)) {
+      analysisCards = JSON.parse(fs.readFileSync(analysisCardsPath, 'utf8'))
+      console.log(`[fullcase] reuse analysis-cards.json (${analysisCards.cards?.length || 0} cards)`)
+    } else {
+      analysisCards = await runAnalysisPass({
+        brief,
+        researchBrief,
+        root: opts.root,
+        callModel: call,
+      })
+      fs.writeFileSync(analysisCardsPath, JSON.stringify(analysisCards, null, 2))
+      console.log(`[fullcase] analysis cards -> ${analysisCards.cards.length} cards`)
+    }
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'analysis_completed',
+      metadata: {
+        cards: analysisCards.cards?.length || 0,
+        types: Object.keys(analysisCards.byType || {}),
+      },
+    })
+    if (!traceExists(runDir, 'analysis')) {
+      writeTrace({
+        runDir,
+        step: 'analysis',
+        injected: Object.fromEntries(Object.entries(analysisCards.byType || {}).map(([type, value]) => [type, value.injected])),
+        output: { cards: analysisCards.cards?.length || 0, file: path.basename(analysisCardsPath) },
+        note: '研究发现经过 industry/competitor/self/user 四类分析 skill，产出契约 A 分析卡',
+      })
+    }
+  }
+
   const selectionPath = path.join(runDir, 'methodology-selection.json')
   let selection
   if (fs.existsSync(selectionPath)) {
@@ -266,6 +303,7 @@ async function cliMain() {
       requiredConclusions: schemeConfig.required_conclusions,
       methodology,
       researchBrief,
+      analysisCards,
       caseLogic: caseLogic.text,
       options: {
         root: opts.root,
