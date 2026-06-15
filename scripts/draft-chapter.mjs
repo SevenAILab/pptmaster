@@ -29,6 +29,7 @@ export function buildChapterPrompt({
   researchBrief,
   pageRange,
   generatedSlides = [],
+  skillGuidance,
 } = {}) {
   const pageStart = Number(pageRange?.start || 1)
   const pageEnd = Number(pageRange?.end || chapter.pages_budget)
@@ -63,6 +64,7 @@ export function buildChapterPrompt({
       ? '除 slides 外必须输出 chapter_takeaways：本章 1-3 条核心结论（给后续章节当上下文）。'
       : '本次不是本章最后一组，只输出 slides，不要输出 chapter_takeaways。',
     '只输出 JSON：{"slides":[...],"chapter_takeaways":["..."]}。',
+    skillGuidance,
   ].filter(Boolean).join('\n')
   const user = [
     '# 整本叙事弧',
@@ -176,6 +178,7 @@ export async function draftChapter({
   researchBrief,
   callModel,
   maxPagesPerCall = Infinity,
+  skillGuidance,
 } = {}) {
   if (typeof callModel !== 'function') throw new Error('draftChapter requires callModel')
   const groupSize = Math.max(1, Number(maxPagesPerCall || Infinity))
@@ -196,6 +199,7 @@ export async function draftChapter({
         researchBrief,
         pageRange: { start, end },
         generatedSlides: slides,
+        skillGuidance,
       })
       const parsed = await callAndParseChapter({
         system,
@@ -218,6 +222,7 @@ export async function draftChapter({
     usedPageClaims,
     methodology,
     researchBrief,
+    skillGuidance,
   })
   const parsed = await callAndParseChapter({
     system,

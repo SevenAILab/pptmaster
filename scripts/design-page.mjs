@@ -26,7 +26,7 @@ function formatBlock(block) {
   return `- ${block?.type || 'block'}: ${block?.title || block?.text || JSON.stringify(block)}`
 }
 
-export function buildDesignPrompt(slide = {}) {
+export function buildDesignPrompt(slide = {}, { skillGuidance } = {}) {
   const system = [
     '你是 guizang / Swiss Style 信息设计师，为 PPTAgent 的短 deck 做每页自主排版。',
     'Swiss/guizang 是审美标尺，不是固定模板目录；不要套用每页相同的版式，结构必须跟内容走。',
@@ -35,7 +35,8 @@ export function buildDesignPrompt(slide = {}) {
     '安全硬约束：只输出当前页的一个 <section class="slide ...">...</section>，不要输出解释文字，不要输出 <html>/<head>/<body>，不要脚本，不要 <style> 标签，不要外链资源，不要 iframe，不要 on* 事件属性，不要 javascript: URL。',
     '可以使用 shell 已有 class、CSS 变量、inline style 与 <i data-lucide="name"></i> 图标；只能写 inline style，所有样式必须限定在当前 section 内，不要写全局 CSS。',
     'section 必须保留 slide class；如能确定页码，写 data-page；页内内容要把 action_title 放在显著位置，并保留可追溯来源的简短标识。',
-  ].join('\n')
+    skillGuidance,
+  ].filter(Boolean).join('\n')
 
   const user = [
     `# page_no\n${normalizeText(slide.page_no) || '(无)'}`,
@@ -93,9 +94,18 @@ function injectDataPage(html, pageNo) {
 export function isWellFormedSection(html) {
   const value = String(html ?? '').trim()
   if (!value.startsWith('<section') || !value.endsWith('</section>')) return false
-  const opens = value.match(/<section\b/gi) || []
-  const closes = value.match(/<\/section>/gi) || []
-  return opens.length === 1 && closes.length === 1
+  const tokens = [...value.matchAll(/<\/?section\b[^>]*>/gi)]
+  if (tokens.length < 2) return false
+  if (tokens[0].index !== 0 || !/^<section\b/i.test(tokens[0][0])) return false
+
+  let depth = 0
+  for (const token of tokens) {
+    depth += token[0].startsWith('</') ? -1 : 1
+    if (depth < 0) return false
+    const end = token.index + token[0].length
+    if (depth === 0 && end !== value.length) return false
+  }
+  return depth === 0
 }
 
 export function parseSectionHtml(text, { pageNo } = {}) {
@@ -111,9 +121,9 @@ export function parseSectionHtml(text, { pageNo } = {}) {
   return injectDataPage(raw, pageNo)
 }
 
-export async function designPage(slide, { callModel, maxAttempts = 2 } = {}) {
+export async function designPage(slide, { callModel, maxAttempts = 2, skillGuidance } = {}) {
   if (typeof callModel !== 'function') throw new Error('designPage requires callModel')
-  const { system, user } = buildDesignPrompt(slide)
+  const { system, user } = buildDesignPrompt(slide, { skillGuidance })
   let lastError
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const attemptUser = attempt === 1
@@ -134,19 +144,20 @@ export async function designPage(slide, { callModel, maxAttempts = 2 } = {}) {
       }
     } catch (error) {
       lastError = error
+      lastError.rawOutput = String(text ?? '')
     }
   }
   throw lastError
 }
 
-export async function designDeck(deck, { callModel, maxAttempts = 2, onProgress } = {}) {
+export async function designDeck(deck, { callModel, maxAttempts = 2, onProgress, skillGuidance } = {}) {
   if (!Array.isArray(deck?.slides)) throw new Error('designDeck requires deck.slides[]')
   const slides = []
   for (const [index, slide] of deck.slides.entries()) {
     if (typeof onProgress === 'function') {
       onProgress({ type: 'start', index, total: deck.slides.length, pageNo: slide?.page_no })
     }
-    slides.push(await designPage(slide, { callModel, maxAttempts }))
+    slides.push(await designPage(slide, { callModel, maxAttempts, skillGuidance }))
     if (typeof onProgress === 'function') {
       onProgress({ type: 'done', index, total: deck.slides.length, pageNo: slide?.page_no })
     }

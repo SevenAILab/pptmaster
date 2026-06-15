@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
 import {
   ensureRunState,
@@ -14,10 +15,22 @@ import { draftChapter } from './draft-chapter.mjs'
 import { normalizeGeneratedDeck } from './generate-nonlocked-deck.mjs'
 import { buildOutlinePrompt, parseOutline, validateOutline } from './outline-fullcase.mjs'
 import { validateProcessLocks } from './process-locks.mjs'
+import { loadSkillGuidance } from './skill-injector.mjs'
+import { readTraces, writeTrace } from './trace-log.mjs'
+
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, JSON.stringify(value, null, 2))
+}
+
+function traceExists(runDir, step) {
+  return readTraces(runDir).some(trace => trace.step === step)
+}
+
+function traceInjected(guidance) {
+  return { skill: guidance.skill, refs: guidance.loaded }
 }
 
 export async function runFullcasePipeline({
@@ -37,7 +50,9 @@ export async function runFullcasePipeline({
   const outlineAttempts = Number(options.outlineAttempts ?? 1)
   const maxPagesPerChapterCall = Number(options.maxPagesPerChapterCall || Infinity)
   const outlineOnly = Boolean(options.outlineOnly)
+  const root = options.root || REPO_ROOT
   const runId = `fullcase-${brief.slug}`
+  const outlineGuidance = loadSkillGuidance({ root, stage: 'outline' })
 
   const outlinePath = path.join(runDir, 'outline.json')
   let outline
@@ -54,6 +69,7 @@ export async function runFullcasePipeline({
         maxPages,
         methodology,
         researchBrief,
+        skillGuidance: outlineGuidance.text,
       })
       const user = attempt === 1
         ? prompt.user
@@ -76,6 +92,15 @@ export async function runFullcasePipeline({
     if (!lastPrompt) throw new Error('Outline prompt was not built')
     writeJson(outlinePath, outline)
   }
+  if (!traceExists(runDir, 'outline')) {
+    writeTrace({
+      runDir,
+      step: 'outline',
+      injected: traceInjected(outlineGuidance),
+      output: { chapters: outline.chapters.length, narrative: outline.narrative },
+      note: '注入 proposal-narrative 叙事方法论搭骨架',
+    })
+  }
 
   await ensureRunState({
     runDir,
@@ -93,6 +118,8 @@ export async function runFullcasePipeline({
   if (outlineOnly) {
     return { outline, runDir }
   }
+
+  const draftGuidance = loadSkillGuidance({ root, stage: 'draft' })
 
   const chapterResults = []
   const takeaways = []
@@ -126,6 +153,7 @@ export async function runFullcasePipeline({
         researchBrief,
         callModel,
         maxPagesPerCall: maxPagesPerChapterCall,
+        skillGuidance: draftGuidance.text,
       })
       writeJson(chapterPath, result)
       await markChunkCompleted({ runDir, chunkId, workerId: 'draft-chapter', outputPath: chapterPath })
@@ -179,6 +207,15 @@ export async function runFullcasePipeline({
   writeJson(path.join(runDir, 'process-locks.json'), locks)
   if (!locks.ok) {
     throw new Error(['全局过程锁未通过：', ...locks.violations.map(violation => `  - ${violation}`)].join('\n'))
+  }
+  if (!traceExists(runDir, 'draft')) {
+    writeTrace({
+      runDir,
+      step: 'draft',
+      injected: traceInjected(draftGuidance),
+      output: { chapters: chapterResults.length, pages: deck.slides.length },
+      note: '注入 proposal-narrative 逐章撰写方法论生成页面内容',
+    })
   }
   await markRunCompleted(runDir)
   await appendRunEvent({

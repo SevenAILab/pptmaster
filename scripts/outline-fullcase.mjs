@@ -20,6 +20,7 @@ export function buildOutlinePrompt(brief, {
   maxPages = 30,
   methodology,
   researchBrief,
+  skillGuidance,
 } = {}) {
   const conclusionLines = requiredConclusions.map(item => `- ${item.id}: ${item.label}`)
   const conceptLines = (methodology?.concepts || []).map(concept =>
@@ -36,7 +37,8 @@ export function buildOutlinePrompt(brief, {
     '所有必备结论 id 必须被至少一章 covers；每章第 1 页固定为章首页（章节导入）。',
     '可用方法论框架与研究发现见输入；把框架分配到最相关的章（在 key_questions 里体现），不要堆砌。',
     '只输出 JSON：{"narrative":"一句话叙事弧","chapters":[...]}。',
-  ].join('\n')
+    skillGuidance,
+  ].filter(Boolean).join('\n')
   const user = [
     '# 客户表单',
     brief?.formText || '',

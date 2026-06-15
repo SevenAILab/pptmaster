@@ -29,6 +29,17 @@ assert.match(user, /行业正在同质化/)
 assert.match(user, /门店越开越像/)
 assert.match(user, /锚点是什么/)
 
+const guidancePrompt = buildChapterPrompt({
+  brief,
+  outline,
+  chapter: outline.chapters[1],
+  previousTakeaways: [],
+  usedTitles: [],
+  skillGuidance: '## proposal-narrative 方法论指引\n横纵双轴；一页一观点。',
+})
+assert.match(guidancePrompt.system, /proposal-narrative 方法论指引/)
+assert.match(guidancePrompt.system, /横纵双轴/)
+
 const ok = parseChapterResponse(JSON.stringify({
   slides: [
     { page_no: 1, intent: '章节导入', action_title: '定位章', layout: 'hero-statement', core_points: ['x'], data_refs: [{ source: 'inputs/x/summary.md' }], evidence_kind: 'deductive', validation_method: 'v', blocks: [{ type: 'callout', text: 'x' }] },
@@ -113,9 +124,11 @@ const grouped = await draftChapter({
   previousTakeaways: ['上一章结论'],
   usedTitles: ['旧标题'],
   usedPageClaims: ['P1 旧标题 / 旧核心点'],
+  skillGuidance: '## proposal-narrative 方法论指引\n分组调用也必须带上。',
   callModel: async (groupSystem, groupUser) => {
     groupedCalls += 1
     assert.match(groupSystem, /本次只写本章第/)
+    assert.match(groupSystem, /分组调用也必须带上/)
     assert.match(groupUser, groupedCalls === 1 ? /旧核心点/ : /本章已生成页面/)
     if (groupedCalls > 1) assert.match(groupUser, /P1: 页组 1-1.*a/)
     if (groupedCalls === 1) {

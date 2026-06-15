@@ -2,8 +2,10 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pptmaster-fullcase-'))
 try {
   const brief = {
@@ -42,9 +44,11 @@ try {
   let outlineCalls = 0
   const callModel = async (system, user) => {
     if (system.includes('叙事大纲')) {
+      assert.match(system, /proposal-narrative 方法论指引/)
       outlineCalls += 1
       return JSON.stringify(stubOutline)
     }
+    assert.match(system, /proposal-narrative 方法论指引/)
     const match = user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/)
     const chapter = stubOutline.chapters[Number(match[1]) - 1]
     return chapterStub(chapter)
@@ -56,7 +60,7 @@ try {
     runDir,
     callModel,
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30 },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30 },
   })
   assert.equal(outlineCalls, 1)
   assert.equal(result.deck.slides.length, 20)
@@ -66,6 +70,13 @@ try {
   assert.ok(fs.existsSync(path.join(runDir, 'outline.json')))
   assert.ok(fs.existsSync(path.join(runDir, 'chapters', 'ch-1.json')))
   assert.ok(fs.existsSync(path.join(runDir, 'chapters', 'ch-4.json')))
+  const traces = fs.readdirSync(path.join(runDir, 'trace')).sort()
+  assert.deepEqual(traces, ['01-outline.json', '02-draft.json'])
+  const outlineTrace = JSON.parse(fs.readFileSync(path.join(runDir, 'trace', '01-outline.json'), 'utf8'))
+  assert.equal(outlineTrace.injected.skill, 'proposal-narrative')
+  assert.deepEqual(outlineTrace.injected.refs.map(ref => ref.ref), ['scqa-pyramid', 'deck-structure', 'writing-discipline'])
+  const draftTrace = JSON.parse(fs.readFileSync(path.join(runDir, 'trace', '02-draft.json'), 'utf8'))
+  assert.equal(draftTrace.output.pages, 20)
 
   let chapterCallCount = 0
   const countingModel = async (system, user) => {
@@ -79,7 +90,7 @@ try {
     runDir,
     callModel: countingModel,
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30 },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30 },
   })
   assert.equal(resumed.deck.slides.length, 20)
   assert.equal(chapterCallCount, 0, 'resume 时已完成章不应再调模型')
@@ -95,7 +106,7 @@ try {
       return chapterStub(stubOutline.chapters[0])
     },
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30, outlineOnly: true },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30, outlineOnly: true },
   })
   assert.equal(outlined.outline.chapters.length, 4)
   assert.equal(outlineOnlyChapterCalls, 0)
@@ -110,7 +121,7 @@ try {
     runDir: path.join(tmp, 'run-bad'),
     callModel: badModel,
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30 },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30 },
   }), /大纲校验未通过/)
 
   let retryCalls = 0
@@ -130,7 +141,7 @@ try {
     runDir: path.join(tmp, 'run-retry'),
     callModel: retryModel,
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30, outlineAttempts: 2 },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30, outlineAttempts: 2 },
   })
   assert.equal(retried.deck.slides.length, 20)
   assert.equal(retryCalls, 2)
@@ -140,6 +151,7 @@ try {
   const groupedModel = async (system, user) => {
     if (system.includes('叙事大纲')) return JSON.stringify(stubOutline)
     groupedChapterCalls += 1
+    assert.match(system, /proposal-narrative 方法论指引/)
     const chapterNo = Number((user.match(/第 (\d) 章/) || system.match(/第 (\d) 章/))[1])
     const pageMatch = system.match(/第 (\d+)-(\d+) 页/)
     assert.ok(pageMatch, 'maxPagesPerChapterCall 应触发页组生成')
@@ -170,7 +182,7 @@ try {
     runDir: path.join(tmp, 'run-grouped'),
     callModel: groupedModel,
     requiredConclusions,
-    options: { minPages: 20, maxPages: 30, maxPagesPerChapterCall: 2 },
+    options: { root: REPO_ROOT, minPages: 20, maxPages: 30, maxPagesPerChapterCall: 2 },
   })
   assert.equal(groupedRun.deck.slides.length, 20)
   assert.equal(groupedChapterCalls, 12)

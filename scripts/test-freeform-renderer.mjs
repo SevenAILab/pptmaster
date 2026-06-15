@@ -17,8 +17,10 @@ try {
   const rendered = await renderFreeformDeck(deck, {
     runDir: tmp,
     style: 'swiss',
-    callModel: async (_system, user) => {
+    skillGuidance: '## deck-design-system 方法论指引\n自由渲染也必须透传。',
+    callModel: async (system, user) => {
       calls += 1
+      assert.match(system, /自由渲染也必须透传/)
       return `<section class="slide light"><h1>${user.includes('A') ? 'A' : 'B'}</h1></section>`
     },
   })

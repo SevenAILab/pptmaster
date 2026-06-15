@@ -10,6 +10,7 @@ export async function renderFreeformDeck(deck, {
   callModel,
   maxAttempts = 2,
   onProgress,
+  skillGuidance,
 } = {}) {
   if (!runDir) throw new Error('renderFreeformDeck requires runDir')
   if (!Array.isArray(deck?.slides)) throw new Error('renderFreeformDeck requires deck.slides[]')
@@ -35,7 +36,7 @@ export async function renderFreeformDeck(deck, {
       designed.slides.push(cachedSlide)
     } else {
       if (typeof onProgress === 'function') onProgress({ type: 'start', label, slide })
-      designed.slides.push(await designPage(slide, { callModel, maxAttempts }))
+      designed.slides.push(await designPage(slide, { callModel, maxAttempts, skillGuidance }))
       if (typeof onProgress === 'function') onProgress({ type: 'done', label, slide })
     }
     fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))

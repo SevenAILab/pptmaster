@@ -30,6 +30,16 @@ assert.match(user, /root_answer/)
 assert.match(user, /市场年增 12%/)
 assert.match(user, /JTBD/)
 
+const withGuidance = buildOutlinePrompt(brief, {
+  requiredConclusions,
+  minPages: 20,
+  maxPages: 30,
+  skillGuidance: '## proposal-narrative 方法论指引\nSCQA 开场；坚持一页一观点。',
+})
+assert.match(withGuidance.system, /proposal-narrative 方法论指引/)
+assert.match(withGuidance.system, /一页一观点/)
+assert.ok(!buildOutlinePrompt(brief, { requiredConclusions, minPages: 20, maxPages: 30 }).system.includes('方法论指引'))
+
 const good = {
   narrative: '从行业变局到定位结论再到落地',
   chapters: [

@@ -35,12 +35,20 @@ assert.match(user, /6 个 Sub-Agent/)
 assert.match(user, /Gartner/)
 assert.match(user, /https:\/\/example\.com\/report/)
 
+const guidedDesign = buildDesignPrompt({ page_no: 1, action_title: 'T', core_points: [], data_refs: [] }, {
+  skillGuidance: '## deck-design-system 方法论指引\n单一强调色；SVG 禁文字。',
+})
+assert.match(guidedDesign.system, /deck-design-system 方法论指引/)
+assert.match(guidedDesign.system, /单一强调色/)
+assert.ok(!buildDesignPrompt({ page_no: 1 }).system.includes('方法论指引'))
+
 const parsed = parseSectionHtml('```html\n<section class="slide light">A</section>\n```', { pageNo: 3 })
 assert.match(parsed, /^<section\b/)
 assert.match(parsed, /data-page="3"/)
 assert.match(parsed, /A<\/section>$/)
 
 assert.equal(isWellFormedSection('<section class="slide light" data-page="1">ok</section>'), true)
+assert.equal(isWellFormedSection('<section class="slide light"><section>nested</section></section>'), true)
 assert.equal(isWellFormedSection('<div>nope</div>'), false)
 assert.equal(isWellFormedSection('<section>unclosed'), false)
 assert.equal(isWellFormedSection('<section>A</section><section>B</section>'), false)
@@ -74,6 +82,15 @@ assert.equal(designedPage.page_no, 2)
 assert.match(designedPage.section_html, /data-page="2"/)
 assert.match(designedPage.section_html, /<h1>P<\/h1>/)
 
+const guidedPage = await designPage({ page_no: 4, action_title: 'Guided' }, {
+  skillGuidance: '## deck-design-system 方法论指引\n必须统一 token。',
+  callModel: async (modelSystem) => {
+    assert.match(modelSystem, /必须统一 token/)
+    return '<section class="slide light">guided</section>'
+  },
+})
+assert.match(guidedPage.section_html, /data-page="4"/)
+
 let retryCalls = 0
 const retriedPage = await designPage({ page_no: 3, action_title: 'Retry' }, {
   callModel: async (_modelSystem, modelUser) => {
@@ -87,6 +104,15 @@ assert.equal(retryCalls, 2)
 assert.match(retriedPage.section_html, /fixed/)
 assert.match(retriedPage.section_html, /data-page="3"/)
 
+await assert.rejects(designPage({ page_no: 5, action_title: 'Bad raw' }, {
+  maxAttempts: 1,
+  callModel: async () => '<section class="slide">A</section><section class="slide">B</section>',
+}), error => {
+  assert.match(error.message, /exactly one/)
+  assert.match(error.rawOutput, /<section class="slide">A/)
+  return true
+})
+
 let callCount = 0
 const deck = {
   metadata: { input_slug: 'demo' },
@@ -96,6 +122,7 @@ const deck = {
   ],
 }
 const designedDeck = await designDeck(deck, {
+  skillGuidance: '## deck-design-system 方法论指引\nDeck 级透传。',
   callModel: async () => {
     callCount += 1
     return '<section class="slide dark">x</section>'

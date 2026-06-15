@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
@@ -12,9 +13,39 @@ import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mj
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
 import { deriveResearchQuestionsLLM, gatherResearch, gatherResearchDeep, normalizeSearchHits } from './research-worker.mjs'
 import { loadCasePattern, loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
+import { loadSkillGuidance } from './skill-injector.mjs'
+import { readTraces, writeTrace } from './trace-log.mjs'
 import { webSearch } from './web-search.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+
+function traceExists(runDir, step) {
+  return readTraces(runDir).some(trace => trace.step === step)
+}
+
+function traceInjected(guidance) {
+  return { skill: guidance.skill, refs: guidance.loaded }
+}
+
+function runVisualAudit({ root, htmlPath, runDir }) {
+  const scriptPath = path.join(root, 'skills', 'deck-design-system', 'scripts', 'audit_visual.py')
+  const audit = spawnSync(process.env.PYTHON || 'python3', [scriptPath, htmlPath], {
+    encoding: 'utf8',
+  })
+  const report = [
+    audit.stdout || '',
+    audit.stderr || '',
+    audit.error ? String(audit.error.stack || audit.error) : '',
+  ].filter(Boolean).join('')
+  const reportPath = path.join(runDir, 'audit-visual.txt')
+  fs.writeFileSync(reportPath, report || '(audit produced no output)')
+  return {
+    passed: audit.status === 0,
+    status: audit.status,
+    reportPath,
+    error: audit.error ? String(audit.error.message || audit.error) : null,
+  }
+}
 
 function parseArgs(argv) {
   const opts = {
@@ -208,6 +239,7 @@ async function cliMain() {
       methodology,
       researchBrief,
       options: {
+        root: opts.root,
         minPages: opts.minPages,
         maxPages: opts.maxPages,
         outlineAttempts: opts.outlineAttempts,
@@ -250,6 +282,7 @@ async function cliMain() {
       result.deck = loop.deck
     }
     if (opts.design) {
+      const designGuidance = loadSkillGuidance({ root: opts.root, stage: 'design' })
       const designCall = async (system, user) => call(system, user, {
         maxTokens: opts.designMaxTokens,
         temperature: 0.2,
@@ -260,6 +293,7 @@ async function cliMain() {
         style: brief.form?.render_style || 'swiss',
         callModel: designCall,
         maxAttempts: opts.designMaxAttempts,
+        skillGuidance: designGuidance.text,
         onProgress: event => {
           if (event.type === 'reuse') console.log(`[freeform] design reuse ${event.label}`)
           if (event.type === 'start') console.log(`[freeform] design start ${event.label}`)
@@ -272,10 +306,39 @@ async function cliMain() {
         eventType: 'design_completed',
         metadata: { slides: freeform.designed.slides.length, htmlPath: freeform.htmlPath },
       })
+      if (!traceExists(runDir, 'design')) {
+        writeTrace({
+          runDir,
+          step: 'design',
+          injected: traceInjected(designGuidance),
+          output: { slides: freeform.designed.slides.length, html: freeform.htmlPath },
+          note: '注入 deck-design-system 逐页设计',
+        })
+      }
+      const audit = runVisualAudit({ root: opts.root, htmlPath: freeform.htmlPath, runDir })
+      if (!traceExists(runDir, 'visual-audit')) {
+        writeTrace({
+          runDir,
+          step: 'visual-audit',
+          injected: null,
+          output: {
+            passed: audit.passed,
+            status: audit.status,
+            report: path.basename(audit.reportPath),
+            error: audit.error,
+          },
+          note: '视觉审计：单一强调色、SVG 禁文字、渐变与安全视觉约束',
+        })
+      }
+      console.log(`[freeform] visual audit: ${audit.passed ? 'PASS' : 'FAIL（见 audit-visual.txt）'}`)
       console.log(`[freeform] ${freeform.designed.slides.length} slides -> ${freeform.htmlPath}`)
     }
   } catch (error) {
-    fs.writeFileSync(path.join(runDir, 'generation-error.txt'), String(error?.stack || error))
+    const details = [
+      String(error?.stack || error),
+      error?.rawOutput ? `\n\n# Raw model output\n${error.rawOutput}` : '',
+    ].join('')
+    fs.writeFileSync(path.join(runDir, 'generation-error.txt'), details)
     throw error
   }
 }
