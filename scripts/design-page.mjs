@@ -26,11 +26,28 @@ function formatBlock(block) {
   return `- ${block?.type || 'block'}: ${block?.title || block?.text || JSON.stringify(block)}`
 }
 
+const KIND_GUIDANCE = {
+  cover: '封面：大标题 + 副标题 + 品牌/项目锚点；大量留白；不要正文罗列，不要数据堆叠。',
+  toc: '目录：清晰章节列表，突出阅读路径；不要解释章节内容；每项短、齐、可扫读。',
+  brief: 'brief 开场：用 SCQA 讲清 situation / complication / question；信息少但张力强，核心问题要最大声。',
+  section_intro: '章节过渡页：用 transition_question 引导本章；极简、强停顿、像咨询汇报里的章节幕布。',
+  closing: '章节收束页：只放本章 closing_judgment 和 1-2 个承接信号；不要复述整章。',
+  conclusion: '总结页：顶层结论最大，形成一眼可复述的判断；少量支撑，不做新分析。',
+  action: '行动页：把 action_items 做成清晰步骤、优先级或路线图；强调下一步。',
+  content: '内容页：一页一观点，action_title 是主判断；论据 ≤4 条，结构跟证据类型走。',
+}
+
+function guidanceForKind(kind) {
+  return KIND_GUIDANCE[kind] || KIND_GUIDANCE.content
+}
+
 export function buildDesignPrompt(slide = {}, { skillGuidance } = {}) {
+  const pageKind = normalizeText(slide.page_kind) || 'content'
   const system = [
     '你是 guizang / Swiss Style 信息设计师，为 PPTAgent 的短 deck 做每页自主排版。',
     'Swiss/guizang 是审美标尺，不是固定模板目录；不要套用每页相同的版式，结构必须跟内容走。',
     '内容结构映射：数据/数字页用大数字、矩阵或横向条；流程页用时间线、循环或系统图；对比页用左右对照；并列判断用等权卡片或网格；结论页可用 manifesto。',
+    `当前 page_kind=${pageKind}。${guidanceForKind(pageKind)}`,
     '审美硬约束：无衬线字体；单一强调色；直角纯色；少阴影、少圆角、少渐变；12 列网格左对齐；极大字号对比；大幅留白；中文大标题用 min(vw,vh) 双约束防溢出。',
     '安全硬约束：只输出当前页的一个 <section class="slide ...">...</section>，不要输出解释文字，不要输出 <html>/<head>/<body>，不要脚本，不要 <style> 标签，不要外链资源，不要 iframe，不要 on* 事件属性，不要 javascript: URL。',
     '可以使用 shell 已有 class、CSS 变量、inline style 与 <i data-lucide="name"></i> 图标；只能写 inline style，所有样式必须限定在当前 section 内，不要写全局 CSS。',
@@ -40,12 +57,14 @@ export function buildDesignPrompt(slide = {}, { skillGuidance } = {}) {
 
   const user = [
     `# page_no\n${normalizeText(slide.page_no) || '(无)'}`,
+    `# page_kind\n${pageKind}`,
     `# intent\n${normalizeText(slide.intent || slide.page_intent) || '(无)'}`,
     `# action_title\n${normalizeText(slide.action_title) || '(无)'}`,
-    `# layout_hint\n${normalizeText(slide.layout) || '(无)'}`,
+    `# layout_hint\n${normalizeText(slide.layout_hint || slide.layout) || '(无)'}`,
     `# core_points\n${formatList(slide.core_points, point => `- ${point}`)}`,
     `# data_refs\n${formatList(slide.data_refs, formatDataRef)}`,
     `# blocks\n${formatList(slide.blocks || slide.content_blocks, formatBlock)}`,
+    `# extra\n${slide.extra ? JSON.stringify(slide.extra, null, 2) : '(无)'}`,
     '# output_contract\n只输出一个完整 section。不要 Markdown 围栏，不要解释。',
   ].join('\n\n')
 

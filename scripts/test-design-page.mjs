@@ -35,6 +35,42 @@ assert.match(user, /6 个 Sub-Agent/)
 assert.match(user, /Gartner/)
 assert.match(user, /https:\/\/example\.com\/report/)
 
+const coverPrompt = buildDesignPrompt({
+  page_no: 1,
+  page_kind: 'cover',
+  action_title: 'LUMA 品牌定位方案',
+  extra: { subtitle: '2026' },
+})
+assert.match(coverPrompt.system, /封面：大标题/)
+assert.match(coverPrompt.system, /不要正文罗列/)
+assert.match(coverPrompt.user, /page_kind\ncover/)
+assert.match(coverPrompt.user, /subtitle/)
+
+const tocPrompt = buildDesignPrompt({
+  page_no: 2,
+  page_kind: 'toc',
+  action_title: '目录',
+  extra: { toc_items: ['诊断', '定位'] },
+})
+assert.match(tocPrompt.system, /目录：清晰章节列表/)
+assert.match(tocPrompt.user, /toc_items/)
+
+const introPrompt = buildDesignPrompt({
+  page_no: 4,
+  page_kind: 'section_intro',
+  action_title: '诊断',
+  extra: { transition_question: '增长问题在哪？' },
+})
+assert.match(introPrompt.system, /章节过渡页/)
+assert.match(introPrompt.system, /transition_question/)
+
+const contentPrompt = buildDesignPrompt({
+  page_no: 5,
+  page_kind: 'content',
+  action_title: '增长正从开店红利切到复购红利',
+})
+assert.match(contentPrompt.system, /一页一观点/)
+
 const guidedDesign = buildDesignPrompt({ page_no: 1, action_title: 'T', core_points: [], data_refs: [] }, {
   skillGuidance: '## deck-design-system 方法论指引\n单一强调色；SVG 禁文字。',
 })

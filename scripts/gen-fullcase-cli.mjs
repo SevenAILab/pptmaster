@@ -9,6 +9,7 @@ import { loadCaseLogic } from './case-logic.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
 import { detectProposalType } from './detect-proposal-type.mjs'
+import { repairDeck } from './design-repair.mjs'
 import { renderFreeformDeck } from './freeform-renderer.mjs'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
@@ -380,6 +381,25 @@ async function cliMain() {
           injected: traceInjected(designGuidance),
           output: { slides: freeform.designed.slides.length, html: freeform.htmlPath },
           note: '注入 deck-design-system 逐页设计',
+        })
+      }
+      const repair = await repairDeck({
+        htmlPath: freeform.htmlPath,
+        runDir,
+        root: opts.root,
+        accent: '#002fa7',
+      })
+      if (!traceExists(runDir, 'visual-repair')) {
+        writeTrace({
+          runDir,
+          step: 'visual-repair',
+          injected: null,
+          output: {
+            rounds: repair.rounds.length,
+            finalPass: repair.finalPass,
+            report: 'visual-repair.json',
+          },
+          note: '视觉返修：统一强调色并移除渐变，再跑视觉审计',
         })
       }
       const audit = runVisualAudit({ root: opts.root, htmlPath: freeform.htmlPath, runDir })
