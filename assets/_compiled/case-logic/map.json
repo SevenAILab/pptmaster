@@ -1,0 +1,15 @@
+{
+  "positioning": {
+    "file": "assets/_compiled/case-logic/positioning-logic.md",
+    "source": "贝比赋（教学）"
+  },
+  "building": {
+    "file": "assets/_compiled/case-logic/building-logic.md",
+    "source": "童里（教学）"
+  },
+  "upgrade": {
+    "file": "assets/_compiled/case-logic/upgrade-logic.md",
+    "source": "SmallRig（真实标杆）"
+  },
+  "guardrail": "只学推导链；行业、内容、结论、页数、版式都必须基于本客户重新生成；禁止套用案例章节结构、原文和行业事实。结构件由 deck 骨架契约产出，不从案例抄页。"
+}

@@ -4,15 +4,17 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
+import { loadCaseLogic } from './case-logic.mjs'
 import { checkMethodologyUsage } from './check-methodology-usage.mjs'
 import { runCriticLoop } from './critic-deck.mjs'
+import { detectProposalType } from './detect-proposal-type.mjs'
 import { renderFreeformDeck } from './freeform-renderer.mjs'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
 import { deriveResearchQuestionsLLM, gatherResearch, gatherResearchDeep, normalizeSearchHits } from './research-worker.mjs'
-import { loadCasePattern, loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
+import { loadNonlockedSchemeConfig, renderResearchAngles } from './scheme-nonlocked.mjs'
 import { loadSkillGuidance } from './skill-injector.mjs'
 import { readTraces, writeTrace } from './trace-log.mjs'
 import { webSearch } from './web-search.mjs'
@@ -206,12 +208,10 @@ async function cliMain() {
   } else {
     const index = loadConceptIndex({ root: opts.root })
     const slugs = await selectConcepts({ brief, index, callModel: cheapCall, max: 4 })
-    const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
     const concepts = loadConceptBodies({ slugs, root: opts.root, maxCharsPerConcept: 1200 })
     selection = {
       slugs,
       concepts: concepts.map(concept => ({ slug: concept.slug, name: concept.name })),
-      case_pattern: casePattern.file,
     }
     fs.writeFileSync(selectionPath, JSON.stringify(selection, null, 2))
     console.log(`[fullcase] methodology -> ${slugs.join(', ')}`)
@@ -227,8 +227,36 @@ async function cliMain() {
   })
 
   const concepts = loadConceptBodies({ slugs: selection.slugs, root: opts.root, maxCharsPerConcept: 1200 })
-  const casePattern = loadCasePattern({ root: opts.root, file: schemeConfig.case_patterns[0], maxChars: 1200 })
-  const methodology = { concepts, casePattern }
+  const methodology = { concepts }
+  const caseLogicPath = path.join(runDir, 'case-logic.json')
+  let caseLogic
+  if (fs.existsSync(caseLogicPath)) {
+    caseLogic = JSON.parse(fs.readFileSync(caseLogicPath, 'utf8'))
+    console.log(`[fullcase] reuse case-logic -> ${caseLogic.proposalType}`)
+  } else {
+    const proposalType = await detectProposalType({ brief, callModel: cheapCall })
+    caseLogic = loadCaseLogic({ root: opts.root, proposalType })
+    fs.writeFileSync(caseLogicPath, JSON.stringify({
+      proposalType: caseLogic.proposalType,
+      file: caseLogic.file,
+      source: caseLogic.source,
+      text: caseLogic.text,
+    }, null, 2))
+    console.log(`[fullcase] case-logic -> ${caseLogic.proposalType} (${caseLogic.source})`)
+  }
+  if (!traceExists(runDir, 'case-logic')) {
+    writeTrace({
+      runDir,
+      step: 'case-logic',
+      injected: {
+        proposalType: caseLogic.proposalType,
+        file: caseLogic.file,
+        source: caseLogic.source,
+      },
+      output: null,
+      note: `按方案类型(${caseLogic.proposalType})注入案例推导逻辑，学推导不抄模板`,
+    })
+  }
 
   try {
     const result = await runFullcasePipeline({
@@ -238,6 +266,7 @@ async function cliMain() {
       requiredConclusions: schemeConfig.required_conclusions,
       methodology,
       researchBrief,
+      caseLogic: caseLogic.text,
       options: {
         root: opts.root,
         minPages: opts.minPages,
