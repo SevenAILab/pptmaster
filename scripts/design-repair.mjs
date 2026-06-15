@@ -1,6 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { assembleFreeformDeck } from './assemble-freeform-deck.mjs'
+import { designPage } from './design-page.mjs'
+import { inspectDeck } from './page-inspect.mjs'
 
 const HEX_PATTERN = /#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g
 const GRADIENT_PATTERN = /(linear|radial)-gradient\((?:[^()]|\([^)]*\))*\)/gi
@@ -49,10 +52,14 @@ function runVisualAudit({ root, htmlPath }) {
 
 export async function repairDeck({
   htmlPath,
+  designedPath,
   runDir,
   root,
   accent = '#002fa7',
   maxRounds = 2,
+  callModel,
+  style = 'swiss',
+  skillGuidance,
 } = {}) {
   if (!htmlPath) throw new Error('repairDeck requires htmlPath')
   if (!runDir) throw new Error('repairDeck requires runDir')
@@ -64,22 +71,54 @@ export async function repairDeck({
   let finalPass = false
   for (let round = 1; round <= maxRounds; round += 1) {
     const audit = runVisualAudit({ root, htmlPath })
-    rounds.push({ round, before: audit })
+    const record = { round, before: audit }
+    rounds.push(record)
     if (audit.passed) {
       finalPass = true
-      break
+    } else {
+      const repaired = normalizeAccents(html, accent)
+      if (repaired !== html) {
+        html = repaired
+        fs.writeFileSync(htmlPath, html)
+      }
+      const after = runVisualAudit({ root, htmlPath })
+      record.after = after
+      finalPass = after.passed
     }
-    const repaired = normalizeAccents(html, accent)
-    if (repaired === html) {
-      finalPass = false
-      break
+
+    if (finalPass && designedPath && typeof callModel === 'function') {
+      try {
+        const inspect = await inspectDeck(htmlPath)
+        record.inspect = inspect
+        if (!inspect.ok && inspect.overflows.length) {
+          const designed = JSON.parse(fs.readFileSync(designedPath, 'utf8'))
+          const overflowPages = [...new Set(inspect.overflows.map(item => Number(item.page)).filter(Boolean))]
+          for (const pageNo of overflowPages) {
+            const index = designed.slides.findIndex(slide => Number(slide.page_no) === pageNo)
+            if (index === -1) continue
+            const slide = designed.slides[index]
+            const feedback = inspect.overflows
+              .filter(item => Number(item.page) === pageNo)
+              .map(item => `- <${String(item.tag).toLowerCase()}> ${item.text || ''}`)
+              .join('\n')
+            designed.slides[index] = await designPage({
+              ...slide,
+              repair_feedback: `上一版出现越界/溢出：\n${feedback}\n请减少文字密度，增大留白，避免任何元素出界。`,
+            }, { callModel, maxAttempts: 1, skillGuidance })
+          }
+          fs.writeFileSync(designedPath, JSON.stringify(designed, null, 2))
+          html = normalizeAccents(await assembleFreeformDeck(designed, { style, root }), accent)
+          fs.writeFileSync(htmlPath, html)
+          const afterRepaint = await inspectDeck(htmlPath)
+          record.afterRepaint = afterRepaint
+          finalPass = afterRepaint.ok && runVisualAudit({ root, htmlPath }).passed
+        }
+      } catch (error) {
+        record.inspectError = String(error?.message || error)
+      }
     }
-    html = repaired
-    fs.writeFileSync(htmlPath, html)
-    const after = runVisualAudit({ root, htmlPath })
-    rounds[rounds.length - 1].after = after
-    if (after.passed) {
-      finalPass = true
+
+    if (finalPass) {
       break
     }
   }

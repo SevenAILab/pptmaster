@@ -385,9 +385,13 @@ async function cliMain() {
       }
       const repair = await repairDeck({
         htmlPath: freeform.htmlPath,
+        designedPath: freeform.designedPath,
         runDir,
         root: opts.root,
         accent: '#002fa7',
+        callModel: designCall,
+        style: brief.form?.render_style || 'swiss',
+        skillGuidance: designGuidance.text,
       })
       if (!traceExists(runDir, 'visual-repair')) {
         writeTrace({
