@@ -19,6 +19,8 @@ export const ALLOWED_BLOCK_TYPES = [
 
 const ALLOWED_BLOCK_TYPE_SET = new Set(ALLOWED_BLOCK_TYPES)
 const EVIDENCE_KINDS = new Set(['empirical', 'deductive', 'hypothesis'])
+const STRUCTURAL_PAGE_KINDS = new Set(['cover', 'toc', 'brief', 'section_intro', 'closing', 'conclusion', 'action'])
+const ALLOWED_PAGE_KINDS = new Set([...STRUCTURAL_PAGE_KINDS, 'content'])
 
 function nonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0
@@ -33,6 +35,14 @@ function blocksFor(slide) {
   if (Array.isArray(slide?.blocks)) return slide.blocks
   if (Array.isArray(slide?.content_blocks)) return slide.content_blocks
   return []
+}
+
+function isContentSlide(slide) {
+  return !slide?.page_kind || slide.page_kind === 'content'
+}
+
+function contentSlides(slides) {
+  return slides.filter(isContentSlide)
 }
 
 function validatePageBudget(slides, options) {
@@ -57,6 +67,22 @@ function validateRequiredFields(slides) {
     }
     if (!Array.isArray(slide?.core_points) || slide.core_points.filter(nonEmptyString).length === 0) {
       violations.push(`page ${page}: 缺 core_points`)
+    }
+  }
+  return violations
+}
+
+function validatePageKinds(slides) {
+  const violations = []
+  for (const [index, slide] of slides.entries()) {
+    const page = slide?.page_no ?? index + 1
+    const kind = slide?.page_kind
+    if (kind && !ALLOWED_PAGE_KINDS.has(kind)) {
+      violations.push(`page ${page}: 未知 page_kind "${kind}"`)
+      continue
+    }
+    if (!isContentSlide(slide) && !nonEmptyString(slide?.action_title)) {
+      violations.push(`page ${page}: 结构件页缺 action_title`)
     }
   }
   return violations
@@ -117,20 +143,23 @@ function validateBlocks(slides) {
 
 export function validateProcessLocks(deck, options = {}) {
   const slides = Array.isArray(deck?.slides) ? deck.slides : []
+  const content = contentSlides(slides)
   const budget = validatePageBudget(slides, options)
-  const repetition = validateRepetition(slides, options)
+  const repetition = validateRepetition(content, options)
   const violations = [
     ...budget.violations,
-    ...validateRequiredFields(slides),
+    ...validatePageKinds(slides),
+    ...validateRequiredFields(content),
     ...repetition.violations,
-    ...validateEvidence(slides),
-    ...validateBlocks(slides),
+    ...validateEvidence(content),
+    ...validateBlocks(content),
   ]
   return {
     ok: violations.length === 0,
     violations,
     summary: {
       slideCount: slides.length,
+      contentSlideCount: content.length,
       pageBudget: { min: budget.min, max: budget.max },
       duplicatePairs: repetition.repetition.duplicatePairs,
       allowedBlockTypes: ALLOWED_BLOCK_TYPES,

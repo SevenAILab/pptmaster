@@ -1,9 +1,17 @@
-import { ALLOWED_BLOCK_TYPES } from './process-locks.mjs'
-
 const EVIDENCE_KINDS = new Set(['empirical', 'deductive', 'hypothesis'])
 
 function text(value) {
   return String(value ?? '').trim()
+}
+
+function asArray(value) {
+  if (Array.isArray(value)) return value
+  if (value === null || value === undefined || value === '') return []
+  return [value]
+}
+
+function textArray(value) {
+  return asArray(value).map(text).filter(Boolean)
 }
 
 function extractJson(value) {
@@ -18,75 +26,160 @@ function extractJson(value) {
   return JSON.parse(raw.slice(start, end + 1))
 }
 
+function analysisCardMap(analysisCards) {
+  const cards = Array.isArray(analysisCards?.cards) ? analysisCards.cards : []
+  return new Map(cards.filter(card => card?.id).map(card => [String(card.id), card]))
+}
+
+function refToDataRef(ref, cardsById) {
+  const id = text(ref)
+  const card = cardsById.get(id)
+  if (card) {
+    return {
+      source: card.source || `analysis-card:${id}`,
+      source_label: id,
+      source_tier: card.source_tier || 'T3',
+      type: card.analysis_type || 'analysis_card',
+    }
+  }
+  return {
+    source: id.startsWith('http') || id.startsWith('inputs/') ? id : `analysis-card:${id}`,
+    source_label: id,
+    source_tier: id.startsWith('http') ? 'T2' : 'T3',
+    type: id.startsWith('http') ? 'external' : 'analysis_card',
+  }
+}
+
+function normalizeDataRefs(rawRefs, evidenceRefs, cardsById) {
+  const refs = asArray(rawRefs)
+    .map(ref => {
+      if (typeof ref === 'string') return refToDataRef(ref, cardsById)
+      const source = text(ref?.source || ref?.source_url || ref?.url)
+      if (!source) return null
+      return {
+        ...ref,
+        source,
+        source_tier: text(ref?.source_tier) || 'T3',
+        type: text(ref?.type) || 'analysis_card',
+      }
+    })
+    .filter(Boolean)
+  if (refs.length) return refs
+  return evidenceRefs.map(ref => refToDataRef(ref, cardsById))
+}
+
+function inferEvidenceKind(raw, dataRefs) {
+  const kind = text(raw).toLowerCase()
+  if (EVIDENCE_KINDS.has(kind)) return kind
+  if (kind.includes('hypothesis')) return 'hypothesis'
+  if (kind.includes('empirical')) return 'empirical'
+  if (kind.includes('deductive')) return 'deductive'
+  return dataRefs.some(ref => /^https?:\/\//i.test(ref.source || '')) ? 'empirical' : 'deductive'
+}
+
+function normalizePage(page, seed, { cardsById } = {}) {
+  const evidenceRefs = textArray(page?.evidence_refs).length
+    ? textArray(page.evidence_refs)
+    : textArray(seed?.evidence_refs)
+  const dataRefs = normalizeDataRefs(page?.data_refs, evidenceRefs, cardsById)
+  const points = textArray(page?.points || page?.core_points).length
+    ? textArray(page?.points || page?.core_points)
+    : textArray(seed?.points)
+  const governingThought = text(page?.governing_thought || page?.action_title || seed?.governing_thought)
+  return {
+    governing_thought: governingThought,
+    points,
+    evidence_refs: evidenceRefs,
+    data_refs: dataRefs,
+    evidence_kind: inferEvidenceKind(page?.evidence_kind || seed?.evidence_kind, dataRefs),
+    validation_method: text(page?.validation_method || seed?.validation_method),
+    layout_hint: text(page?.layout_hint || page?.layout || seed?.layout_hint) || 'statement',
+    blocks: Array.isArray(page?.blocks) ? page.blocks : [],
+  }
+}
+
+function assertPageSchema(pages) {
+  for (const [index, page] of pages.entries()) {
+    const label = `content page ${index + 1}`
+    if (!text(page.governing_thought)) throw new Error(`${label}: governing_thought 为空`)
+    if (!Array.isArray(page.points) || page.points.length === 0) throw new Error(`${label}: points 为空`)
+    if (page.points.length > 4) throw new Error(`${label}: points 超过 4`)
+    if (!Array.isArray(page.evidence_refs) || page.evidence_refs.length === 0) throw new Error(`${label}: evidence_refs 为空`)
+    if (!EVIDENCE_KINDS.has(page.evidence_kind)) {
+      throw new Error(`${label}: evidence_kind 必须是 empirical/deductive/hypothesis`)
+    }
+    if (page.evidence_kind === 'hypothesis' && !text(page.validation_method)) {
+      throw new Error(`${label}: hypothesis 必须给 validation_method`)
+    }
+  }
+}
+
 export function buildChapterPrompt({
   brief,
+  skeleton,
   outline,
+  section,
   chapter,
   previousTakeaways = [],
   usedTitles = [],
   usedPageClaims = [],
   methodology,
   researchBrief,
-  pageRange,
-  generatedSlides = [],
+  analysisCards,
+  caseLogic,
+  generatedPages = [],
   skillGuidance,
 } = {}) {
-  const pageStart = Number(pageRange?.start || 1)
-  const pageEnd = Number(pageRange?.end || chapter.pages_budget)
-  const pageCount = pageEnd - pageStart + 1
-  const isWholeChapter = pageStart === 1 && pageEnd === chapter.pages_budget
-  const isFirstGroup = pageStart === 1
-  const isLastGroup = pageEnd === chapter.pages_budget
+  const target = section || chapter
+  const sectionNo = Number(target?.section_no || target?.chapter_no || 1)
+  const title = text(target?.title)
+  const seedPages = Array.isArray(target?.pages) ? target.pages : []
+  const legacyQuestions = Array.isArray(target?.key_questions) ? target.key_questions : []
   const conceptBlocks = (methodology?.concepts || []).map(concept =>
     `### [框架: ${concept.name}]\n${concept.content}`,
   )
+  const cardLines = Array.isArray(analysisCards?.cards)
+    ? analysisCards.cards.map(card => `- ${card.id}: ${card.claim} → ${card.implication || ''}（${card.source || ''}）`)
+    : []
   const findingLines = (researchBrief?.findings || []).map(finding =>
     `- ${finding.claim}（来源[${finding.source_id ?? '?'}] ${finding.source_url || ''}）`,
   )
   const system = [
-    `你是资深品牌策略主笔，现在只写整本方案的第 ${chapter.chapter_no} 章「${chapter.title}」。`,
-    isWholeChapter
-      ? `本章正好 ${chapter.pages_budget} 页；第 1 页必须是章首页（layout 用 hero-statement，intent 写"章节导入"，用一个判断句导入本章）。`
-      : `本次只写本章第 ${pageStart}-${pageEnd} 页，正好 ${pageCount} 页；page_no 必须使用章内真实页码 ${pageStart} 到 ${pageEnd}，不要从 1 重新编号。`,
-    !isWholeChapter && isFirstGroup
-      ? '本次包含第 1 页，所以第 1 页必须是章首页（layout 用 hero-statement，intent 写"章节导入"）。'
-      : '',
-    !isWholeChapter && !isFirstGroup
-      ? '本次不包含章首页，不要再写章节导入页；直接承接本章已生成页面继续推进。'
-      : '',
-    '每页字段：page_no（章内 1 起）, intent, action_title, layout, core_points, data_refs, evidence_kind, validation_method, blocks；evidence_kind 只能是 empirical/deductive/hypothesis。',
-    `blocks[].type 只能使用：${ALLOWED_BLOCK_TYPES.join(', ')}。`,
-    '跨章纪律：每页必须提供"已用标题清单"之外的新增信息，action_title 不得与已用标题语义重复；本章必须承接前章 takeaways 继续推进，不得重复论证前章已得出的结论。',
-    '语义去重纪律：不要把同一个定位结论换一种说法反复讲；每页必须引入一个此前没有的新变量/新证据/新取舍/新机制，并在 core_points 第一条写清“本页新增：...”。目标是整份 deck 语义重复率 <=20%。',
-    '证据规则与短 deck 相同：empirical 必须有真实出处；缺证据标 hypothesis 并给 validation_method；引用研究发现时 data_refs.source 写完整 URL；不许编造 URL。',
-    '运用框架时在 intent 或 core_points 以 "[框架: 名称]" 标注，禁止复述框架定义。',
-    isLastGroup
-      ? '除 slides 外必须输出 chapter_takeaways：本章 1-3 条核心结论（给后续章节当上下文）。'
-      : '本次不是本章最后一组，只输出 slides，不要输出 chapter_takeaways。',
-    '只输出 JSON：{"slides":[...],"chapter_takeaways":["..."]}。',
+    `你是资深品牌策略主笔，现在只填整本方案第 ${sectionNo} 章「${title}」的 content 页。`,
+    '只填本章内容页：不要写封面、目录、brief 开场、章节过渡页、章节收束页、总结页或行动页；这些结构件由 deck 骨架契约管理。',
+    '一页一观点：每页一个 governing_thought，写成判断句；points 最多 4 条；按需拆页，不要为了凑固定页数注水。',
+    '优先覆盖骨架给出的 page seeds；可以把一个复杂 seed 拆成多页，但每页必须贡献新变量/新证据/新取舍/新机制。',
+    '证据规则：evidence_refs 必须引用分析卡 id、研究来源 id 或真实 URL；empirical 必须有真实来源；缺证据标 hypothesis 并给 validation_method；禁止编造 URL。',
+    '跨章纪律：承接 previousTakeaways，避开 usedTitles 与 usedPageClaims；不要把同一定位结论换一种说法反复讲。',
+    '只输出 JSON：{"pages":[{"governing_thought","points":[≤4],"evidence_refs":[...],"data_refs":[...],"evidence_kind","validation_method","layout_hint","blocks":[...]}],"chapter_takeaways":["..."]}。',
     skillGuidance,
+    caseLogic,
   ].filter(Boolean).join('\n')
   const user = [
-    '# 整本叙事弧',
-    text(outline?.narrative),
-    '',
-    `# 本章任务：第 ${chapter.chapter_no} 章`,
-    JSON.stringify({ goal: chapter.goal, key_questions: chapter.key_questions, covers: chapter.covers }, null, 2),
+    '# 整本骨架上下文',
+    JSON.stringify({
+      brief_question: skeleton?.brief_opening?.question || outline?.narrative || '',
+      toc: skeleton?.toc || [],
+      section: {
+        section_no: sectionNo,
+        title,
+        transition_question: target?.transition_question || legacyQuestions.join(' / '),
+        closing_judgment: target?.closing_judgment || target?.goal || '',
+        covers: target?.covers || [],
+        page_seeds: seedPages,
+      },
+    }, null, 2),
     '',
     '# 前章 takeaways（必须承接，不许重复）',
-    ...(previousTakeaways.length ? previousTakeaways.map(t => `- ${t}`) : ['（无，本章是第一章）']),
+    ...(previousTakeaways.length ? previousTakeaways.map(item => `- ${item}`) : ['（无，本章是第一章）']),
     '',
-    '# 已用 action_title 清单（语义查重用，不得重复）',
-    ...(usedTitles.length ? usedTitles.map(t => `- ${t}`) : ['（无）']),
+    '# 已用 action_title / governing_thought 清单（不得重复）',
+    ...(usedTitles.length ? usedTitles.map(item => `- ${item}`) : ['（无）']),
     '',
     '# 已用页面主张摘要（标题 + 要点，必须避开实质重复）',
-    ...(usedPageClaims.length ? usedPageClaims.map(t => `- ${t}`) : ['（无）']),
-    ...(generatedSlides.length
-      ? [
-        '',
-        '# 本章已生成页面（必须承接，不得重复）',
-        ...generatedSlides.map(slide => `- P${slide.page_no}: ${slide.action_title} / ${(slide.core_points || []).join(' / ')}`),
-      ]
+    ...(usedPageClaims.length ? usedPageClaims.map(item => `- ${item}`) : ['（无）']),
+    ...(generatedPages.length
+      ? ['', '# 本章已生成 content 页（必须承接，不得重复）', ...generatedPages.map(page => `- ${page.governing_thought} / ${(page.points || []).join(' / ')}`)]
       : []),
     '',
     '# 客户表单',
@@ -98,47 +191,35 @@ export function buildChapterPrompt({
     '# 根问题',
     text(brief?.strategicQuestion),
     ...(conceptBlocks.length ? ['', '# 可用方法论框架', ...conceptBlocks] : []),
+    ...(cardLines.length ? ['', '# 分析卡（优先引用 card id）', ...cardLines] : []),
     ...(findingLines.length ? ['', '# 已核实研究发现', ...findingLines] : []),
   ].join('\n')
   return { system, user }
 }
 
-function assertChapterSchema(parsed) {
-  for (const [index, slide] of (parsed.slides || []).entries()) {
-    const page = slide?.page_no ?? index + 1
-    const kind = text(slide?.evidence_kind)
-    if (!EVIDENCE_KINDS.has(kind)) {
-      throw new Error(`page ${page}: evidence_kind 必须是 empirical/deductive/hypothesis`)
-    }
-  }
-}
-
-export function parseChapterResponse(value, { requireTakeaways = true } = {}) {
+export function parseChapterResponse(value, { section, analysisCards, requireTakeaways = true } = {}) {
   const parsed = extractJson(value)
-  if (!Array.isArray(parsed?.slides) || parsed.slides.length === 0) {
-    throw new Error('Chapter response must contain slides[]')
+  const rawPages = Array.isArray(parsed?.pages) ? parsed.pages : parsed?.slides
+  if (!Array.isArray(rawPages) || rawPages.length === 0) {
+    throw new Error('Chapter response must contain pages[]')
   }
   if (requireTakeaways && (!Array.isArray(parsed?.chapter_takeaways) || parsed.chapter_takeaways.length === 0)) {
     throw new Error('Chapter response must contain chapter_takeaways[]')
   }
-  assertChapterSchema(parsed)
+  const cardsById = analysisCardMap(analysisCards)
+  const seeds = Array.isArray(section?.pages) ? section.pages : []
+  const pages = rawPages.map((page, index) => normalizePage(page, seeds[index], { cardsById }))
+  assertPageSchema(pages)
   return {
-    slides: parsed.slides,
-    chapter_takeaways: Array.isArray(parsed?.chapter_takeaways)
-      ? parsed.chapter_takeaways.map(text).filter(Boolean)
-      : [],
-  }
-}
-
-function assertPageGroup(parsed, chapter, { start, end }) {
-  const expectedCount = end - start + 1
-  if (parsed.slides.length !== expectedCount) {
-    throw new Error(`第 ${chapter.chapter_no} 章页组 ${start}-${end} 页数 ${parsed.slides.length} 不等于预算 ${expectedCount}`)
-  }
-  const expectedPageNos = Array.from({ length: expectedCount }, (_, index) => start + index)
-  const actualPageNos = parsed.slides.map(slide => Number(slide?.page_no))
-  if (JSON.stringify(actualPageNos) !== JSON.stringify(expectedPageNos)) {
-    throw new Error(`第 ${chapter.chapter_no} 章页组 page_no 必须为 ${expectedPageNos.join(', ')}，实际 ${actualPageNos.join(', ')}`)
+    pages,
+    slides: pages.map((page, index) => ({
+      page_no: Number(rawPages[index]?.page_no || index + 1),
+      action_title: page.governing_thought,
+      core_points: page.points,
+      layout: page.layout_hint,
+      ...page,
+    })),
+    chapter_takeaways: textArray(parsed?.chapter_takeaways),
   }
 }
 
@@ -146,92 +227,82 @@ async function callAndParseChapter({
   system,
   user,
   callModel,
+  section,
+  analysisCards,
   requireTakeaways,
 } = {}) {
   const response = await callModel(system, user)
   try {
-    return parseChapterResponse(typeof response === 'string' ? response : response?.text, { requireTakeaways })
+    return parseChapterResponse(typeof response === 'string' ? response : response?.text, {
+      section,
+      analysisCards,
+      requireTakeaways,
+    })
   } catch (error) {
-    const retryable = error instanceof SyntaxError || /evidence_kind/.test(String(error?.message || error))
-    if (!retryable) throw error
     const retryUser = [
       user,
       '',
       error instanceof SyntaxError ? '# 上一次 JSON 解析失败' : '# 上一次章节输出校验失败',
       String(error?.message || error),
       '',
-      '只重新输出合法 JSON，不要解释，不要 markdown fence；保持同样页数、page_no 与 schema；evidence_kind 只能是 empirical/deductive/hypothesis。',
+      '只重新输出合法 JSON，不要解释，不要 markdown fence；保持 pages[] schema；evidence_kind 只能是 empirical/deductive/hypothesis；每页必须有 evidence_refs。',
     ].join('\n')
     const retryResponse = await callModel(system, retryUser)
-    return parseChapterResponse(typeof retryResponse === 'string' ? retryResponse : retryResponse?.text, { requireTakeaways })
+    return parseChapterResponse(typeof retryResponse === 'string' ? retryResponse : retryResponse?.text, {
+      section,
+      analysisCards,
+      requireTakeaways,
+    })
   }
 }
 
 export async function draftChapter({
   brief,
+  skeleton,
   outline,
+  section,
   chapter,
-  previousTakeaways,
-  usedTitles,
+  previousTakeaways = [],
+  usedTitles = [],
   usedPageClaims = [],
   methodology,
   researchBrief,
+  analysisCards,
+  caseLogic,
   callModel,
-  maxPagesPerCall = Infinity,
   skillGuidance,
 } = {}) {
   if (typeof callModel !== 'function') throw new Error('draftChapter requires callModel')
-  const groupSize = Math.max(1, Number(maxPagesPerCall || Infinity))
-  if (Number.isFinite(groupSize) && chapter.pages_budget > groupSize) {
-    const slides = []
-    let chapterTakeaways = []
-    for (let start = 1; start <= chapter.pages_budget; start += groupSize) {
-      const end = Math.min(chapter.pages_budget, start + groupSize - 1)
-      const isLastGroup = end === chapter.pages_budget
-      const { system, user } = buildChapterPrompt({
-        brief,
-        outline,
-        chapter,
-        previousTakeaways,
-        usedTitles,
-        usedPageClaims,
-        methodology,
-        researchBrief,
-        pageRange: { start, end },
-        generatedSlides: slides,
-        skillGuidance,
-      })
-      const parsed = await callAndParseChapter({
-        system,
-        user,
-        callModel,
-        requireTakeaways: isLastGroup,
-      })
-      assertPageGroup(parsed, chapter, { start, end })
-      slides.push(...parsed.slides)
-      if (isLastGroup) chapterTakeaways = parsed.chapter_takeaways
-    }
-    return { chapter_no: chapter.chapter_no, title: chapter.title, slides, chapter_takeaways: chapterTakeaways }
-  }
+  const target = section || chapter
+  if (!target) throw new Error('draftChapter requires section')
   const { system, user } = buildChapterPrompt({
     brief,
+    skeleton,
     outline,
-    chapter,
+    section: target,
     previousTakeaways,
     usedTitles,
     usedPageClaims,
     methodology,
     researchBrief,
+    analysisCards,
+    caseLogic,
     skillGuidance,
   })
   const parsed = await callAndParseChapter({
     system,
     user,
     callModel,
+    section: target,
+    analysisCards,
     requireTakeaways: true,
   })
-  if (parsed.slides.length !== chapter.pages_budget) {
-    throw new Error(`第 ${chapter.chapter_no} 章页数 ${parsed.slides.length} 不等于预算 pages_budget=${chapter.pages_budget}`)
+  return {
+    section_no: Number(target.section_no || target.chapter_no || 1),
+    chapter_no: Number(target.section_no || target.chapter_no || 1),
+    title: target.title,
+    pages: parsed.pages,
+    slides: parsed.slides,
+    chapter_takeaways: parsed.chapter_takeaways,
   }
-  return { chapter_no: chapter.chapter_no, title: chapter.title, ...parsed }
 }

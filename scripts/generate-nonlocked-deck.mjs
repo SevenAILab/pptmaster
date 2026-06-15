@@ -219,9 +219,14 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
   }
   const form = brief?.form || {}
   const slides = deck.slides.map((slide, index) => {
+    const pageKind = normalizeString(slide?.page_kind)
+    const isStructural = pageKind && pageKind !== 'content'
     const pageNo = Number(slide?.page_no || index + 1)
     const corePoints = asArray(slide?.core_points).map(normalizeString).filter(Boolean)
-    const blocks = (Array.isArray(slide?.blocks) && slide.blocks.length ? slide.blocks : fallbackBlocks({ ...slide, core_points: corePoints }))
+    const rawBlocks = isStructural
+      ? (Array.isArray(slide?.blocks) ? slide.blocks : [])
+      : (Array.isArray(slide?.blocks) && slide.blocks.length ? slide.blocks : fallbackBlocks({ ...slide, core_points: corePoints }))
+    const blocks = rawBlocks
       .map(normalizeBlock)
     const dataRefs = asArray(slide?.data_refs).map(normalizeRef).filter(Boolean)
     const intent = normalizeString(slide?.intent || slide?.page_intent)
@@ -229,18 +234,24 @@ export function normalizeGeneratedDeck(deck, { brief, generationMode = 'model' }
     const evidenceKind = normalizeEvidenceKind(rawEvidenceKind)
     return {
       page_no: pageNo,
+      ...(pageKind ? { page_kind: pageKind } : {}),
+      ...(slide?.section_no ? { section_no: slide.section_no } : {}),
+      ...(slide?.section_title ? { section_title: normalizeString(slide.section_title) } : {}),
       intent,
       page_intent: intent,
       page_subtitle: normalizeString(slide?.page_subtitle) || `NONLOCKED ${pageNo}`,
       action_title: normalizeString(slide?.action_title),
-      layout: normalizeString(slide?.layout) || 'split-statement',
+      layout: normalizeString(slide?.layout || slide?.layout_hint) || (isStructural ? pageKind : 'split-statement'),
+      layout_hint: normalizeString(slide?.layout_hint || slide?.layout) || (isStructural ? pageKind : 'split-statement'),
       core_points: corePoints,
+      ...(Array.isArray(slide?.evidence_refs) ? { evidence_refs: slide.evidence_refs } : {}),
       data_refs: dataRefs,
       evidence_kind: evidenceKind,
       ...(rawEvidenceKind && rawEvidenceKind !== evidenceKind ? { model_evidence_kind: rawEvidenceKind } : {}),
       validation_method: normalizeString(slide?.validation_method),
       blocks,
       content_blocks: blocks,
+      ...(slide?.extra ? { extra: slide.extra } : {}),
     }
   })
 

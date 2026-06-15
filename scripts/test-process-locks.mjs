@@ -78,4 +78,49 @@ assert.match(result.violations.join('\n'), /hypothesis 必须给 validation_meth
 
 assert.throws(() => assertProcessLocks(noEvidence), /过程锁未通过/)
 
+const mixedKindDeck = {
+  slides: [
+    { page_no: 1, page_kind: 'cover', action_title: 'LUMA 品牌定位方案' },
+    { page_no: 2, page_kind: 'toc', action_title: '目录' },
+    {
+      page_no: 3,
+      page_kind: 'content',
+      intent: '回答根问题的一个判断',
+      action_title: '增长正从开店红利切到复购红利',
+      layout: 'split-statement',
+      core_points: ['复购决定增长'],
+      data_refs: [{ source: 'inputs/demo/summary.md', type: 'client_input', source_tier: 'T1' }],
+      evidence_kind: 'deductive',
+      validation_method: '',
+      blocks: [{ type: 'callout', text: 'x' }],
+    },
+    { page_no: 4, page_kind: 'closing', action_title: '必须重新定位撬动复购' },
+  ],
+}
+result = validateProcessLocks(mixedKindDeck, { minPages: 1, maxPages: 8 })
+assert.equal(result.ok, true, result.violations.join('\n'))
+assert.equal(result.summary.contentSlideCount, 1)
+assert.ok(!result.violations.some(violation => violation.includes('page 1')))
+assert.ok(!result.violations.some(violation => violation.includes('page 2')))
+
+const badContent = {
+  slides: [{
+    page_no: 1,
+    page_kind: 'content',
+    intent: 'i',
+    action_title: '内容页仍然必须有证据',
+    core_points: ['x'],
+    evidence_kind: 'empirical',
+    blocks: [{ type: 'callout', text: 'x' }],
+  }],
+}
+result = validateProcessLocks(badContent, { minPages: 1, maxPages: 8 })
+assert.equal(result.ok, false)
+assert.match(result.violations.join('\n'), /data_refs/)
+
+const unknownKind = { slides: [{ page_no: 1, page_kind: 'splash', action_title: 'x' }] }
+result = validateProcessLocks(unknownKind, { minPages: 1, maxPages: 8 })
+assert.equal(result.ok, false)
+assert.match(result.violations.join('\n'), /未知 page_kind/)
+
 console.log('✅ process-locks: 5 locks and evidence rules passed')
