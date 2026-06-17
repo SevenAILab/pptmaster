@@ -34,7 +34,8 @@
     "deck:s": "node scripts/render-deck-s.mjs",
     "deck:pptx": "node scripts/deck-to-pptx.mjs",
     "check:discipline": "node scripts/check-content-discipline.mjs",
-    "check:evidence": "node scripts/check-evidence-coverage.mjs"
+    "check:evidence": "node scripts/check-evidence-coverage.mjs",
+    "test:mvp": "for t in content-model visibility-classifier output-registry detect-brand-type render-brand-book; do node scripts/test-$t.mjs || exit 1; done"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.99.0",

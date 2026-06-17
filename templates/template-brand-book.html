@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITLE}}</title>
+  <style>
+    :root {
+      {{PALETTE_VARS}}
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+    .cover {
+      min-height: 68vh;
+      display: grid;
+      align-content: center;
+      padding: 72px clamp(24px, 7vw, 96px);
+      background: var(--primary);
+      color: var(--bg);
+    }
+    .cover .kicker {
+      margin: 0 0 18px;
+      font-size: 14px;
+      letter-spacing: 0;
+      color: var(--secondary);
+    }
+    .cover h1 {
+      max-width: 980px;
+      margin: 0;
+      font-size: clamp(42px, 8vw, 96px);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+    .cover .positioning {
+      max-width: 760px;
+      margin: 28px 0 0;
+      font-size: clamp(20px, 3vw, 32px);
+      color: var(--secondary);
+    }
+    .toc {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 14px clamp(20px, 6vw, 80px);
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      background: color-mix(in srgb, var(--bg) 92%, white);
+    }
+    .toc a {
+      flex: 0 0 auto;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 56px clamp(20px, 6vw, 80px) 84px;
+    }
+    .chapter {
+      padding: 42px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+    }
+    .chapter:last-child {
+      border-bottom: 0;
+    }
+    .chapter .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .chapter h2 {
+      margin: 0 0 18px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.1;
+      letter-spacing: 0;
+      color: var(--primary);
+    }
+    .chapter p {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .chapter ul {
+      margin: 16px 0 0;
+      padding-left: 1.2em;
+    }
+    .chapter li {
+      margin: 8px 0;
+      font-size: 17px;
+    }
+    .field {
+      margin-top: 18px;
+    }
+    .field-title {
+      display: block;
+      color: var(--primary);
+      font-weight: 750;
+    }
+    footer {
+      padding: 32px clamp(20px, 6vw, 80px) 56px;
+      color: color-mix(in srgb, var(--text) 62%, transparent);
+      font-size: 13px;
+    }
+    @media print {
+      .toc {
+        position: static;
+      }
+      .cover {
+        min-height: 40vh;
+      }
+      .chapter {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  {{COVER}}
+  {{TOC}}
+  <main>
+    {{CHAPTERS}}
+  </main>
+  <footer>{{FOOTER}}</footer>
+</body>
+</html>

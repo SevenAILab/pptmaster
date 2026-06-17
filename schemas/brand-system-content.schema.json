@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BrandSystemContent",
+  "type": "object",
+  "required": ["meta", "strategic_spine", "tonality", "modules"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["brand_slug", "output_types_selected", "intake_sufficiency", "brand_type"],
+      "properties": {
+        "brand_slug": { "type": "string" },
+        "created_at": { "type": "string" },
+        "document_type": {
+          "enum": ["brand_manual", "whitepaper", "investment_brand_book", "internal_brand_playbook"]
+        },
+        "brand_type": {
+          "enum": ["strategy_charter", "new_consumer_full", "brand_asset_story", "lifestyle_ops", "worldview_visual"]
+        },
+        "audience": {
+          "type": "array",
+          "items": {
+            "enum": ["consumer", "partner", "media", "franchisee", "internal_team", "investor"]
+          }
+        },
+        "output_types_selected": {
+          "type": "array",
+          "items": {
+            "enum": ["brand-book", "independent-site"]
+          }
+        },
+        "intake_sufficiency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    },
+    "strategic_spine": {
+      "type": "object",
+      "required": ["positioning_statement", "mission", "vision", "proposition", "locked"],
+      "properties": {
+        "positioning_statement": { "type": "string" },
+        "mission": { "type": "string" },
+        "vision": { "type": "string" },
+        "proposition": { "type": "string" },
+        "chosen_direction_id": { "type": ["string", "null"] },
+        "locked": { "type": "boolean" },
+        "locked_at": { "type": ["string", "null"] }
+      }
+    },
+    "tonality": {
+      "type": "object",
+      "required": ["keywords", "source"],
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reference_brands": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source": {
+          "enum": ["qa", "upload"]
+        },
+        "palette": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "accent": { "type": "string" },
+            "text": { "type": "string" },
+            "bg": { "type": "string" }
+          }
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "visibility", "content"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": {
+            "enum": [
+              "brand_entry",
+              "market_context",
+              "brand_definition",
+              "audience_scenarios",
+              "strategy_core",
+              "narrative_system",
+              "product_system",
+              "visual_direction",
+              "proof_growth",
+              "personality_statement",
+              "personality_playbook",
+              "risk_check",
+              "founder_fit",
+              "research_note"
+            ]
+          },
+          "visibility": {
+            "enum": ["external", "internal", "review"]
+          },
+          "content": { "type": "object" },
+          "evidence_refs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "depth_level": {
+            "enum": ["L1", "L2", "L3", "L4"]
+          },
+          "spine_alignment": { "type": "string" }
+        }
+      }
+    }
+  }
+}

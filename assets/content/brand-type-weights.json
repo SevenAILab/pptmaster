@@ -1,0 +1,57 @@
+{
+  "strategy_charter": {
+    "brand_entry": 2,
+    "market_context": 1,
+    "brand_definition": 3,
+    "audience_scenarios": 2,
+    "strategy_core": 3,
+    "narrative_system": 2,
+    "product_system": 1,
+    "visual_direction": 1,
+    "proof_growth": 1
+  },
+  "new_consumer_full": {
+    "brand_entry": 2,
+    "market_context": 3,
+    "brand_definition": 2,
+    "audience_scenarios": 3,
+    "strategy_core": 2,
+    "narrative_system": 2,
+    "product_system": 3,
+    "visual_direction": 2,
+    "proof_growth": 2
+  },
+  "brand_asset_story": {
+    "brand_entry": 2,
+    "market_context": 1,
+    "brand_definition": 2,
+    "audience_scenarios": 2,
+    "strategy_core": 1,
+    "narrative_system": 3,
+    "product_system": 3,
+    "visual_direction": 2,
+    "proof_growth": 3
+  },
+  "lifestyle_ops": {
+    "brand_entry": 2,
+    "market_context": 2,
+    "brand_definition": 2,
+    "audience_scenarios": 3,
+    "strategy_core": 3,
+    "narrative_system": 2,
+    "product_system": 1,
+    "visual_direction": 1,
+    "proof_growth": 3
+  },
+  "worldview_visual": {
+    "brand_entry": 2,
+    "market_context": 1,
+    "brand_definition": 3,
+    "audience_scenarios": 3,
+    "strategy_core": 2,
+    "narrative_system": 3,
+    "product_system": 2,
+    "visual_direction": 3,
+    "proof_growth": 1
+  }
+}
