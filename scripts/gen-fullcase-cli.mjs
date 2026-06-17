@@ -253,7 +253,7 @@ export async function runBrandBookMode({ slug, opts = {}, callModel } = {}) {
     callModel: opts.noModel ? undefined : callModel,
   })
   content = applyPaletteToContent(content, palette)
-  assertCoherence(content)
+  assertCoherence(content, { offline: opts.noModel })
 
   fs.mkdirSync(outputDir, { recursive: true })
   await writeContent(path.join(outputDir, 'brand-system-content.json'), content)

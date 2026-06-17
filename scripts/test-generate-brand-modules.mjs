@@ -68,6 +68,57 @@ await assert.rejects(generateBrandModules({
   kinds: ['brand_definition'],
 }), /evidence|boilerplate|套话|specific/i)
 
+const internalLeak = async () => JSON.stringify({
+  content: {
+    title: '品牌定义',
+    positioning: '独立咖啡馆的稳定品质供应',
+    body: '针对 comp-1 的竞品弱点和 usr-1 的采购焦虑，给出单店回本测算。',
+  },
+  evidence_refs: ['comp-1', 'usr-1'],
+  depth_level: 'L4',
+})
+await assert.rejects(generateBrandModules({
+  content,
+  brief: { form: { name: 'demo', industry: '咖啡供应链' } },
+  analysisCards,
+  callModel: internalLeak,
+  kinds: ['brand_definition'],
+}), /visibility|internal|对内/i)
+
+let repairCalls = 0
+const repairedInternalLeak = async () => {
+  repairCalls += 1
+  if (repairCalls === 1) {
+    return JSON.stringify({
+      content: {
+        title: '品牌定义',
+        positioning: '独立咖啡馆的稳定品质供应',
+        body: '针对 comp-1 的竞品弱点和 usr-1 的采购焦虑，给出单店回本测算。',
+      },
+      evidence_refs: ['comp-1', 'usr-1'],
+      depth_level: 'L4',
+    })
+  }
+  return JSON.stringify({
+    content: {
+      title: '品牌定义',
+      positioning: '独立咖啡馆的稳定品质供应',
+      body: '针对 comp-1 显示的连锁供给空白与 usr-1 的采购焦虑，提供面向独立馆的稳定供应选择。',
+    },
+    evidence_refs: ['comp-1', 'usr-1'],
+    depth_level: 'L4',
+  })
+}
+const repaired = await generateBrandModules({
+  content,
+  brief: { form: { name: 'demo', industry: '咖啡供应链' } },
+  analysisCards,
+  callModel: repairedInternalLeak,
+  kinds: ['brand_definition'],
+})
+assert.equal(repairCalls, 2)
+assert.equal(repaired.modules[0].visibility, 'external')
+
 const offline = deterministicBrandModules({
   content,
   brief: { slug: 'demo', form: { name: 'demo', industry: '咖啡供应链', target_audience: ['独立馆主'], core_products: ['豆源配送'] } },

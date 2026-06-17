@@ -37,6 +37,10 @@ export function buildResearchQueryVariants(question, { retry = false, maxVariant
   if (tokens.length >= 7 || /调研|数据|报告|白皮书|研究/.test(original)) {
     variants.push(`${keywords.slice(0, 5).join(' ')} 报告 数据`)
   }
+  if (/[\u4e00-\u9fff]/.test(original) && keywords.length >= 3) {
+    variants.push(`${keywords.slice(0, 3).join(' ')} 行业报告 数据`)
+    variants.push(`${keywords.slice(0, 3).join(' ')} 消费者调研`)
+  }
   if (retry) {
     if (/竞品|竞争|对比|差异|定位/.test(original)) {
       variants.push(`${entityPrefix || original} competitor positioning`)
@@ -276,7 +280,7 @@ export async function researchQuestionWithReflection({
       hits.push(...normalizeSearchHits(await search(query)).slice(0, maxResultsPerQuery))
     }
     if (round === 1 && hits.length === 0) {
-      const retryQueries = buildResearchQueryVariants(question, { retry: true, maxVariants: 3 })
+      const retryQueries = buildResearchQueryVariants(question, { retry: true, maxVariants: 6 })
         .filter(query => !queries.includes(query))
       for (const query of retryQueries) {
         searchCallsUsed += 1
@@ -341,6 +345,8 @@ export async function gatherResearchDeep({
   maxRounds = 2,
   maxResultsPerQuery = 3,
   strongSourceMinRatio = 0.3,
+  onFollowupError,
+  onQuestionError,
 } = {}) {
   if (!Array.isArray(questions) || questions.length === 0) {
     throw new Error('gatherResearchDeep requires questions[]')
@@ -351,22 +357,39 @@ export async function gatherResearchDeep({
   const perQuestion = []
   let searchCallsUsed = 0
   for (const question of questions) {
-    const result = await researchQuestionWithReflection({
-      question,
-      search,
-      callModel,
-      maxRounds,
-      maxResultsPerQuery,
-      strongSourceHint: true,
-    })
-    allFindings.push(...result.findings)
-    searchCallsUsed += result.search_calls_used
-    perQuestion.push({
-      question,
-      rounds_used: result.rounds_used,
-      search_calls_used: result.search_calls_used,
-      findings: result.findings.length,
-    })
+    try {
+      const result = await researchQuestionWithReflection({
+        question,
+        search,
+        callModel,
+        maxRounds,
+        maxResultsPerQuery,
+        strongSourceHint: true,
+      })
+      allFindings.push(...result.findings)
+      searchCallsUsed += result.search_calls_used
+      perQuestion.push({
+        question,
+        rounds_used: result.rounds_used,
+        search_calls_used: result.search_calls_used,
+        findings: result.findings.length,
+      })
+    } catch (error) {
+      const event = {
+        question,
+        error: String(error?.message || error),
+        findings: 0,
+      }
+      perQuestion.push(event)
+      if (typeof onQuestionError === 'function') onQuestionError(event)
+    }
+  }
+  if (allFindings.length === 0) {
+    const errors = perQuestion
+      .filter(item => item.error)
+      .map(item => `${item.question}: ${item.error}`)
+      .join('; ')
+    throw new Error(`No traceable research findings across questions${errors ? `: ${errors}` : ''}`)
   }
   let tagged = tagSources(allFindings, sourceOptions)
   let strongSummary = summarizeStrongSources(tagged.sources)
@@ -377,24 +400,35 @@ export async function gatherResearchDeep({
     console.log('[research] strong-source followup triggered')
     for (const question of questions) {
       const targetedQuery = `${question} 行业报告 研究院 统计 白皮书`
-      const result = await researchQuestionWithReflection({
-        question: targetedQuery,
-        search,
-        callModel,
-        maxRounds: 1,
-        maxResultsPerQuery,
-        strongSourceHint: true,
-      })
-      allFindings.push(...result.findings)
-      searchCallsUsed += result.search_calls_used
-      perQuestion.push({
-        question,
-        followup_query: targetedQuery,
-        rounds_used: result.rounds_used,
-        search_calls_used: result.search_calls_used,
-        findings: result.findings.length,
-        strong_source_followup: true,
-      })
+      try {
+        const result = await researchQuestionWithReflection({
+          question: targetedQuery,
+          search,
+          callModel,
+          maxRounds: 1,
+          maxResultsPerQuery,
+          strongSourceHint: true,
+        })
+        allFindings.push(...result.findings)
+        searchCallsUsed += result.search_calls_used
+        perQuestion.push({
+          question,
+          followup_query: targetedQuery,
+          rounds_used: result.rounds_used,
+          search_calls_used: result.search_calls_used,
+          findings: result.findings.length,
+          strong_source_followup: true,
+        })
+      } catch (error) {
+        const event = {
+          question,
+          followup_query: targetedQuery,
+          followup_error: String(error?.message || error),
+          strong_source_followup: true,
+        }
+        perQuestion.push(event)
+        if (typeof onFollowupError === 'function') onFollowupError(event)
+      }
     }
     tagged = tagSources(allFindings, sourceOptions)
     strongSummary = summarizeStrongSources(tagged.sources)

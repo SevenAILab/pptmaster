@@ -129,12 +129,13 @@ async function generateOneModule({
   const cards = selectRelevantCards(analysisCards, kind)
   const allCards = flatCards(analysisCards)
   const fields = renderableFieldsForKind(kind)
-  const system = [
+  const baseSystem = [
     `你正在生成品牌手册模块 kind=${kind}。`,
     '必须从已锁战略主线推导，不得重写主线。',
     '必须引用真实 analysis-card id，evidence_refs 不能为空。',
     `renderable-fields 只允许这些 content 字段：${fields.join(', ')}。不要输出 production_note、layout_hint、*_note。`,
     '每个模块必须 L3/L4 深度，避免套话；必须包含来自 brief 或 analysis-card 的品牌专属细节。',
+    '这是对外品牌手册模块，禁止输出对内信息或对内词：营收、利润、毛利、成本、现金流、单店、回本、测算、底价、返点、KPI、薪酬、绩效、未发布、风险清单、竞品弱点。',
     '只输出 JSON：{"content":{},"evidence_refs":[...],"depth_level":"L3|L4"}。',
     guidance?.text,
   ].filter(Boolean).join('\n')
@@ -146,31 +147,51 @@ async function generateOneModule({
     relevant_cards: cards,
     generated_module_summaries: generatedSummaries,
   }, null, 2)
-  const parsed = extractJsonObject(await callModel(system, user))
-  validateEvidenceRefs(parsed.evidence_refs, allCards, kind)
-  if (!['L3', 'L4'].includes(parsed.depth_level)) throw new Error(`${kind} depth_level must be L3/L4`)
-  const sanitized = sanitizeRenderableContent(kind, parsed.content || {})
-  assertNotBoilerplate({
-    kind,
-    content: sanitized,
-    spine: content.strategic_spine.positioning_statement,
-    cards,
-    brief,
-  })
-  const classified = classifyVisibility({
-    kind,
-    text: moduleText(sanitized),
-    evidence_refs: parsed.evidence_refs,
-  })
-  return {
-    id: kind.replaceAll('_', '-'),
-    kind,
-    visibility: classified.visibility === 'review' ? 'external' : classified.visibility,
-    content: sanitized,
-    evidence_refs: parsed.evidence_refs,
-    depth_level: parsed.depth_level,
-    spine_alignment: content.strategic_spine.positioning_statement,
+
+  let lastError
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const system = [
+      baseSystem,
+      attempt > 1
+        ? `上一次生成没有通过校验：${lastError?.message || lastError}。请重写整个模块，保留真实 evidence_refs，移除对内信息、套话和重复模板，只输出 JSON。`
+        : '',
+    ].filter(Boolean).join('\n')
+
+    try {
+      const parsed = extractJsonObject(await callModel(system, user))
+      validateEvidenceRefs(parsed.evidence_refs, allCards, kind)
+      if (!['L3', 'L4'].includes(parsed.depth_level)) throw new Error(`${kind} depth_level must be L3/L4`)
+      const sanitized = sanitizeRenderableContent(kind, parsed.content || {})
+      assertNotBoilerplate({
+        kind,
+        content: sanitized,
+        spine: content.strategic_spine.positioning_statement,
+        cards,
+        brief,
+      })
+      const classified = classifyVisibility({
+        kind,
+        text: moduleText(sanitized),
+        evidence_refs: parsed.evidence_refs,
+      })
+      if (classified.visibility === 'internal') {
+        throw new Error(`${kind} visibility gate failed: internal content in external module (${classified.reason})`)
+      }
+      return {
+        id: kind.replaceAll('_', '-'),
+        kind,
+        visibility: classified.visibility === 'review' ? 'external' : classified.visibility,
+        content: sanitized,
+        evidence_refs: parsed.evidence_refs,
+        depth_level: parsed.depth_level,
+        spine_alignment: content.strategic_spine.positioning_statement,
+      }
+    } catch (error) {
+      lastError = error
+      if (attempt === 2) throw error
+    }
   }
+  throw lastError
 }
 
 export async function generateBrandModules({

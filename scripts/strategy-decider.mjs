@@ -117,6 +117,9 @@ export function deterministicStrategyDirections({ brief = {}, analysisCards } = 
 export function lockChosenDirection(content, directions, chosenId) {
   if (content.strategic_spine?.locked) throw new Error('strategic spine already locked')
   const direction = (directions || []).find(item => item.id === chosenId)
+    || (/^d[1-9]\d*$/.test(chosenId)
+      ? (directions || [])[Number(chosenId.slice(1)) - 1]
+      : null)
   if (!direction) throw new Error(`unknown strategy direction: ${chosenId}`)
   return lockSpine(content, {
     chosen_direction_id: direction.id,

@@ -1,7 +1,11 @@
-import { externalModules } from '../core/content-model.mjs'
+import { externalModules, MODULE_KINDS, VISIBILITIES } from '../core/content-model.mjs'
 
 const KEY_KINDS = new Set(['brand_definition', 'strategy_core', 'product_system', 'narrative_system'])
 const STOP_WORDS = new Set(['的', '和', '与', '为', '是', '在', '品牌', '用户', '市场', '产品'])
+const MODULE_KIND_SET = new Set(MODULE_KINDS)
+const VISIBILITY_SET = new Set(VISIBILITIES)
+const TEMPLATE_REPEAT_THRESHOLD = 56
+const TEMPLATE_REPEAT_RATIO = 0.45
 
 function text(value) {
   if (value === null || value === undefined) return ''
@@ -38,9 +42,16 @@ function numberClaims(value) {
   return claims
 }
 
-function normalizedBodyWithoutAnchors(value, anchors) {
+function evidenceTerms(module) {
+  return (module.evidence_refs || [])
+    .flatMap(ref => String(ref || '').split(/[^A-Za-z0-9\u4e00-\u9fff]+/))
+    .map(term => term.trim())
+    .filter(term => term.length >= 2)
+}
+
+function normalizedBodyWithoutAnchors(value, anchors, evidenceSpecificTerms = []) {
   let body = text(value).replace(/\s+/g, '')
-  for (const anchor of anchors) body = body.replaceAll(anchor, '')
+  for (const anchor of [...anchors, ...evidenceSpecificTerms]) body = body.replaceAll(anchor, '')
   return body
     .replace(/[A-Za-z]+-\d+/g, '')
     .replace(/[A-Za-z][A-Za-z0-9._-]+/g, '')
@@ -63,29 +74,52 @@ function longestCommonSubstringLength(a, b) {
   return best
 }
 
-export function validateCoherence(content) {
+function validateStructureAndVisibility(content) {
+  const violations = []
+  if (!content?.strategic_spine?.locked) {
+    violations.push({ id: 'strategic_spine', rule: 'structure', reason: '战略主线未锁定' })
+  }
+  for (const module of content?.modules || []) {
+    if (!module?.id) violations.push({ id: module?.id || 'module', rule: 'structure', reason: '模块缺少 id' })
+    if (!MODULE_KIND_SET.has(module?.kind)) violations.push({ id: module?.id || 'module', rule: 'structure', reason: `未知模块 kind: ${module?.kind}` })
+    if (!VISIBILITY_SET.has(module?.visibility)) violations.push({ id: module?.id || 'module', rule: 'visibility', reason: `未知 visibility: ${module?.visibility}` })
+    if (!module?.content || typeof module.content !== 'object' || Array.isArray(module.content)) {
+      violations.push({ id: module?.id || 'module', rule: 'structure', reason: '模块 content 必须是对象' })
+    }
+  }
+  return violations
+}
+
+export function validateCoherence(content, { offline = false } = {}) {
   const positioning = content?.strategic_spine?.positioning_statement || ''
   const anchors = anchorWords(positioning)
-  const violations = []
+  const violations = validateStructureAndVisibility(content)
   const metrics = new Map()
   const normalizedTexts = []
 
   for (const module of externalModules(content)) {
     const moduleText = text(module.content)
     const alignment = text(module.spine_alignment)
-    const normalized = normalizedBodyWithoutAnchors(`${alignment} ${moduleText}`, anchors)
+    const normalized = normalizedBodyWithoutAnchors(`${alignment} ${moduleText}`, anchors, evidenceTerms(module))
 
-    if (KEY_KINDS.has(module.kind) && (!Array.isArray(module.evidence_refs) || module.evidence_refs.length === 0)) {
+    if (!offline && KEY_KINDS.has(module.kind) && (!Array.isArray(module.evidence_refs) || module.evidence_refs.length === 0)) {
       violations.push({ id: module.id, rule: 'evidence_refs', reason: '证据缺失：关键模块必须引用 analysis-card evidence_refs' })
     }
 
-    if (KEY_KINDS.has(module.kind) && normalized.length < 8) {
+    if (!offline && KEY_KINDS.has(module.kind) && normalized.length < 8) {
       violations.push({ id: module.id, rule: 'boilerplate', reason: 'boilerplate 套话：模块几乎只是在复读定位语' })
     }
 
-    if (module.kind !== 'brand_entry') {
+    if (!offline && module.kind !== 'brand_entry') {
       for (const previous of normalizedTexts) {
-        if (normalized.length >= 18 && previous.normalized.length >= 18 && longestCommonSubstringLength(normalized, previous.normalized) >= 18) {
+        const repeatedLength = longestCommonSubstringLength(normalized, previous.normalized)
+        const repeatedRatio = repeatedLength / Math.min(normalized.length, previous.normalized.length)
+        if (
+          normalized.length >= TEMPLATE_REPEAT_THRESHOLD
+          && previous.normalized.length >= TEMPLATE_REPEAT_THRESHOLD
+          && repeatedLength >= TEMPLATE_REPEAT_THRESHOLD
+          && repeatedRatio >= TEMPLATE_REPEAT_RATIO
+        ) {
           violations.push({ id: module.id, rule: 'template_repeat', reason: `模板重复：与 ${previous.id} 存在大段相同表达` })
           break
         }
@@ -99,24 +133,26 @@ export function validateCoherence(content) {
       violations.push({ id: module.id, rule: 'spine_alignment', reason: 'spine_alignment 未命中战略主线锚词' })
     }
 
-    if (KEY_KINDS.has(module.kind) && !['L3', 'L4'].includes(module.depth_level)) {
+    if (!offline && KEY_KINDS.has(module.kind) && !['L3', 'L4'].includes(module.depth_level)) {
       violations.push({ id: module.id, rule: 'depth_level', reason: '深度不足，关键模块必须是 L3/L4' })
     }
 
-    if (anchors.length && !hasAnchor(moduleText, anchors) && !hasAnchor(alignment, anchors)) {
+    if (!offline && anchors.length && !hasAnchor(moduleText, anchors) && !hasAnchor(alignment, anchors)) {
       violations.push({ id: module.id, rule: 'interchangeability', reason: '可互换：模块文本与战略主线锚词零交集' })
     }
 
-    for (const claim of numberClaims(module.content)) {
-      const previous = metrics.get(claim.metric)
-      if (previous && previous.value !== claim.value) {
-        violations.push({
-          id: module.id,
-          rule: 'assumption_conflict',
-          reason: `假设冲突：${claim.metric} 同时出现 ${previous.value} 与 ${claim.value}`,
-        })
-      } else {
-        metrics.set(claim.metric, { value: claim.value, id: module.id })
+    if (!offline) {
+      for (const claim of numberClaims(module.content)) {
+        const previous = metrics.get(claim.metric)
+        if (previous && previous.value !== claim.value) {
+          violations.push({
+            id: module.id,
+            rule: 'assumption_conflict',
+            reason: `假设冲突：${claim.metric} 同时出现 ${previous.value} 与 ${claim.value}`,
+          })
+        } else {
+          metrics.set(claim.metric, { value: claim.value, id: module.id })
+        }
       }
     }
   }
@@ -124,8 +160,8 @@ export function validateCoherence(content) {
   return { ok: violations.length === 0, violations }
 }
 
-export function assertCoherence(content) {
-  const result = validateCoherence(content)
+export function assertCoherence(content, options = {}) {
+  const result = validateCoherence(content, options)
   if (!result.ok) {
     const summary = result.violations.map(item => `${item.id}:${item.reason}`).join('; ')
     throw new Error(`coherence gate failed: ${summary}`)

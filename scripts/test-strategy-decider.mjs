@@ -63,6 +63,16 @@ assert.equal(content.strategic_spine.chosen_direction_id, 'd1')
 assert.equal(content.strategic_spine.positioning_statement, '品质便捷')
 assert.throws(() => lockChosenDirection(content, directions, 'd2'), /already locked/i)
 
+let semanticIdContent = createBrandContent({ brand_slug: 'semantic', brand_type: 'new_consumer_full' })
+semanticIdContent = lockChosenDirection(semanticIdContent, [
+  { ...directions[0], id: 'daily_companion' },
+  { ...directions[1], id: 'trust_anchor' },
+  { ...directions[2], id: 'growth_system' },
+], 'd1')
+assert.equal(semanticIdContent.strategic_spine.locked, true)
+assert.equal(semanticIdContent.strategic_spine.chosen_direction_id, 'daily_companion')
+assert.equal(semanticIdContent.strategic_spine.positioning_statement, '品质便捷')
+
 await assert.rejects(deriveStrategyDirections({
   analysisCards,
   brief: {},

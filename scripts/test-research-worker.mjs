@@ -110,6 +110,8 @@ assert.throws(() => parseResearchResponse('无 JSON'), /No JSON object/)
 const variants = buildResearchQueryVariants('LUMA Coffee 竞品 Manner M Stand 瑞幸 精品咖啡连锁 定位 差异化 价格 门店模型 会员体系', { retry: true })
 assert.ok(variants.length >= 2)
 assert.ok(variants.some(query => query.includes('competitor positioning') || query.length < 50))
+const broadChineseVariants = buildResearchQueryVariants('一线城市年轻白领 精品咖啡 消费频次 客单价 预算 咖啡外卖 到店 行为数据 2024', { retry: true, maxVariants: 6 })
+assert.ok(broadChineseVariants.some(query => /行业报告 数据|消费者调研/.test(query)))
 
 const rfl = buildReflectionPrompt({
   question: '精品咖啡市场规模？',
@@ -289,5 +291,44 @@ assert.equal(weak.strong_source_followup, true)
 assert.equal(weak.strong_source_sources, 0)
 assert.equal(weak.strong_source_total_sources, 1)
 assert.equal(weak.strong_source_ratio, 0)
+
+const followupErrors = []
+const weakFollowupMiss = await gatherResearchDeep({
+  questions: ['用户趋势?'],
+  maxRounds: 1,
+  strongSourceMinRatio: 0.3,
+  search: async query => {
+    if (/报告|研究院|统计|白皮书/.test(query)) return { results: [] }
+    return { results: [{ url: 'https://www.sohu.com/a/2', snippet: '用户趋势 66%' }] }
+  },
+  callModel: async weakSystem => weakSystem.includes('研究质量评估员')
+    ? '{"sufficient":true,"gaps":[],"next_queries":[]}'
+    : '{"findings":[{"claim":"用户趋势 66%","evidence":"66%","source_url":"https://www.sohu.com/a/2","confidence":"med"}]}',
+  onFollowupError: event => followupErrors.push(event),
+})
+assert.equal(weakFollowupMiss.findings.length, 1)
+assert.equal(weakFollowupMiss.strong_source_followup, true)
+assert.equal(weakFollowupMiss.per_question.some(item => item.followup_error), true)
+assert.equal(followupErrors.length, 1)
+
+const questionErrors = []
+const partialDeep = await gatherResearchDeep({
+  questions: ['可找到的问题', '不可抽取的问题'],
+  maxRounds: 1,
+  strongSourceMinRatio: 0,
+  search: async query => ({ results: [{ url: `https://example.com/${encodeURIComponent(query)}`, snippet: `${query} 88%` }] }),
+  callModel: async (_partialSystem, partialUser) => partialUser.includes('不可抽取的问题')
+    ? '{"findings":[]}'
+    : JSON.stringify({ findings: [{
+      claim: '可找到的问题 88%',
+      evidence: '88%',
+      source_url: 'https://example.com/%E5%8F%AF%E6%89%BE%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98',
+      confidence: 'med',
+    }] }),
+  onQuestionError: event => questionErrors.push(event),
+})
+assert.equal(partialDeep.findings.length, 1)
+assert.equal(partialDeep.per_question.some(item => item.question === '不可抽取的问题' && item.error), true)
+assert.equal(questionErrors.length, 1)
 
 console.log('✅ research-worker: derive + normalize + tag + parse + gather passed')

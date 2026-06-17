@@ -36,7 +36,7 @@
     "check:discipline": "node scripts/check-content-discipline.mjs",
     "check:evidence": "node scripts/check-evidence-coverage.mjs",
     "brandbook:gen": "node scripts/gen-fullcase-cli.mjs",
-    "test:mvp": "for t in content-model visibility-classifier output-registry detect-brand-type render-brand-book strategy-decider coherence-validator pipeline-spine-wiring ingest-sources intake-strategist brand-profiler render-independent-site generate-brand-modules brandbook-cli; do node scripts/test-$t.mjs || exit 1; done"
+    "test:mvp": "for t in content-model visibility-classifier output-registry detect-brand-type render-brand-book strategy-decider coherence-validator pipeline-spine-wiring ingest-sources intake-strategist brand-profiler render-independent-site generate-brand-modules research-worker brandbook-cli; do node scripts/test-$t.mjs || exit 1; done"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.99.0",

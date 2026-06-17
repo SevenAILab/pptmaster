@@ -88,4 +88,76 @@ const boilerplateResult = validateCoherence(boilerplate)
 assert.equal(boilerplateResult.ok, false)
 assert.ok(boilerplateResult.violations.some(v => /boilerplate|套话|证据/.test(v.reason)))
 
+let offline = createBrandContent({ brand_slug: 'offline-demo', brand_type: 'new_consumer_full' })
+offline = {
+  ...offline,
+  strategic_spine: {
+    positioning_statement: '稳定品质供应',
+    mission: 'm',
+    vision: 'v',
+    proposition: 'p',
+    locked: true,
+    locked_at: 'now',
+    chosen_direction_id: 'd1',
+  },
+}
+offline = addModule(offline, {
+  id: 'offline-def',
+  kind: 'brand_definition',
+  visibility: 'external',
+  depth_level: 'L1',
+  content: { positioning: '稳定品质供应', body: '稳定品质供应。离线占位非交付。', offline: true },
+  spine_alignment: '稳定品质供应',
+  evidence_refs: [],
+})
+offline = addModule(offline, {
+  id: 'offline-narrative',
+  kind: 'narrative_system',
+  visibility: 'external',
+  depth_level: 'L1',
+  content: { brand_story: '稳定品质供应。离线占位非交付。', body: '稳定品质供应。离线占位非交付。', offline: true },
+  spine_alignment: '稳定品质供应',
+  evidence_refs: [],
+})
+const strictOfflineResult = validateCoherence(offline)
+assert.equal(strictOfflineResult.ok, false)
+assert.ok(strictOfflineResult.violations.some(v => ['evidence_refs', 'depth_level', 'template_repeat'].includes(v.rule)))
+const bypassOfflineResult = validateCoherence(offline, { offline: true })
+assert.equal(bypassOfflineResult.ok, true, bypassOfflineResult.violations.map(v => v.reason).join('\n'))
+assert.doesNotThrow(() => assertCoherence(offline, { offline: true }))
+
+let sharedEvidenceTerms = createBrandContent({ brand_slug: 'shared', brand_type: 'new_consumer_full' })
+sharedEvidenceTerms = {
+  ...sharedEvidenceTerms,
+  strategic_spine: {
+    positioning_statement: '稳定体验',
+    mission: 'm',
+    vision: 'v',
+    proposition: 'p',
+    locked: true,
+    locked_at: 'now',
+    chosen_direction_id: 'd1',
+  },
+}
+sharedEvidenceTerms = addModule(sharedEvidenceTerms, {
+  id: 'market',
+  kind: 'market_context',
+  visibility: 'external',
+  depth_level: 'L3',
+  content: { body: 'usr-1 显示一线白领需要清楚价格和稳定体验，因此先解释选择理由。' },
+  spine_alignment: '稳定体验',
+  evidence_refs: ['usr-1'],
+})
+sharedEvidenceTerms = addModule(sharedEvidenceTerms, {
+  id: 'proof',
+  kind: 'proof_growth',
+  visibility: 'external',
+  depth_level: 'L3',
+  content: { body: 'usr-2 显示一线白领需要清楚价格和稳定体验，因此用会员复购证明。' },
+  spine_alignment: '稳定体验',
+  evidence_refs: ['usr-2'],
+})
+const sharedEvidenceResult = validateCoherence(sharedEvidenceTerms)
+assert.equal(sharedEvidenceResult.ok, true, sharedEvidenceResult.violations.map(v => v.reason).join('\n'))
+
 console.log('✅ coherence-validator tests passed')
