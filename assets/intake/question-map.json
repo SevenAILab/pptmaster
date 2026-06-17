@@ -1,0 +1,168 @@
+{
+  "questions": [
+    {
+      "id": "q_category",
+      "target_concepts": ["category", "brand_basics"],
+      "oblique_prompt": "如果用户第一次听到你，他会把你放进哪个选择列表里？旁边会站着谁？",
+      "options_or_examples": ["咖啡供应链", "新消费饮品", "B2B 软件", "生活方式空间", "其他（自述）"],
+      "follow_ups": ["请给一个最像的替代选择。"],
+      "restate_template": "我先把你放在「{{answer}}」这个选择列表里，对吗？",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.08,
+      "category_trigger": null,
+      "dimensions": ["brand_basics"]
+    },
+    {
+      "id": "q_goal",
+      "target_concepts": ["delivery_goal"],
+      "oblique_prompt": "这份成品拿出去后，你最希望它帮你推进哪一个动作？",
+      "options_or_examples": ["招商", "融资", "招募伙伴", "统一团队说法", "独立站对外展示"],
+      "follow_ups": ["谁会读它？读完要做什么？"],
+      "restate_template": "所以这次优先服务「{{answer}}」这个动作。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.07,
+      "category_trigger": null,
+      "dimensions": ["brand_basics"]
+    },
+    {
+      "id": "q_stage",
+      "target_concepts": ["stage"],
+      "oblique_prompt": "你现在更像在证明一个新想法，还是把已有生意规模化？",
+      "options_or_examples": ["刚起步", "已有试点", "区域扩张", "成熟升级", "其他"],
+      "follow_ups": ["目前最硬的一个经营事实是什么？"],
+      "restate_template": "我按「{{answer}}」阶段来判断深度。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.05,
+      "category_trigger": null,
+      "dimensions": ["brand_basics"]
+    },
+    {
+      "id": "q_user",
+      "target_concepts": ["audience", "persona"],
+      "oblique_prompt": "谁会第一个为它买单？请具体到一个真实的人和他的日常处境。",
+      "options_or_examples": ["独立咖啡馆主理人", "连锁采购负责人", "年轻白领", "加盟商", "其他"],
+      "follow_ups": ["这个人为什么现在非解决不可？"],
+      "restate_template": "首批核心人群是「{{answer}}」。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.12,
+      "category_trigger": null,
+      "dimensions": ["audience_scene"]
+    },
+    {
+      "id": "q_scene",
+      "target_concepts": ["scenario"],
+      "oblique_prompt": "这个人会在什么时候突然想起你？那个时刻之前发生了什么？",
+      "options_or_examples": ["临时补货", "开新店", "客户投诉", "做年度汇报", "其他"],
+      "follow_ups": ["请说一个真实场景，不要概念。"],
+      "restate_template": "关键场景是「{{answer}}」。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.08,
+      "category_trigger": null,
+      "dimensions": ["audience_scene"]
+    },
+    {
+      "id": "q_old_problem",
+      "target_concepts": ["old_problem"],
+      "oblique_prompt": "你最受不了这个行业现在怎么解决问题？它让用户付出了什么代价？",
+      "options_or_examples": ["太不稳定", "太贵", "太麻烦", "只会讲概念", "其他"],
+      "follow_ups": ["这个代价能不能具体到钱、时间或风险？"],
+      "restate_template": "旧问题是「{{answer}}」。",
+      "simplify_tag": "mergeable",
+      "sufficiency_weight": 0.1,
+      "category_trigger": null,
+      "dimensions": ["problem_opportunity"]
+    },
+    {
+      "id": "q_new_cognition",
+      "target_concepts": ["new_cognition"],
+      "oblique_prompt": "如果你要让用户改变一个想法，你希望他从哪句话改成哪句话？",
+      "options_or_examples": ["从只能凑合到可以稳定专业", "从便宜优先到总成本优先", "从买产品到买结果", "其他"],
+      "follow_ups": ["这句话能被销售或官网直接使用吗？"],
+      "restate_template": "新的认知目标是「{{answer}}」。",
+      "simplify_tag": "mergeable",
+      "sufficiency_weight": 0.1,
+      "category_trigger": null,
+      "dimensions": ["problem_opportunity", "strategy_seed"]
+    },
+    {
+      "id": "q_product",
+      "target_concepts": ["product_system"],
+      "oblique_prompt": "你真正交付给用户的不是商品名，而是哪几个可感知结果？",
+      "options_or_examples": ["稳定品质", "更省心", "更快上线", "更有身份感", "其他"],
+      "follow_ups": ["哪些结果今天已经做得到，哪些只是愿景？"],
+      "restate_template": "产品承诺先记为「{{answer}}」。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.15,
+      "category_trigger": null,
+      "dimensions": ["product"]
+    },
+    {
+      "id": "q_proposition",
+      "target_concepts": ["proposition", "core_values"],
+      "oblique_prompt": "如果你的品牌明天消失，你的用户会失去什么？为什么得是你来填这个空，而不是别人？",
+      "options_or_examples": ["失去一个懂我的选择", "失去一种省心", "失去一种身份认同", "其他（自述）"],
+      "follow_ups": ["具体到一个真实的人、一个真实的时刻。"],
+      "restate_template": "我理解你想填的空是「{{answer}}」——对吗？",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.15,
+      "category_trigger": null,
+      "dimensions": ["strategy_seed"]
+    },
+    {
+      "id": "q_persona_personality",
+      "target_concepts": ["personality_statement"],
+      "oblique_prompt": "如果你的品牌是一个人，他在饭桌上会怎么说话？他会因为坚持什么而得罪人？",
+      "options_or_examples": ["温和可靠不制造焦虑", "犀利敢说真话", "专业克制有距离感", "热情爱分享", "其他"],
+      "follow_ups": ["他绝对不会说的一句话是什么？"],
+      "restate_template": "那他的人格更接近「{{answer}}」，我先记下。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.1,
+      "category_trigger": null,
+      "dimensions": ["tonality"]
+    },
+    {
+      "id": "q_public_data",
+      "target_concepts": ["proof_growth"],
+      "oblique_prompt": "有哪些事实可以公开拿来证明你不是只会讲故事？",
+      "options_or_examples": ["试点客户", "复购率", "真实案例", "媒体/资质", "暂时没有"],
+      "follow_ups": ["哪些可以对外说，哪些只能内部看？"],
+      "restate_template": "对外证明材料先记为「{{answer}}」。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.08,
+      "category_trigger": null,
+      "dimensions": ["strategy_seed"]
+    },
+    {
+      "id": "q_internal_data",
+      "target_concepts": ["risk_check"],
+      "oblique_prompt": "有哪些数字或风险你希望系统知道，但绝对不要写到对外成品里？",
+      "options_or_examples": ["毛利/成本", "单店模型", "未发布计划", "竞品弱点", "没有"],
+      "follow_ups": ["这些内容只会进入 internal 模块。"],
+      "restate_template": "内部材料边界是「{{answer}}」。",
+      "simplify_tag": "optional",
+      "sufficiency_weight": 0.02,
+      "category_trigger": null,
+      "dimensions": ["brand_basics"]
+    }
+  ],
+  "merge_rules": [
+    {
+      "merge": ["q_old_problem", "q_new_cognition"],
+      "into": "一题两问：你最受不了这个行业的什么？你想让用户改成怎么想？",
+      "tag": "mergeable"
+    },
+    {
+      "optional_if": "document_type!=internal_brand_playbook",
+      "ids": ["q_internal_data"],
+      "tag": "optional"
+    }
+  ],
+  "sufficiency_dimensions": [
+    { "dim": "brand_basics", "weight": 0.15, "question_ids": ["q_category", "q_goal", "q_stage"] },
+    { "dim": "audience_scene", "weight": 0.2, "question_ids": ["q_user", "q_scene"] },
+    { "dim": "problem_opportunity", "weight": 0.2, "question_ids": ["q_old_problem", "q_new_cognition"] },
+    { "dim": "product", "weight": 0.15, "question_ids": ["q_product"] },
+    { "dim": "strategy_seed", "weight": 0.2, "question_ids": ["q_proposition", "q_public_data"] },
+    { "dim": "tonality", "weight": 0.1, "question_ids": ["q_persona_personality"] }
+  ]
+}

@@ -18,7 +18,9 @@ import { normalizeGeneratedDeck } from './generate-nonlocked-deck.mjs'
 import { buildOutlinePrompt, parseOutline, validateOutline } from './outline-fullcase.mjs'
 import { validateProcessLocks } from './process-locks.mjs'
 import { loadSkillGuidance } from './skill-injector.mjs'
+import { deriveStrategyDirections, lockChosenDirection } from './strategy-decider.mjs'
 import { readTraces, writeTrace } from './trace-log.mjs'
+import { assertCoherence } from '../validators/coherence-validator.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -99,6 +101,36 @@ export async function runFullcasePipeline({
   const root = options.root || REPO_ROOT
   const runId = `fullcase-${brief.slug}`
   const outlineGuidance = loadSkillGuidance({ root, stage: 'outline' })
+  let brandContent = options.brandSystemContent || null
+  let strategyDirections = options.strategyDirections || null
+  let coherence = null
+
+  await ensureRunState({
+    runDir,
+    runId,
+    clientSlug: brief.slug,
+    schemeType: brandContent ? 'brand-book-fullcase' : 'fullcase',
+    totalChunks: 0,
+  })
+
+  if (brandContent) {
+    if (!strategyDirections) {
+      strategyDirections = await deriveStrategyDirections({ analysisCards, brief, callModel })
+    }
+    const directions = strategyDirections.directions || strategyDirections
+    const chosenId = options.strategyPick || directions[0]?.id
+    brandContent = lockChosenDirection(brandContent, directions, chosenId)
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'strategy_locked',
+      metadata: {
+        chosen_direction_id: brandContent.strategic_spine.chosen_direction_id,
+        positioning_statement: brandContent.strategic_spine.positioning_statement,
+      },
+    })
+  }
+  const strategicSpine = brandContent?.strategic_spine || options.strategicSpine
 
   const outlinePath = path.join(runDir, 'outline.json')
   let skeleton
@@ -117,6 +149,7 @@ export async function runFullcasePipeline({
         researchBrief,
         analysisCards,
         caseLogic,
+        strategicSpine,
         skillGuidance: outlineGuidance.text,
       })
       const user = attempt === 1
@@ -154,7 +187,7 @@ export async function runFullcasePipeline({
     runDir,
     runId,
     clientSlug: brief.slug,
-    schemeType: 'fullcase',
+    schemeType: brandContent ? 'brand-book-fullcase' : 'fullcase',
     totalChunks: skeleton.sections.length,
   })
   await appendRunEvent({
@@ -202,6 +235,7 @@ export async function runFullcasePipeline({
         analysisCards,
         caseLogic,
         callModel,
+        strategicSpine,
         skillGuidance: draftGuidance.text,
       })
       writeJson(chapterPath, result)
@@ -256,6 +290,15 @@ export async function runFullcasePipeline({
     content_pages: section.pages.length,
   }))
   const locks = validateProcessLocks(deck, { minPages, maxPages: maxPages + finalSkeleton.sections.length * 2 + 5 })
+  if (options.coherenceContent) {
+    coherence = assertCoherence(options.coherenceContent)
+    await appendRunEvent({
+      runDir,
+      runId,
+      eventType: 'coherence_passed',
+      metadata: { modules: options.coherenceContent.modules?.length || 0 },
+    })
+  }
   writeJson(path.join(runDir, 'deck.json'), deck)
   writeJson(path.join(runDir, 'process-locks.json'), locks)
   if (!locks.ok) {
@@ -277,5 +320,5 @@ export async function runFullcasePipeline({
     eventType: 'fullcase_completed',
     metadata: { pages: deck.slides.length },
   })
-  return { deck, outline: finalSkeleton, skeleton: finalSkeleton, locks, runDir }
+  return { deck, outline: finalSkeleton, skeleton: finalSkeleton, locks, runDir, brandContent, strategyDirections, coherence }
 }

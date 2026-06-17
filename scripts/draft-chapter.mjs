@@ -128,6 +128,7 @@ export function buildChapterPrompt({
   analysisCards,
   caseLogic,
   generatedPages = [],
+  strategicSpine,
   skillGuidance,
 } = {}) {
   const target = section || chapter
@@ -151,6 +152,9 @@ export function buildChapterPrompt({
     '优先覆盖骨架给出的 page seeds；可以把一个复杂 seed 拆成多页，但每页必须贡献新变量/新证据/新取舍/新机制。',
     '证据规则：evidence_refs 必须引用分析卡 id、研究来源 id 或真实 URL；empirical 必须有真实来源；缺证据标 hypothesis 并给 validation_method；禁止编造 URL。',
     '跨章纪律：承接 previousTakeaways，避开 usedTitles 与 usedPageClaims；不要把同一定位结论换一种说法反复讲。',
+    strategicSpine?.positioning_statement
+      ? `全局战略主线已锁定：${strategicSpine.positioning_statement}。本章每个 content 页必须用 governing_thought 或 points 回扣这条主线。`
+      : '',
     '只输出 JSON：{"pages":[{"governing_thought","points":[≤4],"evidence_refs":[...],"data_refs":[...],"evidence_kind","validation_method","layout_hint","blocks":[...]}],"chapter_takeaways":["..."]}。',
     skillGuidance,
     caseLogic,
@@ -190,6 +194,9 @@ export function buildChapterPrompt({
     '',
     '# 根问题',
     text(brief?.strategicQuestion),
+    ...(strategicSpine?.positioning_statement
+      ? ['', '# 已锁战略主线（必须贯穿）', JSON.stringify(strategicSpine, null, 2)]
+      : []),
     ...(conceptBlocks.length ? ['', '# 可用方法论框架', ...conceptBlocks] : []),
     ...(cardLines.length ? ['', '# 分析卡（优先引用 card id）', ...cardLines] : []),
     ...(findingLines.length ? ['', '# 已核实研究发现', ...findingLines] : []),
@@ -271,6 +278,7 @@ export async function draftChapter({
   caseLogic,
   callModel,
   skillGuidance,
+  strategicSpine,
 } = {}) {
   if (typeof callModel !== 'function') throw new Error('draftChapter requires callModel')
   const target = section || chapter
@@ -287,6 +295,7 @@ export async function draftChapter({
     researchBrief,
     analysisCards,
     caseLogic,
+    strategicSpine,
     skillGuidance,
   })
   const parsed = await callAndParseChapter({

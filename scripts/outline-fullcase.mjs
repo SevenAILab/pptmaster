@@ -12,6 +12,7 @@ export function buildOutlinePrompt(brief, {
   researchBrief,
   analysisCards,
   caseLogic,
+  strategicSpine,
   skillGuidance,
 } = {}) {
   const conclusionLines = requiredConclusions.map(item => `- ${item.id}: ${item.label}`)
@@ -35,6 +36,9 @@ export function buildOutlinePrompt(brief, {
     '一页一观点：每页只讲一个核心判断，governing_thought 必须写成判断句，不是话题词；points 最多 4 条；evidence_refs 必须挂分析卡/研究来源 id。',
     '必须包含结构件：封面 cover、目录 toc、brief_opening 开场（SCQA：situation/complication/question，question=根问题）、每章 transition_question（问题引导过渡页）、每章 closing_judgment（收束）、总结 conclusion（顶层结论）和 action_items（行动）。',
     '所有必备结论 id 必须被 sections[].covers 或 pages[].covers 覆盖。把方法论框架用在最相关的页，在 governing_thought 或 points 以 "[框架: 名称]" 标注；禁止复述框架定义。',
+    strategicSpine?.positioning_statement
+      ? `全局战略主线已锁定：${strategicSpine.positioning_statement}。所有章节必须回扣该主线，不得下游重写。`
+      : '',
     '只输出契约 B JSON：{"cover":{"title","subtitle"},"toc":[...],"brief_opening":{"situation","complication","question"},"sections":[{"section_no","title","transition_question","closing_judgment","covers":["必备结论id"],"pages":[{"governing_thought","points":[≤4],"evidence_refs":[...],"layout_hint","covers":[]}]}],"conclusion":{"governing_thought","action_items":[...]}}。',
     skillGuidance,
     caseLogic,
@@ -48,6 +52,9 @@ export function buildOutlinePrompt(brief, {
     '',
     '# 根问题',
     text(brief?.strategicQuestion),
+    ...(strategicSpine?.positioning_statement
+      ? ['', '# 已锁战略主线（必须贯穿）', JSON.stringify(strategicSpine, null, 2)]
+      : []),
     '',
     '# 必备结论清单（type 级，必须全部被 sections[].covers 或 pages[].covers 覆盖）',
     ...conclusionLines,
