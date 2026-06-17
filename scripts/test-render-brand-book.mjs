@@ -29,6 +29,7 @@ content = addModule(content, {
   content: {
     title: '品牌定位',
     body: '为独立咖啡馆提供稳定、可信的品质供应链。',
+    differentiation: ['只服务独立馆', '按小批量稳定配送'],
     points: ['缩短采购决策', '降低品质波动'],
     production_note: '左图右文，配竞品对比',
     layout_hint: 'split',
@@ -45,6 +46,7 @@ content = addModule(content, {
 const { html, chapters_rendered } = renderBrandBook(content)
 assert.ok(html.includes('品牌定位'))
 assert.ok(html.includes('独立咖啡馆的品质供应链'))
+assert.ok(html.includes('只服务独立馆'))
 assert.ok(html.includes('#1a3c34'))
 assert.ok(/<section class="chapter"/.test(html))
 assert.equal(chapters_rendered.length, 1)

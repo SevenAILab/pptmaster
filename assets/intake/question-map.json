@@ -121,6 +121,18 @@
       "dimensions": ["tonality"]
     },
     {
+      "id": "q_tonality",
+      "target_concepts": ["tonality"],
+      "oblique_prompt": "有没有哪个品牌——不限行业——你看一眼就觉得「这就是我想要的感觉」？是它的什么打动你：颜色、质感、字体、还是气质？",
+      "options_or_examples": ["像观夏那种温暖克制", "像无印良品那种自然留白", "像苹果那种冷静科技", "其他（说出品牌+你喜欢它哪点）"],
+      "follow_ups": ["用三个形容词概括你想要的调性。"],
+      "restate_template": "那视觉基调更接近「{{answer}}」，我会用它来定白皮书和独立站的色彩与气质。",
+      "simplify_tag": "keep",
+      "sufficiency_weight": 0.1,
+      "category_trigger": null,
+      "dimensions": ["tonality"]
+    },
+    {
       "id": "q_public_data",
       "target_concepts": ["proof_growth"],
       "oblique_prompt": "有哪些事实可以公开拿来证明你不是只会讲故事？",
@@ -163,6 +175,6 @@
     { "dim": "problem_opportunity", "weight": 0.2, "question_ids": ["q_old_problem", "q_new_cognition"] },
     { "dim": "product", "weight": 0.15, "question_ids": ["q_product"] },
     { "dim": "strategy_seed", "weight": 0.2, "question_ids": ["q_proposition", "q_public_data"] },
-    { "dim": "tonality", "weight": 0.1, "question_ids": ["q_persona_personality"] }
+    { "dim": "tonality", "weight": 0.1, "question_ids": ["q_tonality"] }
   ]
 }

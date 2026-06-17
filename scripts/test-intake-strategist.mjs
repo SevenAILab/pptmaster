@@ -40,6 +40,7 @@ const answers = {
   q_product: '咖啡豆和履约服务',
   q_proposition: '让小馆稳定做出好咖啡',
   q_persona_personality: '温和可靠不制造焦虑',
+  q_tonality: '参考观夏，喜欢它的温暖克制、自然质感',
   q_public_data: '12 家试点门店复购',
   q_goal: '招商',
 }
@@ -57,7 +58,9 @@ try {
   })
   assert.equal(brief.gate_passed, true)
   assert.deepEqual(brief.output_types_selected, ['brand-book'])
-  assert.ok(brief.tonality.keywords.includes('温和可靠不制造焦虑'))
+  assert.ok(brief.tonality.reference_brands.includes('观夏'))
+  assert.ok(brief.tonality.keywords.some(keyword => /温暖|克制|自然/.test(keyword)))
+  assert.ok(!brief.tonality.keywords.includes('温和可靠不制造焦虑'))
   assert.ok(brief.brand_type_input.category.includes('咖啡'))
   const saved = JSON.parse(await fs.readFile(path.join(tmp, 'coffee-supply', 'brief.json'), 'utf8'))
   assert.equal(saved.slug, 'coffee-supply')

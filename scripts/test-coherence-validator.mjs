@@ -22,6 +22,7 @@ content = addModule(content, {
   depth_level: 'L4',
   content: { body: '围绕品质做爆品，并把便捷交付做成可感知体验。' },
   spine_alignment: '承接品质便捷定位',
+  evidence_refs: ['self-1'],
 })
 
 let result = validateCoherence(content)
@@ -60,5 +61,31 @@ conflict = addModule(conflict, {
   spine_alignment: '品质便捷',
 })
 assert.ok(validateCoherence(conflict).violations.some(v => /假设冲突/.test(v.reason)))
+
+let boilerplate = createBrandContent({ brand_slug: 'd', brand_type: 'new_consumer_full' })
+boilerplate = {
+  ...boilerplate,
+  strategic_spine: {
+    positioning_statement: '稳定品质供应',
+    mission: 'm',
+    vision: 'v',
+    proposition: 'p',
+    locked: true,
+    locked_at: 'now',
+    chosen_direction_id: 'd1',
+  },
+}
+boilerplate = addModule(boilerplate, {
+  id: 'm1',
+  kind: 'brand_definition',
+  visibility: 'external',
+  depth_level: 'L4',
+  content: { positioning: '稳定品质供应', body: '稳定品质供应。' },
+  spine_alignment: '稳定品质供应',
+  evidence_refs: [],
+})
+const boilerplateResult = validateCoherence(boilerplate)
+assert.equal(boilerplateResult.ok, false)
+assert.ok(boilerplateResult.violations.some(v => /boilerplate|套话|证据/.test(v.reason)))
 
 console.log('✅ coherence-validator tests passed')

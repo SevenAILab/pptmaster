@@ -38,15 +38,61 @@ function numberClaims(value) {
   return claims
 }
 
+function normalizedBodyWithoutAnchors(value, anchors) {
+  let body = text(value).replace(/\s+/g, '')
+  for (const anchor of anchors) body = body.replaceAll(anchor, '')
+  return body
+    .replace(/[A-Za-z]+-\d+/g, '')
+    .replace(/[A-Za-z][A-Za-z0-9._-]+/g, '')
+    .replace(/[。！？,.，、；;:：]/g, '')
+}
+
+function longestCommonSubstringLength(a, b) {
+  const left = String(a || '')
+  const right = String(b || '')
+  let best = 0
+  const dp = Array.from({ length: left.length + 1 }, () => Array(right.length + 1).fill(0))
+  for (let i = 1; i <= left.length; i += 1) {
+    for (let j = 1; j <= right.length; j += 1) {
+      if (left[i - 1] === right[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1
+        if (dp[i][j] > best) best = dp[i][j]
+      }
+    }
+  }
+  return best
+}
+
 export function validateCoherence(content) {
   const positioning = content?.strategic_spine?.positioning_statement || ''
   const anchors = anchorWords(positioning)
   const violations = []
   const metrics = new Map()
+  const normalizedTexts = []
 
   for (const module of externalModules(content)) {
     const moduleText = text(module.content)
     const alignment = text(module.spine_alignment)
+    const normalized = normalizedBodyWithoutAnchors(`${alignment} ${moduleText}`, anchors)
+
+    if (KEY_KINDS.has(module.kind) && (!Array.isArray(module.evidence_refs) || module.evidence_refs.length === 0)) {
+      violations.push({ id: module.id, rule: 'evidence_refs', reason: '证据缺失：关键模块必须引用 analysis-card evidence_refs' })
+    }
+
+    if (KEY_KINDS.has(module.kind) && normalized.length < 8) {
+      violations.push({ id: module.id, rule: 'boilerplate', reason: 'boilerplate 套话：模块几乎只是在复读定位语' })
+    }
+
+    if (module.kind !== 'brand_entry') {
+      for (const previous of normalizedTexts) {
+        if (normalized.length >= 18 && previous.normalized.length >= 18 && longestCommonSubstringLength(normalized, previous.normalized) >= 18) {
+          violations.push({ id: module.id, rule: 'template_repeat', reason: `模板重复：与 ${previous.id} 存在大段相同表达` })
+          break
+        }
+      }
+    }
+    if (module.kind !== 'brand_entry') normalizedTexts.push({ id: module.id, normalized })
+
     if (!alignment) {
       violations.push({ id: module.id, rule: 'spine_alignment', reason: 'spine_alignment 为空，主线断层' })
     } else if (anchors.length && !hasAnchor(`${alignment} ${moduleText}`, anchors)) {

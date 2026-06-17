@@ -80,6 +80,27 @@ function inferSlug(answers) {
     || 'brand'
 }
 
+function parseTonality(raw) {
+  const value = answerText(raw)
+  const knownBrands = ['观夏', '无印良品', '苹果', 'MUJI', 'Apple', '耐克', 'Nike', '星巴克', 'Starbucks']
+  const referenceBrands = new Set()
+  for (const brand of knownBrands) {
+    if (value.includes(brand)) referenceBrands.add(brand)
+  }
+  const patternMatches = value.matchAll(/(?:像|参考|类似|接近)([\u4e00-\u9fffA-Za-z0-9][\u4e00-\u9fffA-Za-z0-9\s-]{1,20}?)(?:那种|的|，|,|、|\s)/g)
+  for (const match of patternMatches) {
+    const candidate = answerText(match[1]).replace(/那种.*/, '')
+    if (candidate) referenceBrands.add(candidate)
+  }
+  const keywordCandidates = ['温暖', '克制', '自然', '留白', '科技', '冷静', '高级', '活泼', '专业', '年轻', '质感', '可靠', '明亮', '大胆', '精致']
+  const keywords = keywordCandidates.filter(keyword => value.includes(keyword))
+  return {
+    keywords: keywords.length ? keywords : (value ? [value] : []),
+    reference_brands: [...referenceBrands],
+    source: 'qa',
+  }
+}
+
 export async function finalizeBrief({
   answers = {},
   preBrief = {},
@@ -101,11 +122,7 @@ export async function finalizeBrief({
       delivery_goal: answers.q_goal || '',
       audience: [answers.q_user].filter(Boolean),
     },
-    tonality: {
-      keywords: [answers.q_persona_personality].filter(Boolean),
-      reference_brands: [],
-      source: 'qa',
-    },
+    tonality: parseTonality(answers.q_tonality),
     output_types_selected,
   }
   if (outputRoot) {

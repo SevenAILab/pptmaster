@@ -4,7 +4,7 @@ import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { appendRunEvent } from '../core/runtime/event-ledger.mjs'
-import { addModule, createBrandContent, writeContent } from '../core/content-model.mjs'
+import { createBrandContent, writeContent } from '../core/content-model.mjs'
 import { getTransformer } from '../core/output-registry.mjs'
 import { runAnalysisPass } from './analysis-pass.mjs'
 import { applyPaletteToContent, buildPalette } from './brand-profiler.mjs'
@@ -17,7 +17,7 @@ import { repairDeck } from './design-repair.mjs'
 import { renderFreeformDeck } from './freeform-renderer.mjs'
 import { runFullcasePipeline } from './fullcase-pipeline.mjs'
 import { buildBriefFromInputs } from './generate-nonlocked-deck.mjs'
-import { classifyVisibility } from '../core/visibility-classifier.mjs'
+import { deterministicBrandModules, generateBrandModules } from './generate-brand-modules.mjs'
 import { callClaude, DEFAULT_CLAUDE_MODEL } from './llm-clients/claude-client.mjs'
 import { loadConceptBodies, loadConceptIndex, selectConcepts } from './methodology-kb.mjs'
 import { deriveResearchQuestionsLLM, gatherResearch, gatherResearchDeep, normalizeSearchHits } from './research-worker.mjs'
@@ -183,25 +183,6 @@ function brandTypeInputFromBrief(brief) {
   }
 }
 
-function moduleText(content) {
-  return Object.values(content || {}).map(value => Array.isArray(value) ? value.join(' ') : String(value || '')).join(' ')
-}
-
-function addClassifiedModule(content, module) {
-  const classified = classifyVisibility({
-    kind: module.kind,
-    text: moduleText(module.content),
-    evidence_refs: module.evidence_refs || [],
-  })
-  return addModule(content, {
-    evidence_refs: [],
-    depth_level: 'L3',
-    spine_alignment: content.strategic_spine.positioning_statement,
-    ...module,
-    visibility: module.visibility || classified.visibility,
-  })
-}
-
 function deterministicAnalysisCards(brief) {
   const form = brief.form || {}
   const source = `inputs/${brief.slug}/summary.md`
@@ -213,126 +194,6 @@ function deterministicAnalysisCards(brief) {
       { id: 'self-1', claim: `${form.name || brief.slug} 已有产品和运营资产可支撑主线`, source, source_tier: 'T1', implication: '用现有资产证明定位', analysis_type: 'self' },
     ],
   }
-}
-
-function buildBrandModules(content, brief) {
-  const form = brief.form || {}
-  const name = form.name || brief.slug
-  const industry = form.industry || '所在行业'
-  const audience = Array.isArray(form.target_audience) ? form.target_audience.join('、') : text(form.target_audience)
-  const products = Array.isArray(form.core_products) ? form.core_products : []
-  const spine = content.strategic_spine.positioning_statement
-  const base = `${spine}。`
-  let next = content
-  next = addClassifiedModule(next, {
-    id: 'brand-entry',
-    kind: 'brand_entry',
-    visibility: 'external',
-    content: {
-      name,
-      slogan: spine,
-      one_liner: content.strategic_spine.proposition,
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'market-context',
-    kind: 'market_context',
-    content: {
-      title: '市场背景',
-      body: `${base}${industry} 的竞争正在从单点产品走向清晰心智和稳定体验。`,
-      points: ['用户需要更容易复述的选择理由', '品牌需要把产品资产转成信任资产'],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'brand-definition',
-    kind: 'brand_definition',
-    content: {
-      title: '品牌定义',
-      positioning: spine,
-      body: `${base}${name} 不只提供产品，而是把专业能力包装成用户能感知的日常选择。`,
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'audience-scenarios',
-    kind: 'audience_scenarios',
-    content: {
-      title: '人群与场景',
-      body: `${base}核心人群先锁定 ${audience || '最早愿意付费的人'}，优先解决高频、具体、可验证的使用时刻。`,
-      scenarios: ['第一次选择时需要被说服', '重复购买时需要被证明', '推荐给他人时需要一句话说清楚'],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'strategy-core',
-    kind: 'strategy_core',
-    content: {
-      title: '战略核心',
-      body: `${base}所有对外表达、产品组织和增长动作都必须回扣这条主线。`,
-      points: [content.strategic_spine.mission, content.strategic_spine.vision, content.strategic_spine.proposition],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'narrative-system',
-    kind: 'narrative_system',
-    content: {
-      title: '叙事系统',
-      body: `${base}叙事顺序应从旧问题进入新认知，再用产品和证据证明为什么是 ${name}。`,
-      points: ['旧问题：用户难以判断谁可信', '新认知：品质和便捷可以被同一套系统交付', '证明：用真实产品与运营资产承接'],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'product-system',
-    kind: 'product_system',
-    content: {
-      title: '产品体系',
-      body: `${base}${products.length ? products.join('、') : '核心产品'} 应被组织成从认知到信任再到复购的产品梯队。`,
-      products,
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'visual-direction',
-    kind: 'visual_direction',
-    content: {
-      title: '视觉方向',
-      body: `${base}视觉应服务于清晰、可信和可持续表达，先做文字级方向，不生成实物 VI。`,
-      points: ['色彩来自调性', '字体保持专业克制', '符号概念围绕主线展开'],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'proof-growth',
-    kind: 'proof_growth',
-    content: {
-      title: '证明与增长',
-      body: `${base}增长证明应优先使用可公开事实和可验证体验，而不是夸大行业话术。`,
-      proof_points: ['现有客户/门店/试点事实', '用户复购或推荐线索', '产品稳定交付证据'],
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'personality-statement',
-    kind: 'personality_statement',
-    content: {
-      title: '品牌人格',
-      body: `${base}人格表达应专业、可靠、有温度，少制造焦虑，多给确定性。`,
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'personality-playbook',
-    kind: 'personality_playbook',
-    visibility: 'internal',
-    content: {
-      title: '内部话术边界',
-      body: '客服话术：不可说绝对化承诺；遇到未验证效果必须标注假设。',
-    },
-  })
-  next = addClassifiedModule(next, {
-    id: 'risk-check',
-    kind: 'risk_check',
-    visibility: 'internal',
-    content: {
-      title: '内部风险',
-      body: '单店回本测算、毛利、未发布战略只进入内部模块，不出现在对外手册或独立站。',
-    },
-  })
-  return next
 }
 
 export async function runBrandBookMode({ slug, opts = {}, callModel } = {}) {
@@ -384,7 +245,9 @@ export async function runBrandBookMode({ slug, opts = {}, callModel } = {}) {
     ? deterministicStrategyDirections({ brief, analysisCards })
     : await deriveStrategyDirections({ analysisCards, brief, callModel })
   content = lockChosenDirection(content, strategyDirections.directions, opts.pick || 'd1')
-  content = buildBrandModules(content, brief)
+  content = opts.noModel
+    ? deterministicBrandModules({ content, brief }).content
+    : (await generateBrandModules({ content, brief, analysisCards, researchBrief, callModel, root })).content
   const palette = await buildPalette({
     tonality: content.tonality,
     callModel: opts.noModel ? undefined : callModel,

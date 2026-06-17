@@ -92,9 +92,10 @@ try {
     kind: 'strategy_core',
     visibility: 'external',
     depth_level: 'L3',
-    content: { body: '品质便捷是本品牌的核心战略。' },
-    spine_alignment: '品质便捷',
-  })
+  content: { body: '品质便捷是本品牌的核心战略。' },
+  spine_alignment: '品质便捷',
+  evidence_refs: ['comp-1'],
+})
 
   const runDir = path.join(tmp, 'run')
   const result = await runFullcasePipeline({

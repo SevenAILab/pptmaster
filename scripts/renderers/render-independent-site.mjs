@@ -7,12 +7,11 @@ import {
   registerTransformer,
 } from '../../core/output-registry.mjs'
 import { BRAND_BOOK_MODULES } from './render-brand-book.mjs'
+import { sanitizeRenderableContent } from './renderable-fields.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const DEFAULT_TEMPLATE = path.join(REPO_ROOT, 'templates', 'template-independent-site.html')
 const DEFAULT_PALETTE = { primary: '#1f3a34', secondary: '#d7e7df', accent: '#c66b2e', text: '#1d1d1d', bg: '#fbfaf7' }
-const SAFE_KEYS = new Set(['name', 'slogan', 'one_liner', 'title', 'body', 'summary', 'points', 'bullets', 'values', 'products', 'proof_points'])
-
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -26,16 +25,11 @@ function safeId(value) {
   return String(value || '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '')
 }
 
-function safeKey(key) {
-  const normalized = String(key || '').toLowerCase()
-  return SAFE_KEYS.has(key) && !normalized.endsWith('_note') && !normalized.includes('production') && !normalized.startsWith('layout_')
-}
-
 function renderValue(value) {
   if (value === null || value === undefined || value === '') return ''
   if (Array.isArray(value)) return `<ul>${value.map(item => `<li>${renderValue(item)}</li>`).join('')}</ul>`
   if (typeof value === 'object') {
-    return Object.entries(value).filter(([key]) => safeKey(key)).map(([, child]) => renderValue(child)).join('')
+    return Object.values(value).map(child => renderValue(child)).join('')
   }
   return escapeHtml(value)
 }
@@ -60,9 +54,10 @@ function hero(content) {
 }
 
 function sectionFor(module) {
-  const title = module.content?.title || module.content?.name || module.kind
-  const body = Object.entries(module.content || {})
-    .filter(([key]) => safeKey(key) && !['title', 'name', 'slogan'].includes(key))
+  const content = sanitizeRenderableContent(module.kind, module.content || {})
+  const title = content.title || content.name || module.kind
+  const body = Object.entries(content)
+    .filter(([key]) => !['title', 'name', 'slogan'].includes(key))
     .map(([, value]) => {
       const rendered = renderValue(value)
       return typeof value === 'string' ? `<p>${rendered}</p>` : rendered

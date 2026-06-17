@@ -1,0 +1,12 @@
+{
+  "brand_entry": ["name", "slogan", "one_liner", "category"],
+  "market_context": ["title", "body", "category_trends", "old_problem", "new_opportunity", "points"],
+  "brand_definition": ["title", "positioning", "what_it_is", "what_it_is_not", "differentiation", "name_interpretation", "body"],
+  "audience_scenarios": ["title", "body", "core_audience", "personas", "scenarios", "motivations"],
+  "strategy_core": ["title", "mission", "vision", "values", "philosophy", "proposition", "body", "points"],
+  "narrative_system": ["title", "brand_story", "manifesto", "slogan", "slogan_interpretation", "body"],
+  "product_system": ["title", "product_positioning", "product_keywords", "product_series", "methodology", "core_selling_points", "functional_value", "emotional_value", "social_cultural_value", "body"],
+  "visual_direction": ["title", "color_direction", "typography_direction", "symbol_concept", "body"],
+  "proof_growth": ["title", "milestones", "public_metrics", "partners", "future_plan", "body"],
+  "personality_statement": ["title", "archetype", "traits", "tone", "body"]
+}

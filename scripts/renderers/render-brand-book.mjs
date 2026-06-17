@@ -7,6 +7,7 @@ import {
   listTransformers,
   registerTransformer,
 } from '../../core/output-registry.mjs'
+import { sanitizeRenderableContent } from './renderable-fields.mjs'
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const DEFAULT_TEMPLATE = path.join(REPO_ROOT, 'templates', 'template-brand-book.html')
@@ -45,33 +46,6 @@ const DEFAULT_PALETTE = Object.freeze({
   bg: '#fbfaf7',
 })
 
-const SAFE_KEYS = new Set([
-  'name',
-  'slogan',
-  'one_liner',
-  'title',
-  'subtitle',
-  'body',
-  'summary',
-  'positioning',
-  'proposition',
-  'mission',
-  'vision',
-  'story',
-  'narrative',
-  'differentiation',
-  'trust',
-  'points',
-  'bullets',
-  'highlights',
-  'values',
-  'scenarios',
-  'products',
-  'proof_points',
-  'sections',
-  'quote',
-])
-
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -88,14 +62,6 @@ function safeId(value) {
     .replace(/^-+|-+$/g, '')
 }
 
-function isSafeKey(key) {
-  const normalized = String(key || '').toLowerCase()
-  if (!SAFE_KEYS.has(key)) return false
-  if (normalized === 'note' || normalized === 'notes' || normalized.endsWith('_note')) return false
-  if (normalized.startsWith('layout_') || normalized.includes('production')) return false
-  return true
-}
-
 function renderArray(value) {
   const items = value
     .map(item => renderValue(item, { wrapObject: true }))
@@ -107,7 +73,6 @@ function renderArray(value) {
 
 function renderObject(value) {
   return Object.entries(value)
-    .filter(([key]) => isSafeKey(key))
     .map(([key, child]) => {
       const rendered = renderValue(child, { wrapObject: true })
       if (!rendered) return ''
@@ -143,7 +108,7 @@ function labelForKey(key) {
 function renderContent(content) {
   const title = content.title || content.name || content.slogan || ''
   const bodyParts = Object.entries(content)
-    .filter(([key]) => isSafeKey(key) && key !== 'title' && key !== 'name' && key !== 'slogan')
+    .filter(([key]) => key !== 'title' && key !== 'name' && key !== 'slogan')
     .map(([key, value]) => {
       const rendered = renderValue(value, { wrapObject: true })
       if (!rendered) return ''
@@ -210,7 +175,7 @@ export function renderBrandBook(content, { template = DEFAULT_TEMPLATE } = {}) {
   if (modules.length === 0) throw new Error('no external modules available for brand-book rendering')
 
   const chapters = modules.map(({ module, weight }) => {
-    const rendered = renderContent(module.content || {})
+    const rendered = renderContent(sanitizeRenderableContent(module.kind, module.content || {}))
     const title = rendered.title || MODULE_TITLES[module.kind] || module.kind
     return {
       id: safeId(module.id || module.kind),
